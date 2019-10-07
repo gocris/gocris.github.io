@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-	  <title>Cristian's Blog</title>
+
+    <title>Cristian's Blog</title>
+
   <style>
     @import url(http: //fonts.googleapis.com/css?
   family=Montserrat:400,700);
@@ -137,7 +139,7 @@
             /* Add some padding inside the card container */
             .under {
               margin: 0;
-              padding: 2px 16px;
+              padding: 8px 8px 5px 8px;
               background: white;
               border-radius: 5px; /* 5px rounded corners */
               color: black;
@@ -146,6 +148,7 @@
     
     	.under h4 { 
           color: #00BD89;
+          margin: 0;
     }
 
   .content{
@@ -169,20 +172,15 @@
      text-align: center;
     }
     
+    
   #nested { 
     display: grid;
   	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));;
   	grid-gap: 1rem;
     color: black;
-    boder: solid 1px black;
     margin-top: 50px;
+    text-align: center;
    }
-    
- #nested > div {
-  background: #EDE7F6;
-  padding: 25px;
-  border-radius: 1rem;
-}   
     
   </style>
   </head>
@@ -215,29 +213,36 @@
     
     <div class="content box"> <h1>Posts</h1>
     	<div id = "nested">
-          <div id = "one"> Hello </div>
-          <div id = "two"> GoodBye </div>
-          <div id = "three"> Farewell </div>
-          <div id = "for"> Adios </div>
+          <div class="card">
+          	<img src="picture_two.jpg">
+            	<div class="under">
+             		<h4><b>Is Keanu Reeves Jesus?</b></h4>
+              		<p><em>No human can be that breath-taking!</em></p>
+            </div>
+		</div>
+          
+           	<div class="card">
+          		<img src="picture_three.jpg">
+           	 		<div class="under">
+              			<h4><b>Breath of the Wild is the Best Game Ever!</b></h4>
+              			<p><em>This game took a 180 spin.</em></p>
+           			 </div>
+			</div>
+          
+        	<div class="card">
+          		<img src="picture_four.jpg">
+            		<div class="under">
+              			<h4><strong>Help Wanted</strong></h4>
+              			<p><em>Here in America, there is a shortage of coders.</em></p>
+            		</div>
+			</div>
+          
+     
     	</div>
     </div>
     
     <div class="deck box"> 
-    	<div class="card">
-          <img src="picture_two.jpg">
-            <div class="under">
-              <h4><b>Is Keanu Reeves Jesus?</b></h4>
-              <p><em>No human can be that breath-taking!</em></p>
-            </div>
-		</div>
       	
-      	<div class="card">
-          <img src="picture_three.jpg">
-            <div class="under">
-              <h4><b>Breath of the Wild is the Best Game Ever!</b></h4>
-              <p><em>This game took a 180 spin.</em></p>
-            </div>
-		</div>
     </div>
     
     <div class="footer box">
