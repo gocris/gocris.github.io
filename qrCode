@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Essential iOS viewport settings -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Apple Native App (PWA) Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Scanner OS">
+    
+    <title>QR Data Extractor // CYBERPUNK_OS</title>
+    <style>
+        :root {
+            --cp-lime: #39ff14;
+            --cp-cyan: #00f0ff;
+            --cp-dark: #0a0a0c;
+            --cp-grey: #222225;
+            --cp-danger: #ff003c;
+            --cp-font-mono: 'Courier New', Courier, monospace;
+            --cp-font-sans: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body, html {
+            margin: 0;
+            padding: calc(env(safe-area-inset-top) + 1rem) 1rem calc(env(safe-area-inset-bottom) + 1rem) 1rem;
+            width: 100%;
+            height: 100%;
+            background-color: var(--cp-dark);
+            font-family: var(--cp-font-sans);
+            color: white;
+            overflow: hidden; 
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            box-sizing: border-box;
+            /* Prevents text selection on mobile for a native feel */
+            user-select: none; 
+            -webkit-user-select: none;
+        }
+
+        .bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            z-index: -3;
+        }
+
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 15, 0.85);
+            z-index: -2;
+        }
+
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .neon-kanji {
+            position: absolute;
+            font-weight: 900;
+            font-size: 3rem;
+            opacity: 0.15;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 0.5rem;
+            z-index: 0;
+        }
+
+        .kanji-1 { top: 10%; left: 5%; color: var(--cp-cyan); text-shadow: 0 0 10px var(--cp-cyan); }
+        .kanji-2 { bottom: 10%; right: 5%; color: var(--cp-lime); text-shadow: 0 0 10px var(--cp-lime); }
+
+        .wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 600px;
+            padding: 3px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, var(--cp-cyan) 0%, var(--cp-lime) 100%);
+            clip-path: polygon(0 15px, 15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.15);
+            max-height: 100%; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            background: rgba(15, 15, 20, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 1.5rem;
+            clip-path: polygon(0 13px, 13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%);
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden; 
+        }
+
+        h2 {
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            color: white;
+            position: relative;
+            display: inline-block;
+            letter-spacing: 2px;
+        }
+
+        .glitch { position: relative; color: white; font-weight: 800; }
+        .glitch::before, .glitch::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent;
+        }
+        .glitch::before {
+            left: 2px; text-shadow: -2px 0 var(--cp-lime); clip: rect(24px, 550px, 90px, 0); animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            left: -2px; text-shadow: -2px 0 var(--cp-cyan); clip: rect(85px, 550px, 140px, 0); animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim { 0% { clip: rect(10px, 9999px, 44px, 0); } 20% { clip: rect(80px, 9999px, 12px, 0); } 40% { clip: rect(15px, 9999px, 98px, 0); } 60% { clip: rect(55px, 9999px, 23px, 0); } 80% { clip: rect(3px, 9999px, 85px, 0); } 100% { clip: rect(90px, 9999px, 4px, 0); } }
+        @keyframes glitch-anim-2 { 0% { clip: rect(65px, 9999px, 100px, 0); } 20% { clip: rect(3px, 9999px, 20px, 0); } 40% { clip: rect(44px, 9999px, 70px, 0); } 60% { clip: rect(80px, 9999px, 5px, 0); } 80% { clip: rect(15px, 9999px, 30px, 0); } 100% { clip: rect(98px, 9999px, 55px, 0); } }
+
+        .input-group { margin-bottom: 1.5rem; position: relative; flex-shrink: 0; }
+        .input-group label { display: block; margin-bottom: 0.5rem; color: var(--cp-cyan); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+
+        input[type="text"] {
+            width: 100%; padding: 0.8rem; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--cp-grey);
+            color: var(--cp-lime); font-family: var(--cp-font-mono); font-size: 1rem; box-sizing: border-box;
+            outline: none; border-left: 4px solid var(--cp-cyan); transition: all 0.3s ease; appearance: none; border-radius: 0;
+            user-select: auto; -webkit-user-select: auto;
+        }
+        input[type="text"]:focus { border-color: var(--cp-lime); border-left: 4px solid var(--cp-lime); box-shadow: 0 0 10px rgba(57, 255, 20, 0.2); background: rgba(0, 0, 0, 0.8); }
+        input[type="text"]::placeholder { color: rgba(57, 255, 20, 0.3); }
+
+        .results { display: flex; flex-direction: column; gap: 0.5rem; flex-shrink: 0; }
+        .data-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); padding: 0.8rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .data-label { color: #aaa; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        .data-value { font-family: var(--cp-font-mono); font-size: 1rem; color: var(--cp-cyan); font-weight: bold; text-shadow: 0 0 5px rgba(0, 240, 255, 0.3); }
+        .data-value.highlight { color: var(--cp-lime); text-shadow: 0 0 5px rgba(57, 255, 20, 0.3); font-size: 1.1rem; }
+        .empty-state { color: rgba(255, 255, 255, 0.2); font-style: italic; }
+        
+        .sys-badge { position: absolute; top: 1rem; right: 1rem; background: var(--cp-lime); color: var(--cp-dark); padding: 2px 6px; font-size: 0.6rem; font-weight: bold; letter-spacing: 1px; box-shadow: 0 0 5px rgba(57, 255, 20, 0.4); }
+
+        .log-section { margin-top: 1.5rem; border-top: 1px dashed rgba(57, 255, 20, 0.3); padding-top: 1rem; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+        .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-shrink: 0; }
+        .log-title { color: var(--cp-cyan); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
+        
+        .clear-btn { background: transparent; border: 1px solid var(--cp-cyan); color: var(--cp-cyan); font-family: var(--cp-font-mono); font-size: 0.7rem; padding: 4px 8px; cursor: pointer; text-transform: uppercase; transition: all 0.3s ease; }
+        .clear-btn:active { background: var(--cp-cyan); color: var(--cp-dark); }
+
+        .tally-container { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; flex-shrink: 0; }
+        .tally-tag { background: rgba(57, 255, 20, 0.1); border: 1px solid var(--cp-lime); color: var(--cp-lime); padding: 4px 6px; font-size: 0.75rem; font-family: var(--cp-font-mono); border-radius: 2px; }
+
+        .log-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 0.4rem; padding-right: 4px; }
+        .log-list::-webkit-scrollbar { width: 4px; }
+        .log-list::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+        .log-list::-webkit-scrollbar-thumb { background: var(--cp-cyan); }
+
+        .log-item { font-family: var(--cp-font-mono); font-size: 0.8rem; color: #aaa; display: flex; flex-direction: column; background: rgba(0, 0, 0, 0.5); padding: 8px; border-left: 2px solid var(--cp-cyan); cursor: pointer; transition: background 0.2s ease; }
+        .log-item:active { background: rgba(0, 240, 255, 0.15); }
+        .log-item-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .log-time { color: var(--cp-cyan); opacity: 0.7; font-size: 0.7rem; }
+        .log-arrow { display: inline-block; margin-left: 8px; font-size: 0.7rem; color: var(--cp-lime); transition: transform 0.3s ease; }
+        .log-item.expanded .log-arrow { transform: rotate(180deg); }
+        .log-item-detail { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(57, 255, 20, 0.2); color: var(--cp-lime); word-break: break-all; font-size: 0.7rem; opacity: 0.9; }
+        .log-item.expanded .log-item-detail { display: block; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 100; display: none; justify-content: center; align-items: center; }
+        .modal-box { background: var(--cp-dark); border: 1px solid var(--cp-danger); box-shadow: 0 0 20px rgba(255, 0, 60, 0.3); padding: 1.5rem; width: 80%; max-width: 300px; text-align: center; }
+        .modal-title { color: var(--cp-danger); font-weight: bold; margin-bottom: 1rem; letter-spacing: 1px; }
+        .modal-buttons { display: flex; justify-content: space-between; gap: 1rem; }
+        .modal-btn { flex: 1; padding: 8px; background: transparent; font-family: var(--cp-font-mono); font-weight: bold; cursor: pointer; text-transform: uppercase; border: 1px solid; }
+        .modal-btn-cancel { border-color: var(--cp-grey); color: white; }
+        .modal-btn-confirm { border-color: var(--cp-danger); color: var(--cp-danger); }
+        .modal-btn-confirm:active { background: var(--cp-danger); color: var(--cp-dark); }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer"></div>
+    <div class="bg-overlay"></div>
+    <div class="scanlines"></div>
+
+    <div class="neon-kanji kanji-1">サイバーパンク</div>
+    <div class="neon-kanji kanji-2">アクセス</div>
+
+    <div class="wrapper">
+        <div class="container">
+            <div class="sys-badge">v6.0-WEB_APP</div>
+            <h2 class="glitch" data-text="DECRYPT_DATA">DECRYPT_DATA</h2>
+            
+            <div class="input-group">
+                <label for="qrInput">Scanner Input // ターミナル入力</label>
+                <!-- Form wrapper prevents iOS from doing weird reloads -->
+                <form id="scanForm" onsubmit="event.preventDefault();">
+                    <input type="text" id="qrInput" inputmode="none" placeholder="> Scanning..." value="" spellcheck="false" autocomplete="off" autofocus>
+                </form>
+            </div>
+
+            <div class="results">
+                <div class="data-row">
+                    <span class="data-label">Model/Size</span>
+                    <span class="data-value" id="valModel"><span class="empty-state">NULL</span></span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">OSE</span>
+                    <span class="data-value" id="val25"><span class="empty-state">NULL</span></span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Cavity</span>
+                    <span class="data-value" id="val26"><span class="empty-state">NULL</span></span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Prod Wk</span>
+                    <span class="data-value highlight" id="valWeek"><span class="empty-state">NULL</span></span>
+                </div>
+            </div>
+
+            <div class="log-section">
+                <div class="log-header">
+                    <span class="log-title">Session Log</span>
+                    <button class="clear-btn" onclick="openClearModal()">Clear Data</button>
+                </div>
+                <div class="tally-container" id="tallyContainer"></div>
+                <div class="log-list" id="logList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-box">
+            <div class="modal-title">WARNING: DATA PURGE</div>
+            <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 1.5rem;">Wipe all local session data? This cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeClearModal()">Abort</button>
+                <button class="modal-btn modal-btn-confirm" onclick="confirmClearData()">Purge</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const inputField = document.getElementById('qrInput');
+        const modalOverlay = document.getElementById('confirmModal');
+
+        const productMap = {
+            "819": "MEDIUM QC", "816": "LONG QC", "814": "LONG SF", "815": "LONG SS",
+            "817": "MEDIUM SF", "818": "MEDIUM SS", "070": "Energy Plate",
+            "852": "SMALL SS", "853": "SMALL QC", "851": "SMALL SF"
+        };
+
+        function calculateWeek(yearStr, dayOfYearStr) {
+            const year = parseInt(yearStr, 10);
+            const dayOfYear = parseInt(dayOfYearStr, 10);
+            if (isNaN(year) || isNaN(dayOfYear)) return null;
+            const fullYear = 1900 + year + 100;
+            const targetDate = new Date(fullYear, 0, dayOfYear);
+            const janFirst = new Date(fullYear, 0, 1);
+            const diffDays = Math.floor((targetDate - janFirst) / 86400000);
+            return Math.floor((diffDays + janFirst.getDay()) / 7) + 1;
+        }
+
+        // Standard LocalStorage works perfectly on GitHub Pages
+        let sessionLogs = JSON.parse(localStorage.getItem('cp_sessionLogs')) || [];
+        let weekTally = JSON.parse(localStorage.getItem('cp_weekTally')) || {};
+
+        const logListEl = document.getElementById('logList');
+        const tallyContainerEl = document.getElementById('tallyContainer');
+
+        function updateLogUI() {
+            tallyContainerEl.innerHTML = '';
+            const sortedWeeks = Object.keys(weekTally).sort((a, b) => parseInt(a) - parseInt(b));
+            
+            if (sortedWeeks.length === 0) {
+                tallyContainerEl.innerHTML = '<span class="empty-state" style="font-size: 0.75rem;">Awaiting first scan...</span>';
+            } else {
+                sortedWeeks.forEach(week => {
+                    const tag = document.createElement('div');
+                    tag.className = 'tally-tag';
+                    tag.innerText = `WK-${week}: ${weekTally[week]}`;
+                    tallyContainerEl.appendChild(tag);
+                });
+            }
+
+            logListEl.innerHTML = '';
+            const displayLogs = sessionLogs.slice(0, 100);
+            displayLogs.forEach(log => {
+                const item = document.createElement('div');
+                item.className = 'log-item';
+                item.innerHTML = `
+                    <div class="log-item-header">
+                        <span><span style="color: var(--cp-lime); font-weight: bold;">WK-${log.week}</span></span>
+                        <div>
+                            <span class="log-time">${log.time}</span>
+                            <span class="log-arrow">▼</span>
+                        </div>
+                    </div>
+                    <div class="log-item-detail">DATA: ${log.qr || 'N/A'}</div>
+                `;
+                item.addEventListener('click', () => item.classList.toggle('expanded'));
+                logListEl.appendChild(item);
+            });
+        }
+
+        // Visual update as the scanner types
+        function processQR() {
+            const qr = inputField.value.trim();
+            const valModelEl = document.getElementById('valModel');
+            const val25El = document.getElementById('val25');
+            const val26El = document.getElementById('val26');
+            const valWeekEl = document.getElementById('valWeek');
+            const emptyHTML = '<span class="empty-state">NULL</span>';
+
+            if (qr === "") {
+                valModelEl.innerHTML = emptyHTML; val25El.innerHTML = emptyHTML;
+                val26El.innerHTML = emptyHTML; valWeekEl.innerHTML = emptyHTML;
+                return;
+            }
+
+            const codeFragment = qr.substring(5, 8);
+            if (codeFragment.length === 3) {
+                valModelEl.innerHTML = productMap[codeFragment] || `<span class="empty-state">ERR: ${codeFragment}</span>`;
+            } else { valModelEl.innerHTML = emptyHTML; }
+            
+            val25El.innerHTML = qr.length >= 25 ? qr.substring(24, 25) : emptyHTML;
+            val26El.innerHTML = qr.length >= 26 ? qr.substring(25, 26) : emptyHTML;
+
+            if (qr.length >= 23) {
+                const weekNum = calculateWeek(qr.substring(18, 20), qr.substring(20, 23));
+                valWeekEl.innerHTML = weekNum !== null ? "WK-" + weekNum : emptyHTML;
+            } else {
+                valWeekEl.innerHTML = emptyHTML;
+            }
+        }
+
+        inputField.addEventListener('input', processQR);
+
+        // GitHub / Real Web Browser Enter Key Listener
+        inputField.addEventListener('keydown', function(e) {
+            // Check for the invisible Enter key
+            if (e.key === 'Enter' || e.keyCode === 13) {
+                e.preventDefault(); 
+                
+                // 100ms delay to make sure iOS Bluetooth finished pasting the last character
+                setTimeout(() => {
+                    const qr = inputField.value.trim();
+                    
+                    if (qr.length >= 23) {
+                        const weekNum = calculateWeek(qr.substring(18, 20), qr.substring(20, 23));
+                        
+                        if (weekNum !== null) {
+                            const now = new Date();
+                            const dateTimeString = now.toLocaleString('en-US', { 
+                                month: '2-digit', day: '2-digit', year: '2-digit', 
+                                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false 
+                            });
+                            
+                            sessionLogs.unshift({ week: weekNum, time: dateTimeString, qr: qr });
+                            weekTally[weekNum] = (weekTally[weekNum] || 0) + 1;
+
+                            localStorage.setItem('cp_sessionLogs', JSON.stringify(sessionLogs));
+                            localStorage.setItem('cp_weekTally', JSON.stringify(weekTally));
+
+                            updateLogUI();
+                            inputField.value = ''; // Auto-clear the box
+                            processQR(); // Reset the neon display to NULL
+                        }
+                    }
+                }, 100);
+            }
+        });
+
+        function openClearModal() { modalOverlay.style.display = 'flex'; }
+        function closeClearModal() { modalOverlay.style.display = 'none'; inputField.focus(); }
+
+        function confirmClearData() {
+            sessionLogs = []; weekTally = {};
+            localStorage.removeItem('cp_sessionLogs');
+            localStorage.removeItem('cp_weekTally');
+            updateLogUI(); closeClearModal();
+        }
+
+        // Kiosk Mode
+        function enforceFocus(e) {
+            const isClickingInteractable = e.target.closest('.clear-btn') || e.target.closest('.modal-overlay') || e.target.closest('.log-item');
+            if (e.target !== inputField && !isClickingInteractable) {
+                setTimeout(() => inputField.focus(), 100);
+            }
+        }
+
+        document.addEventListener('click', enforceFocus);
+        document.addEventListener('touchstart', enforceFocus, { passive: true });
+
+        updateLogUI();
+        processQR();
+        inputField.focus();
+    </script>
+</body>
+</html>
