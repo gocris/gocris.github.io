@@ -108,9 +108,12 @@
             for (let i = 0; i < items.length; i++) {
                 let e = items[i];
                 
-                if (e.toLowerCase() === 'x' || e === '-') {
-                    // Since 2 Xs worked perfectly, we map ONE 'X' to 6 Enters!
+                if (e.toLowerCase() === 'x') {
+                    // 'X' = Skip 3 cells (6 Enters)
                     payload += "\r\n\r\n\r\n\r\n\r\n\r\n"; 
+                } else if (e === '-') {
+                    // '-' = Skip 1 cell (2 Enters)
+                    payload += "\r\n\r\n"; 
                 } else {
                     // If it's a number, type the number and press Enter once
                     payload += e + "\r\n";
