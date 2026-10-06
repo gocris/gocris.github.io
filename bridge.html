@@ -100,33 +100,21 @@
                 return;
             }
 
-            // Split the camera's text by line breaks to preserve your paper's rows
-            let lines = rawData.split('\n');
-            let processedLines = [];
+            // 1. Break the camera's text into one continuous list of items
+            let items = rawData.split(/[\n\s,]+/).filter(e => e !== '');
+            
+            // 2. Check for an 'x', 'X', or '-' and convert it to a blank value
+            let mappedItems = items.map(e => {
+                if (e.toLowerCase() === 'x' || e === '-') {
+                    return ''; // Leaves this cell blank to create a skip
+                }
+                return e;
+            });
+            
+            // 3. Join everything together with ENTER keystrokes (\r\n) instead of TABs
+            let payload = mappedItems.join('\r\n') + '\r\n';
 
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i].trim();
-                if (line === "") continue;
-
-                // Split the row into individual cells
-                let cells = line.split(/[\s,]+/).filter(e => e !== '');
-                
-                // NEW: Check for an 'x', 'X', or '-' and convert it to a blank value
-                let mappedCells = cells.map(e => {
-                    if (e.toLowerCase() === 'x' || e === '-') {
-                        return ''; // Leaves this cell blank, creating a double-TAB jump
-                    }
-                    return e;
-                });
-                
-                // Join them with invisible TAB keystrokes (\t)
-                processedLines.push(mappedCells.join('\t'));
-            }
-
-            // Join the completed rows with Windows ENTER keystrokes (\r\n)
-            let payload = processedLines.join('\r\n') + '\r\n';
-
-            // Generate the physical QR code on the screen
+            // 4. Generate the physical QR code on the screen
             qrContainer.style.display = 'block';
             new QRious({
                 element: document.getElementById('qrCanvas'),
