@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Data Bridge // CYBERPUNK_OS</title>
+    <!-- Lightweight QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <style>
+        :root {
+            --cp-lime: #39ff14;
+            --cp-cyan: #00f0ff;
+            --cp-dark: #0a0a0c;
+            --cp-grey: #222225;
+            --cp-font-mono: 'Courier New', Courier, monospace;
+            --cp-font-sans: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body, html {
+            margin: 0; padding: calc(env(safe-area-inset-top) + 1rem) 1rem 1rem 1rem;
+            width: 100%; height: 100%; background-color: var(--cp-dark);
+            font-family: var(--cp-font-sans); color: white;
+            display: flex; justify-content: center; align-items: flex-start;
+            box-sizing: border-box; background-image: radial-gradient(circle at 50% 50%, #1a1a20 0%, #0a0a0c 100%);
+        }
+
+        .wrapper {
+            width: 100%; max-width: 600px;
+            background: linear-gradient(135deg, var(--cp-cyan) 0%, var(--cp-lime) 100%);
+            padding: 3px; clip-path: polygon(0 15px, 15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+        }
+
+        .container {
+            background: rgba(15, 15, 20, 0.95); padding: 1.5rem;
+            clip-path: polygon(0 13px, 13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%);
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+        }
+
+        h2 { margin: 0 0 1rem 0; font-size: 1.5rem; color: var(--cp-cyan); letter-spacing: 2px; text-transform: uppercase; }
+
+        textarea {
+            width: 100%; height: 120px; padding: 0.8rem;
+            background: rgba(0, 0, 0, 0.6); border: 1px solid var(--cp-grey);
+            color: var(--cp-lime); font-family: var(--cp-font-mono); font-size: 1rem;
+            box-sizing: border-box; outline: none; border-left: 4px solid var(--cp-cyan);
+            resize: none; margin-bottom: 1rem;
+        }
+        
+        textarea:focus { border-color: var(--cp-lime); border-left-color: var(--cp-lime); box-shadow: 0 0 10px rgba(57, 255, 20, 0.2); }
+
+        .btn {
+            background: transparent; border: 1px solid var(--cp-lime); color: var(--cp-lime);
+            padding: 10px 20px; font-family: var(--cp-font-mono); font-size: 1rem; font-weight: bold;
+            text-transform: uppercase; cursor: pointer; width: 100%; margin-bottom: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:active { background: var(--cp-lime); color: var(--cp-dark); }
+
+        .qr-wrapper {
+            background: white; padding: 10px; display: none;
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+        }
+
+        canvas { display: block; }
+        
+        .nav-link { margin-top: 2rem; color: #aaa; text-decoration: none; font-size: 0.8rem; font-family: var(--cp-font-mono); border-bottom: 1px dashed #aaa; }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="container">
+            <h2>DATA BRIDGE // EXCEL</h2>
+            <p style="font-size: 0.8rem; color: #aaa; margin-top: -10px; margin-bottom: 15px;">Use iOS Camera to capture handwriting</p>
+            
+            <!-- This is where the magic iOS Live Text happens -->
+            <textarea id="dataInput" placeholder="Tap here -> Tap the 'Scan Text' icon on your keyboard -> Scan your paper..." spellcheck="false"></textarea>
+            
+            <button class="btn" onclick="generateQR()">COMPILE TO QR</button>
+            
+            <div class="qr-wrapper" id="qrContainer">
+                <canvas id="qrCanvas"></canvas>
+            </div>
+            
+            <a href="index.html" class="nav-link">← BACK TO SCANNER OS</a>
+        </div>
+    </div>
+
+    <script>
+        function generateQR() {
+            const inputEl = document.getElementById('dataInput');
+            const qrContainer = document.getElementById('qrContainer');
+            let rawData = inputEl.value.trim();
+            
+            if (rawData === "") {
+                qrContainer.style.display = 'none';
+                return;
+            }
+
+            // 1. Break the camera's text block into an array of individual numbers/words
+            // This regex splits by spaces, commas, or new lines.
+            let dataElements = rawData.split(/[\n,\s]+/).filter(e => e !== '');
+
+            // 2. Join them back together with invisible TAB keystrokes (\t)
+            // 3. Add an ENTER keystroke (\r) at the very end
+            let payload = dataElements.join('\t') + '\r';
+
+            // 4. Generate the physical QR code on the screen
+            qrContainer.style.display = 'block';
+            new QRious({
+                element: document.getElementById('qrCanvas'),
+                value: payload,
+                size: 250,
+                level: 'M' // Medium error correction so the PC scanner can read it quickly
+            });
+        }
+    </script>
+</body>
+</html>
