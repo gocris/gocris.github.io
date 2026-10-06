@@ -106,14 +106,14 @@
             // 2. Check for an 'x', 'X', or '-' and convert it into 3 blank jumps
             let mappedItems = items.flatMap(e => {
                 if (e.toLowerCase() === 'x' || e === '-') {
-                    // Return 3 empty strings to force 3 extra ENTER presses
+                    // 3 empty strings = 4 Enter keystrokes total (skips 3 cells)
                     return ['', '', '']; 
                 }
                 return e;
             });
             
-            // 3. Join everything together with ENTER keystrokes (\r\n)
-            let payload = mappedItems.join('\r\n') + '\r\n';
+            // 3. Join everything together with a pure Carriage Return (\r)
+            let payload = mappedItems.join('\r') + '\r';
 
             // 4. Generate the physical QR code on the screen
             qrContainer.style.display = 'block';
