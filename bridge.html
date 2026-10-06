@@ -100,31 +100,39 @@
                 return;
             }
 
-            // 1. Split the camera's text by line breaks to preserve your paper's rows
+            // Split the camera's text by line breaks to preserve your paper's rows
             let lines = rawData.split('\n');
             let processedLines = [];
 
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i].trim();
-                if (line === "") continue; // Ignore blank lines
+                if (line === "") continue;
 
-                // 2. For each line, split the numbers by spaces/commas
+                // Split the row into individual cells
                 let cells = line.split(/[\s,]+/).filter(e => e !== '');
                 
-                // 3. Join them back together with invisible TAB keystrokes (\t)
-                processedLines.push(cells.join('\t'));
+                // NEW: Check for an 'x', 'X', or '-' and convert it to a blank value
+                let mappedCells = cells.map(e => {
+                    if (e.toLowerCase() === 'x' || e === '-') {
+                        return ''; // Leaves this cell blank, creating a double-TAB jump
+                    }
+                    return e;
+                });
+                
+                // Join them with invisible TAB keystrokes (\t)
+                processedLines.push(mappedCells.join('\t'));
             }
 
-            // 4. Join the completed rows with ENTER keystrokes (\r), and add one at the end
-            let payload = processedLines.join('\r') + '\r';
+            // Join the completed rows with Windows ENTER keystrokes (\r\n)
+            let payload = processedLines.join('\r\n') + '\r\n';
 
-            // 5. Generate the physical QR code on the screen
+            // Generate the physical QR code on the screen
             qrContainer.style.display = 'block';
             new QRious({
                 element: document.getElementById('qrCanvas'),
                 value: payload,
                 size: 250,
-                level: 'M' // Medium error correction
+                level: 'M' 
             });
         }
     </script>
