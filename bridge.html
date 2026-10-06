@@ -109,8 +109,8 @@
                 let e = items[i];
                 
                 if (e.toLowerCase() === 'x' || e === '-') {
-                    // If it's an X, press the Windows Enter key exactly 3 times
-                    payload += "\r\n\r\n\r\n"; 
+                    // Since 2 Xs worked perfectly, we map ONE 'X' to 6 Enters!
+                    payload += "\r\n\r\n\r\n\r\n\r\n\r\n"; 
                 } else {
                     // If it's a number, type the number and press Enter once
                     payload += e + "\r\n";
