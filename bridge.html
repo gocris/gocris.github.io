@@ -100,14 +100,14 @@
                 return;
             }
 
-            // 1. Break the camera's text into one continuous list of items
+            // 1. Break the camera's text into a list
             let items = rawData.split(/[\n\s,]+/).filter(e => e !== '');
             
-            // 2. Check for an 'x', 'X', or '-' and convert it into 3 blank jumps
-            let mappedItems = items.flatMap(e => {
+            // 2. Map ONE "X" to raw Enter keystrokes
+            let mappedItems = items.map(e => {
                 if (e.toLowerCase() === 'x' || e === '-') {
-                    // 3 empty strings = 4 Enter keystrokes total (skips 3 cells)
-                    return ['', '', '']; 
+                    // This creates exactly 4 Enters total between numbers (skips 3 cells)
+                    return '\r\r'; 
                 }
                 return e;
             });
