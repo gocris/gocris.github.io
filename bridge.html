@@ -89,7 +89,7 @@
         </div>
     </div>
 
-  <script>
+<script>
         function generateQR() {
             const inputEl = document.getElementById('dataInput');
             const qrContainer = document.getElementById('qrContainer');
@@ -102,21 +102,22 @@
 
             // 1. Break the camera's text into a list
             let items = rawData.split(/[\n\s,]+/).filter(e => e !== '');
-            
-            // 2. Map ONE "X" to raw Enter keystrokes
-            let mappedItems = items.map(e => {
-                if (e.toLowerCase() === 'x' || e === '-') {
-                    // .join('\r') below adds 1 Enter before and 1 after this string.
-                    // Returning '\r\r' here makes 4 Enters total = exactly 3 skipped cells.
-                    return '\r\r'; 
-                }
-                return e;
-            });
-            
-            // 3. Join everything together with a pure Carriage Return (\r)
-            let payload = mappedItems.join('\r') + '\r';
+            let payload = "";
 
-            // 4. Generate the physical QR code on the screen
+            // 2. Loop through every item one by one
+            for (let i = 0; i < items.length; i++) {
+                let e = items[i];
+                
+                if (e.toLowerCase() === 'x' || e === '-') {
+                    // If it's an X, press the Windows Enter key exactly 3 times
+                    payload += "\r\n\r\n\r\n"; 
+                } else {
+                    // If it's a number, type the number and press Enter once
+                    payload += e + "\r\n";
+                }
+            }
+
+            // 3. Generate the physical QR code on the screen
             qrContainer.style.display = 'block';
             new QRious({
                 element: document.getElementById('qrCanvas'),
