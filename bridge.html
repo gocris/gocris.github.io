@@ -106,7 +106,8 @@
             // 2. Map ONE "X" to raw Enter keystrokes
             let mappedItems = items.map(e => {
                 if (e.toLowerCase() === 'x' || e === '-') {
-                    // This creates exactly 4 Enters total between numbers (skips 3 cells)
+                    // .join('\r') below adds 1 Enter before and 1 after this string.
+                    // Returning '\r\r' here makes 4 Enters total = exactly 3 skipped cells.
                     return '\r\r'; 
                 }
                 return e;
