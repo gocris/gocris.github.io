@@ -5,130 +5,513 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Data Bridge // CYBERPUNK_OS</title>
-    <!-- Lightweight QR Code Generator Library -->
+    <title>NEURAL BRIDGE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
         :root {
             --cp-lime: #39ff14;
             --cp-cyan: #00f0ff;
-            --cp-dark: #0a0a0c;
-            --cp-grey: #222225;
+            --cp-pink: #ff0055;
+            --cp-dark: #070709;
+            --cp-grey: #1a1a20;
             --cp-font-mono: 'Courier New', Courier, monospace;
             --cp-font-sans: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body, html {
-            margin: 0; padding: calc(env(safe-area-inset-top) + 1rem) 1rem 1rem 1rem;
-            width: 100%; height: 100%; background-color: var(--cp-dark);
-            font-family: var(--cp-font-sans); color: white;
-            display: flex; justify-content: center; align-items: flex-start;
-            box-sizing: border-box; background-image: radial-gradient(circle at 50% 50%, #1a1a20 0%, #0a0a0c 100%);
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background-color: var(--cp-dark); font-family: var(--cp-font-sans); color: white;
+            display: flex; flex-direction: column; overscroll-behavior-y: none;
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.07) 1px, transparent 1px);
+            background-size: 20px 20px; position: relative;
         }
 
-        .wrapper {
-            width: 100%; max-width: 600px;
-            background: linear-gradient(135deg, var(--cp-cyan) 0%, var(--cp-lime) 100%);
-            padding: 3px; clip-path: polygon(0 15px, 15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+        body::after {
+            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
-        .container {
-            background: rgba(15, 15, 20, 0.95); padding: 1.5rem;
-            clip-path: polygon(0 13px, 13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%);
-            display: flex; flex-direction: column; align-items: center; text-align: center;
-        }
+        .ui-layer { position: relative; z-index: 10; display: flex; flex-direction: column; height: 100%; }
 
-        h2 { margin: 0 0 1rem 0; font-size: 1.5rem; color: var(--cp-cyan); letter-spacing: 2px; text-transform: uppercase; }
-
-        textarea {
-            width: 100%; height: 120px; padding: 0.8rem;
-            background: rgba(0, 0, 0, 0.6); border: 1px solid var(--cp-grey);
-            color: var(--cp-lime); font-family: var(--cp-font-mono); font-size: 1rem;
-            box-sizing: border-box; outline: none; border-left: 4px solid var(--cp-cyan);
-            resize: none; margin-bottom: 1rem;
-        }
+        .header { background: linear-gradient(90deg, var(--cp-cyan) 0%, var(--cp-lime) 100%); padding: 0 0 2px 0; }
+        .header-inner { background: var(--cp-dark); padding: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.15);}
         
-        textarea:focus { border-color: var(--cp-lime); border-left-color: var(--cp-lime); box-shadow: 0 0 10px rgba(57, 255, 20, 0.2); }
+        .header-title { font-family: var(--cp-font-mono); font-weight: bold; letter-spacing: 2px; color: var(--cp-cyan); text-shadow: 0 0 5px var(--cp-cyan); }
+
+        select { background: #111; color: var(--cp-cyan); border: 1px solid var(--cp-cyan); font-family: var(--cp-font-mono); font-size: 0.8rem; padding: 5px; outline: none; }
+
+        .btn-sys-back { background: transparent; border: none; color: var(--cp-pink); font-family: var(--cp-font-mono); font-weight: bold; font-size: 1.1rem; cursor: pointer; padding: 0; text-shadow: 0 0 5px var(--cp-pink); text-decoration: none;}
+
+        .status-bar {
+            background: rgba(10, 10, 15, 0.9); color: white; text-align: center; padding: 8px;
+            font-family: var(--cp-font-mono); font-weight: bold; font-size: 0.9rem;
+            border-bottom: 1px solid var(--cp-lime); transition: color 0.3s;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .display-area {
+            flex: 1; display: flex; flex-direction: column; padding: 15px;
+            background: rgba(0, 0, 0, 0.6); border-bottom: 2px solid var(--cp-grey); overflow-y: auto;
+        }
+
+        .history-log {
+            flex: 1; display: flex; flex-direction: column; justify-content: flex-end;
+            font-family: var(--cp-font-mono); color: #0aa; font-size: 1rem; line-height: 1.4; margin-bottom: 10px;
+        }
+        .history-item { margin-bottom: 4px; border-left: 2px solid #055; padding-left: 8px;}
+        .history-skip { color: var(--cp-pink); font-style: italic; border-left: 2px solid var(--cp-pink);}
+
+        .current-input {
+            font-family: var(--cp-font-mono); font-size: 2.8rem; color: var(--cp-lime); text-shadow: 0 0 10px rgba(57, 255, 20, 0.4);
+            text-align: right; min-height: 55px; border-bottom: 2px solid var(--cp-lime); margin-bottom: 10px;
+        }
+
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: #000; padding: 6px; }
 
         .btn {
-            background: transparent; border: 1px solid var(--cp-lime); color: var(--cp-lime);
-            padding: 10px 20px; font-family: var(--cp-font-mono); font-size: 1rem; font-weight: bold;
-            text-transform: uppercase; cursor: pointer; width: 100%; margin-bottom: 1.5rem;
-            transition: all 0.2s ease;
+            background: var(--cp-grey); border: none; color: white; font-size: 1.8rem;
+            padding: 18px 0; font-family: var(--cp-font-mono); touch-action: manipulation;
+            transition: all 0.1s; position: relative;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
         }
-
-        .btn:active { background: var(--cp-lime); color: var(--cp-dark); }
-
-        .qr-wrapper {
-            background: white; padding: 10px; display: none;
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
-        }
-
-        canvas { display: block; }
+        .btn:active { background: var(--cp-lime) !important; color: black !important; text-shadow: none !important; box-shadow: 0 0 15px var(--cp-lime) !important; animation: none !important; }
         
-        .nav-link { margin-top: 2rem; color: #aaa; text-decoration: none; font-size: 0.8rem; font-family: var(--cp-font-mono); border-bottom: 1px dashed #aaa; }
+        @keyframes cyber-pulse {
+            0% { background-color: var(--cp-grey); color: rgba(255, 255, 255, 0.5); box-shadow: inset 0 0 0px transparent; }
+            100% { background-color: #1a2930; color: #ffffff; box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.3), 0 0 8px rgba(0, 240, 255, 0.2); text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); }
+        }
+        .num-btn { animation: cyber-pulse 1.2s infinite alternate ease-in-out; }
+        .btn-disabled { opacity: 0.15; pointer-events: none; filter: grayscale(100%); border-color: transparent !important; animation: none !important; color: white !important; background-color: var(--cp-grey) !important; box-shadow: none !important;}
+        .btn-action { background: #111a22; color: var(--cp-cyan); font-size: 1.1rem; font-weight: bold; animation: none; }
+        .btn-undo { background: #220a11; color: var(--cp-pink); }
+        .btn-enter { background: #0a1f0a; color: var(--cp-lime); font-weight: bold; grid-column: span 3; animation: none;}
+        .btn-compile { background: var(--cp-cyan); color: black; grid-column: span 3; font-weight: bold; padding: 18px 0; font-size: 1.4rem; box-shadow: 0 0 10px rgba(0,240,255,0.4); animation: none; }
+
+        /* --- QR MODAL --- */
+        #qrModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 8, 0.95); z-index: 100; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; overflow-y: auto;
+        }
+        #validationMessage { width: 100%; max-width: 380px; margin-top: 10px; font-family: var(--cp-font-mono); }
+        .qr-container { background: white; padding: 15px; border-radius: 4px; box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); margin: 20px 0; border: 4px solid var(--cp-cyan); outline: 2px solid var(--cp-pink); outline-offset: -10px; }
+        .btn-toggle-data { background: transparent; border: 2px solid var(--cp-cyan); color: var(--cp-cyan); padding: 12px 20px; font-size: 1rem; font-family: var(--cp-font-mono); font-weight: bold; width: 100%; max-width: 380px; margin-bottom: 15px; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+        .btn-close { background: var(--cp-pink); border: none; color: white; padding: 15px 40px; font-weight: bold; font-size: 1.2rem; font-family: var(--cp-font-mono); width: 100%; max-width: 380px; margin-bottom: 40px; box-shadow: 0 0 15px rgba(255,0,85,0.5); clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+
+        #expandedData { width: 100%; max-width: 380px; margin-bottom: 20px; }
+        .data-card { background: rgba(0, 0, 0, 0.7); border: 1px solid #333; padding: 12px; margin-bottom: 10px; font-family: var(--cp-font-mono); font-size: 0.95rem; line-height: 1.5; position: relative; }
+        .data-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+        .card-pass { border-color: rgba(57,255,20,0.3); } .card-pass::before { background: var(--cp-lime); box-shadow: 0 0 10px var(--cp-lime); }
+        .card-fail { border-color: rgba(255,0,85,0.3); } .card-fail::before { background: var(--cp-pink); box-shadow: 0 0 10px var(--cp-pink); }
+        .zone-title { font-weight: bold; color: var(--cp-cyan); border-bottom: 1px solid #333; padding-bottom: 4px; margin-bottom: 6px;}
+        .zone-values { color: #ccc; font-size: 0.85rem; line-height: 1.6;}
+        .zone-result-pass { color: var(--cp-lime); font-weight: bold; margin-top: 4px;}
+        .zone-result-fail { color: var(--cp-pink); font-weight: bold; margin-top: 4px;}
     </style>
 </head>
 <body>
 
-    <div class="wrapper">
-        <div class="container">
-            <h2>DATA BRIDGE // EXCEL</h2>
-            <p style="font-size: 0.8rem; color: #aaa; margin-top: -10px; margin-bottom: 15px;">Use iOS Camera to capture handwriting</p>
-            
-            <!-- This is where the magic iOS Live Text happens -->
-            <textarea id="dataInput" placeholder="Tap here -> Tap the 'Scan Text' icon on your keyboard -> Scan your paper..." spellcheck="false"></textarea>
-            
-            <button class="btn" onclick="generateQR()">COMPILE TO QR</button>
-            
-            <div class="qr-wrapper" id="qrContainer">
-                <canvas id="qrCanvas"></canvas>
-            </div>
-            
-            <a href="index.html" class="nav-link">← BACK TO SCANNER OS</a>
+<div id="appLayer" class="ui-layer">
+    <div class="header">
+        <div class="header-inner">
+            <a href="index.html" class="btn-sys-back">&lt; SYS</a>
+            <span class="header-title" style="margin-left: 10px;">BRIDGE</span>
+            <select id="modeSelector" onchange="changeMode()" style="margin-left: auto;">
+                <option value="T1">T1 (Tg Match)</option>
+                <option value="T2">T2 (Joint Mass)</option>
+                <option value="T3">T3 (Thickness)</option>
+                <option value="FREE">FREE MODE</option>
+            </select>
         </div>
     </div>
 
+    <div class="status-bar" id="statusBar">INITIATING...</div>
+
+    <div class="display-area" id="displayArea">
+        <div class="history-log" id="historyLog"></div>
+        <div class="current-input" id="currentInput"></div>
+    </div>
+
+    <div class="keypad">
+        <button class="btn btn-action btn-undo" style="grid-column: span 3;" onclick="clearLast()">[ UNDO LAST ]</button>
+
+        <button class="btn num-btn" onclick="typeNum('1')">1</button>
+        <button class="btn num-btn" onclick="typeNum('2')">2</button>
+        <button class="btn num-btn" onclick="typeNum('3')">3</button>
+
+        <button class="btn num-btn" onclick="typeNum('4')">4</button>
+        <button class="btn num-btn" onclick="typeNum('5')">5</button>
+        <button class="btn num-btn" onclick="typeNum('6')">6</button>
+
+        <button class="btn num-btn" onclick="typeNum('7')">7</button>
+        <button class="btn num-btn" onclick="typeNum('8')">8</button>
+        <button class="btn num-btn" onclick="typeNum('9')">9</button>
+
+        <button class="btn num-btn" id="btnDecimal" onclick="typeNum('.')">.</button>
+        <button class="btn num-btn" onclick="typeNum('0')">0</button>
+        <button class="btn btn-action" style="opacity: 0.1; pointer-events: none; animation: none;">+/-</button>
+
+        <button class="btn btn-enter" id="btnEnter" onclick="submitNumber()">INSERT DATA</button>
+        <button class="btn btn-compile" onclick="generateQR()">ENCODE PAYLOAD</button>
+    </div>
+</div>
+
+<div id="qrModal" class="ui-layer" style="z-index: 100;">
+    <div id="validationMessage"></div>
+    <div class="qr-container"><canvas id="qrCanvas"></canvas></div>
+    <button class="btn-toggle-data" id="btnToggleData" onclick="toggleData()" style="display:none;">[ ACCESS ZONE DATA ]</button>
+    <div id="expandedData" style="display:none;"></div>
+    <button class="btn-close" onclick="closeQR()">PURGE MEMORY & CLOSE</button>
+</div>
+
 <script>
-        function generateQR() {
-            const inputEl = document.getElementById('dataInput');
-            const qrContainer = document.getElementById('qrContainer');
-            let rawData = inputEl.value.trim();
-            
-            if (rawData === "") {
-                qrContainer.style.display = 'none';
-                return;
-            }
+    let dataList = [];
+    let currentString = "";
+    let isAutoSkipping = false;
+    
+    // TEMPLATE 1
+    const template1 = [
+        'A','B','C','D','X', 'A','B','C','D','X', 'A','B','C','D','X','-', 
+        'A','B','C','D','X', 'A','B','C','D','X', 'A','B','C','D','X'
+    ];
+    
+    // TEMPLATE 2 
+    const template2 = [
+        'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 
+        'A','B','X', 'A','B','-', 'A','-', 'A','-', 'A','X','-','-',      
+        'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 
+        'A','B','X', 'A','B','-', 'A','-', 'A','-', 'A','X','-','-'       
+    ];
 
-            // 1. Break the camera's text into a list
-            let items = rawData.split(/[\n\s,]+/).filter(e => e !== '');
-            let payload = "";
+    // TEMPLATE 3
+    const template3 = [
+        'A','B','C','D','E','F','J','K','A','B','C','D','E','F',
+        'A','B','C','D','E','F','J','K','A','B','C','D','E','F',
+        'A','B','C','D','E','F','J','K','A','B','C','D','E','F'
+    ];
 
-            // 2. Loop through every item one by one
-            for (let i = 0; i < items.length; i++) {
-                let e = items[i];
+    const t1Labels = ["S1 - QR SIDE", "S1 - BACK SIDE", "S5 - QR SIDE", "S5 - BACK SIDE", "S7/8 - QR SIDE", "S7/8 - BACK SIDE"];
+    const t2Labels = ["QR SIDE - A1", "QR SIDE - A2", "QR SIDE - B1", "QR SIDE - B2", "QR SIDE - B3", "QR SIDE - B4", "QR SIDE - C", "QR SIDE - D", "QR SIDE - E1", "QR SIDE - E2", "QR SIDE - W", "BACK SIDE - A1", "BACK SIDE - A2", "BACK SIDE - B1", "BACK SIDE - B2", "BACK SIDE - B3", "BACK SIDE - B4", "BACK SIDE - C", "BACK SIDE - D", "BACK SIDE - E1", "BACK SIDE - E2", "BACK SIDE - W"];
+
+    const regexRulesT1 = {
+        'A': /^(5|5[0-9]|5[0-9]\.|5[0-9]\.[0-9]{0,2})$/,                               
+        'B': /^([4-7]|[4-7]\.|[4-7]\.[0-9]{0,2})$/,                                     
+        'C': /^(8|9|8[0-9]|9[0-5]|8[0-9]\.|9[0-5]\.|8[0-9]\.[0-9]{0,2}|9[0-5]\.[0-9]{0,2})$/,  
+        'D': /^(8|9|8[0-9]|9[0-5]|8[0-9]\.|9[0-5]\.|8[0-9]\.[0-9]{0,2}|9[0-5]\.[0-9]{0,2})$/   
+    };
+
+    let activeBlueprint = template1; 
+
+    // --- INITIALIZATION ---
+    // Read the URL parameter to auto-select the mode from the Hub
+    const urlParams = new URLSearchParams(window.location.search);
+    const modeParam = urlParams.get('mode');
+    if (modeParam && ['T1', 'T2', 'T3', 'FREE'].includes(modeParam)) {
+        document.getElementById('modeSelector').value = modeParam;
+    }
+
+    function changeMode() {
+        const val = document.getElementById('modeSelector').value;
+        if (val === 'T1') activeBlueprint = template1;
+        else if (val === 'T2') activeBlueprint = template2;
+        else if (val === 'T3') activeBlueprint = template3;
+        else activeBlueprint = null;
+        
+        dataList = []; currentString = ""; updateDisplay();
+    }
+
+    function updateDisplay() {
+        document.getElementById('currentInput').innerText = currentString;
+        
+        let html = "";
+        dataList.forEach((item, index) => {
+            if (item === 'X') html += `<div class="history-item history-skip">SYS_JMP: +3 CELLS</div>`;
+            else if (item === '-') html += `<div class="history-item history-skip">SYS_JMP: +1 CELL</div>`;
+            else {
+                let varName = "";
+                let expectedVar = activeBlueprint ? activeBlueprint[index] : null;
+                const mode = document.getElementById('modeSelector').value;
                 
-                if (e.toLowerCase() === 'x') {
-                    // 'X' = Skip 3 cells (6 Enters)
-                    payload += "\r\n\r\n\r\n\r\n\r\n\r\n"; 
-                } else if (e === '-') {
-                    // '-' = Skip 1 cell (2 Enters)
-                    payload += "\r\n\r\n"; 
-                } else {
-                    // If it's a number, type the number and press Enter once
-                    payload += e + "\r\n";
+                if (mode === 'T1') {
+                    if(expectedVar === 'A') varName = "Total Mass:";
+                    else if(expectedVar === 'B') varName = "Sample Mass:";
+                    else if(expectedVar === 'C') varName = "2nd Tg:";
+                    else if(expectedVar === 'D') varName = "3rd Tg:";
+                } else if (mode === 'T2') {
+                    if(expectedVar === 'A') varName = "Fillet Length:";
+                    else if(expectedVar === 'B') varName = "Porosity Total:";
+                } else if (mode === 'T3') {
+                    if(expectedVar === 'A') varName = "Slot 1:";
+                    else if(expectedVar === 'B') varName = "Slot 2:";
+                    else if(expectedVar === 'C') varName = "Slot 16:";
+                    else if(expectedVar === 'D') varName = "Slot 17:";
+                    else if(expectedVar === 'E') varName = "Slot 27:";
+                    else if(expectedVar === 'F') varName = "Slot 28:";
+                    else if(expectedVar === 'J') varName = "Right Edge:";
+                    else if(expectedVar === 'K') varName = "Left Edge:";
+                }
+                
+                if (varName === "") varName = `VAL_${index+1}:`;
+                let dispItem = item;
+                if (mode === 'T3' && !dispItem.startsWith('.')) dispItem = '.' + dispItem;
+
+                html += `<div class="history-item">${varName} <span style="color:white;">${dispItem}</span></div>`;
+            }
+        });
+        document.getElementById('historyLog').innerHTML = html;
+        
+        const displayArea = document.getElementById('displayArea');
+        displayArea.scrollTop = displayArea.scrollHeight;
+        checkBlueprint();
+    }
+
+    function checkBlueprint() {
+        const numBtns = document.querySelectorAll('.num-btn');
+        const btnEnter = document.getElementById('btnEnter');
+        const btnDecimal = document.getElementById('btnDecimal');
+        const statusBar = document.getElementById('statusBar');
+        const mode = document.getElementById('modeSelector').value;
+
+        numBtns.forEach(b => b.classList.remove('btn-disabled'));
+        btnEnter.classList.remove('btn-disabled');
+
+        if (!activeBlueprint) {
+            statusBar.innerText = "SYSTEM: MANUAL OVERRIDE ACTIVE";
+            statusBar.style.color = "var(--cp-cyan)";
+            return;
+        }
+
+        const step = dataList.length;
+        
+        if (step >= activeBlueprint.length) {
+            statusBar.innerText = "PAYLOAD COMPLETE. READY TO ENCODE.";
+            statusBar.style.color = "var(--cp-lime)";
+            numBtns.forEach(b => b.classList.add('btn-disabled'));
+            btnEnter.classList.add('btn-disabled');
+            return;
+        }
+
+        const expected = activeBlueprint[step];
+
+        if (expected === 'X' || expected === '-') {
+            btnEnter.classList.add('btn-disabled');
+            if (!isAutoSkipping) {
+                isAutoSkipping = true;
+                statusBar.innerText = `AUTO-JUMPING... [${expected}]`;
+                statusBar.style.color = "var(--cp-pink)";
+                numBtns.forEach(b => b.classList.add('btn-disabled'));
+                
+                setTimeout(() => {
+                    isAutoSkipping = false;
+                    addSkip(expected);
+                }, 80); 
+            }
+            return;
+        }
+
+        let zoneLabel = "";
+        let prompt = "";
+        let regex = null;
+
+        if (mode === 'T1') {
+            zoneLabel = `ZONE ${Math.floor(step/5)+1}`;
+            if (expected === 'A') prompt = "Total Mass (mg) [50.0-59.9]";
+            if (expected === 'B') prompt = "Sample Mass (mg) [4.0-7.9]";
+            if (expected === 'C') prompt = "2nd Tg [80.0-95.9]";
+            if (expected === 'D') prompt = "3rd Tg [80.0-95.9]";
+            regex = regexRulesT1[expected];
+        } else if (mode === 'T2') {
+            let aCount = 0;
+            for(let i=0; i<=step; i++) if(activeBlueprint[i] === 'A') aCount++;
+            if(aCount > 0) zoneLabel = t2Labels[aCount - 1];
+            else zoneLabel = "SYS";
+            if (expected === 'A') prompt = "Fillet Length";
+            if (expected === 'B') prompt = "Porosity Length";
+            regex = /^\d*\.?\d*$/; 
+        } else if (mode === 'T3') {
+            if (step < 14) zoneLabel = "S1";
+            else if (step < 28) zoneLabel = "S5";
+            else zoneLabel = "S7/8";
+
+            if (expected === 'A') prompt = "Slot 1 [ .2x - .4x ]";
+            if (expected === 'B') prompt = "Slot 2 [ .2x - .4x ]";
+            if (expected === 'C') prompt = "Slot 16 [ .2x - .4x ]";
+            if (expected === 'D') prompt = "Slot 17 [ .2x - .4x ]";
+            if (expected === 'E') prompt = "Slot 27 [ .2x - .4x ]";
+            if (expected === 'F') prompt = "Slot 28 [ .2x - .4x ]";
+            if (expected === 'J') prompt = "Right Edge [ .2x - .4x ]";
+            if (expected === 'K') prompt = "Left Edge [ .2x - .4x ]";
+            
+            regex = /^[2-4][0-9]?$/; 
+            btnDecimal.classList.add('btn-disabled'); 
+        }
+
+        statusBar.innerText = `[${zoneLabel}] ${prompt}`;
+        statusBar.style.color = "white";
+
+        numBtns.forEach(btn => {
+            let char = btn.innerText; 
+            if (char === '+/-' || char === '.') return; 
+            let testStr = currentString + char;
+            if (regex && !regex.test(testStr)) btn.classList.add('btn-disabled');
+        });
+
+        if (mode === 'T1' || mode === 'T2') {
+            if (currentString === "" || currentString.endsWith('.')) btnEnter.classList.add('btn-disabled');
+        } else if (mode === 'T3') {
+            if (currentString === "") btnEnter.classList.add('btn-disabled');
+        }
+    }
+
+    function typeNum(char) {
+        if (isAutoSkipping) return;
+        const mode = document.getElementById('modeSelector').value;
+        if (char === '.' && currentString.includes('.')) return;
+        if (mode === 'T3' && char === '.') return; 
+
+        currentString += char;
+        let expected = activeBlueprint ? activeBlueprint[dataList.length] : null;
+        
+        if (mode === 'T1') {
+            if (expected && !currentString.includes('.')) {
+                if ((expected === 'A' || expected === 'C' || expected === 'D') && currentString.length === 2) currentString += '.';
+                else if (expected === 'B' && currentString.length === 1) currentString += '.';
+            }
+            if (currentString.includes('.') && currentString.split('.')[1].length === 2) {
+                submitNumber(); return; 
+            }
+        } else if (mode === 'T3') {
+            if (currentString.length === 2) {
+                submitNumber(); return;
+            }
+        }
+        updateDisplay();
+    }
+
+    function submitNumber() {
+        if (currentString === "") return;
+        dataList.push(currentString);
+        currentString = "";
+        updateDisplay();
+    }
+
+    function addSkip(type) {
+        if (currentString !== "") submitNumber(); 
+        dataList.push(type);
+        updateDisplay();
+    }
+
+    function clearLast() {
+        if (isAutoSkipping) return;
+        if (currentString !== "") {
+            currentString = currentString.slice(0, -1);
+        } else if (dataList.length > 0) {
+            let popped = dataList.pop();
+            while (popped === 'X' || popped === '-') popped = dataList.pop(); 
+            currentString = popped; 
+        }
+        updateDisplay();
+    }
+
+    function toggleData() {
+        const el = document.getElementById('expandedData');
+        const btn = document.getElementById('btnToggleData');
+        if (el.style.display === 'none') {
+            el.style.display = 'block';
+            btn.innerText = "[ HIDE ZONE DATA ]";
+        } else {
+            el.style.display = 'none';
+            btn.innerText = "[ ACCESS ZONE DATA ]";
+        }
+    }
+
+    function generateQR() {
+        if (currentString !== "") submitNumber(); 
+        if (dataList.length === 0) return;
+
+        let payload = "";
+        let validationHTML = "";
+        let expandedHTML = "";
+        const mode = document.getElementById('modeSelector').value;
+        
+        document.getElementById('btnToggleData').style.display = 'none';
+        document.getElementById('expandedData').style.display = 'none';
+        document.getElementById('btnToggleData').innerText = "[ ACCESS ZONE DATA ]";
+
+        if (mode === 'T1') {
+            let numbersOnly = dataList.filter(e => e !== 'X' && e !== '-').map(Number);
+            let allPassed = true;
+            let errorMessages = [];
+
+            for (let i = 0; i < numbersOnly.length; i += 4) {
+                let zoneIdx = Math.floor(i / 4); 
+                let zoneName = t1Labels[zoneIdx] || `ZONE ${zoneIdx + 1}`;
+                let a_val = numbersOnly[i] !== undefined ? numbersOnly[i] : '--';
+                let b_val = numbersOnly[i+1] !== undefined ? numbersOnly[i+1] : '--';
+                let c_val = numbersOnly[i+2]; 
+                let d_val = numbersOnly[i+3]; 
+
+                if (c_val !== undefined && d_val !== undefined) {
+                    let difference = d_val - c_val;
+                    let passed = Math.abs(difference) <= 5;
+                    if (!passed) { allPassed = false; errorMessages.push(`${zoneName}: D-C = ${difference.toFixed(2)}`); }
+
+                    expandedHTML += `
+                        <div class="data-card ${passed ? 'card-pass' : 'card-fail'}">
+                            <div class="zone-title">${zoneName}</div>
+                            <div class="zone-values">Total Mass: ${a_val}mg | Sample: ${b_val}mg<br>2nd Tg: ${c_val.toFixed(2)} | 3rd Tg: ${d_val.toFixed(2)}</div>
+                            <div class="${passed ? 'zone-result-pass' : 'zone-result-fail'}">> Tg (D-C): ${difference.toFixed(2)} [${passed ? 'PASS' : 'FAIL'}]</div>
+                        </div>`;
                 }
             }
 
-            // 3. Generate the physical QR code on the screen
-            qrContainer.style.display = 'block';
-            new QRious({
-                element: document.getElementById('qrCanvas'),
-                value: payload,
-                size: 250,
-                level: 'M' 
-            });
+            if (allPassed) validationHTML = `<div style="color: var(--cp-lime); font-size: 1.1rem; font-weight: bold; text-align: center; text-shadow: 0 0 5px var(--cp-lime); margin-bottom: 10px;">> ALL ZONES Tg: PASSED <</div>`;
+            else validationHTML = `<div style="color: var(--cp-pink); font-size: 1rem; font-weight: bold; text-align: center; border: 1px solid var(--cp-pink); padding: 10px; border-radius: 4px; background: rgba(255,0,85,0.1); margin-bottom: 10px; box-shadow: 0 0 10px rgba(255,0,85,0.4);">[!] SYS WARNING: Tg LIMIT EXCEEDED<br><br>${errorMessages.join('<br>')}</div>`;
+            document.getElementById('expandedData').innerHTML = expandedHTML;
+            document.getElementById('btnToggleData').style.display = 'block';
         }
-    </script>
+        else if (mode === 'T2') {
+            let t2Data = []; let aCount = -1;
+            for (let i = 0; i < dataList.length; i++) {
+                if (activeBlueprint[i] === 'A') { aCount++; t2Data[aCount] = { name: t2Labels[aCount], a: dataList[i], b: '--' }; } 
+                else if (activeBlueprint[i] === 'B') t2Data[aCount].b = dataList[i];
+            }
+            t2Data.forEach(zone => {
+                expandedHTML += `<div class="data-card card-pass"><div class="zone-title">${zone.name}</div><div class="zone-values">Fillet Length: ${zone.a} ${zone.b !== '--' ? `| Porosity Total: ${zone.b}` : ''}</div></div>`;
+            });
+            validationHTML = `<div style="color: var(--cp-cyan); font-size: 1.1rem; font-weight: bold; text-align: center; text-shadow: 0 0 5px var(--cp-cyan); margin-bottom: 10px;">> T2 DATA LOGGED SUCCESSFULLY <</div>`;
+            document.getElementById('expandedData').innerHTML = expandedHTML;
+            document.getElementById('btnToggleData').style.display = 'block';
+        }
+        else if (mode === 'T3') {
+            validationHTML = `<div style="color: var(--cp-cyan); font-size: 1.1rem; font-weight: bold; text-align: center; text-shadow: 0 0 5px var(--cp-cyan); margin-bottom: 10px;">> THICKNESS LOGGED SUCCESSFULLY <</div>`;
+        }
+
+        document.getElementById('validationMessage').innerHTML = validationHTML;
+
+        for (let i = 0; i < dataList.length; i++) {
+            let e = dataList[i];
+            if (e === 'X') payload += "\r\n\r\n\r\n\r\n\r\n\r\n"; 
+            else if (e === '-') payload += "\r\n\r\n"; 
+            else { 
+                if (mode === 'T3' && !e.startsWith('.')) e = '.' + e;
+                payload += e + "\r\n"; 
+            } 
+        }
+
+        document.getElementById('qrModal').style.display = 'flex';
+        new QRious({ element: document.getElementById('qrCanvas'), value: payload, size: 260, level: 'M' });
+    }
+
+    function closeQR() {
+        document.getElementById('qrModal').style.display = 'none';
+        dataList = []; updateDisplay();
+    }
+
+    // Call on load to process any URL parameters
+    changeMode();
+</script>
 </body>
 </html>
