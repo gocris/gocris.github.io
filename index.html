@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,96 +7,169 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>NEURAL_OS // HUB</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap');
+
         :root {
-            --cp-lime: #39ff14;
             --cp-cyan: #00f0ff;
             --cp-pink: #ff0055;
-            --cp-dark: #070709;
-            --cp-font-mono: 'Courier New', Courier, monospace;
-            --cp-font-sans: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --cp-lime: #39ff14;
+            --cp-dark: #050507;
+            --font-en: 'Orbitron', sans-serif;
+            --font-jp: 'Noto Sans JP', sans-serif;
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; min-height: 100vh; 
-            background-color: var(--cp-dark); font-family: var(--cp-font-sans); color: white;
+            background-color: var(--cp-dark); color: white;
             display: flex; flex-direction: column; align-items: center; 
-            background-image: 
-                linear-gradient(rgba(0, 240, 255, 0.07) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.07) 1px, transparent 1px);
-            background-size: 20px 20px; position: relative;
+            overflow-x: hidden; position: relative;
         }
 
-        body::after {
-            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        /* Gritty Liberty City Cityscape Overlay */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(5,5,7,0.8) 0%, rgba(5,5,7,0.95) 100%), 
+                        url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover; background-position: center; z-index: 1; pointer-events: none;
+        }
+
+        /* Animated TRON Floor Grid */
+        .tron-grid {
+            position: fixed; top: 40%; left: -50%; width: 200%; height: 120%;
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.4) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.4) 2px, transparent 2px);
+            background-size: 50px 50px;
+            transform: perspective(600px) rotateX(75deg);
+            z-index: 2; pointer-events: none;
+            animation: grid-scroll 2s linear infinite;
+            box-shadow: inset 0 100px 150px var(--cp-dark); /* Fades grid into the horizon */
+        }
+
+        @keyframes grid-scroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 50px; }
+        }
+
+        /* CRT Scanlines */
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 3px, 3px 100%; z-index: 20; pointer-events: none;
         }
 
         .hub-container {
-            position: relative; z-index: 10; width: 100%; max-width: 400px;
-            padding: 40px 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;
+            position: relative; z-index: 30; width: 100%; max-width: 420px;
+            padding: 50px 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;
         }
 
         .landing-title {
-            color: var(--cp-cyan); text-shadow: 0 0 15px var(--cp-cyan); font-family: var(--cp-font-mono);
-            font-size: 2.5rem; font-weight: bold; letter-spacing: 4px; text-align: center; margin-bottom: 40px;
+            color: var(--cp-cyan); font-family: var(--font-en);
+            font-size: 2.5rem; font-weight: 900; letter-spacing: 3px; text-align: center; margin-bottom: 40px;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.8), 0 0 30px rgba(0, 240, 255, 0.4);
         }
-        .landing-title span { font-size: 1.1rem; color: var(--cp-lime); text-shadow: 0 0 10px var(--cp-lime); letter-spacing: 2px; }
+        
+        .landing-title .jp-text {
+            display: block; font-family: var(--font-jp); font-size: 1.2rem; color: white;
+            text-shadow: 0 0 10px white, 0 0 20px var(--cp-cyan); letter-spacing: 6px; margin-top: 5px;
+        }
 
+        /* TRON Glowing Buttons */
         .menu-btn {
-            width: 100%; height: 130px; border: 2px solid var(--cp-cyan); color: var(--cp-cyan);
-            font-size: 1.6rem; font-family: var(--cp-font-mono); font-weight: bold; letter-spacing: 2px;
-            margin-bottom: 20px; position: relative; cursor: pointer;
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); transition: all 0.2s;
-            text-shadow: 2px 2px 5px rgba(0,0,0,1), 0 0 10px var(--cp-cyan);
-            display: flex; align-items: center; justify-content: center; text-align: center;
+            width: 100%; height: 120px; 
+            background: rgba(0, 10, 15, 0.6); backdrop-filter: blur(8px); border: 2px solid var(--cp-cyan);
+            color: white; font-family: var(--font-en); font-weight: 900; font-size: 1.5rem; letter-spacing: 2px;
+            margin-bottom: 25px; position: relative; cursor: pointer;
+            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), inset 0 0 20px rgba(0, 240, 255, 0.2); 
+            transition: all 0.2s ease-in-out;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .menu-btn:active { box-shadow: 0 0 25px var(--cp-cyan); border-color: #fff; color: #fff; transform: scale(0.98); }
+        
+        .menu-btn:hover, .menu-btn:active { 
+            background: rgba(0, 240, 255, 0.1); border-color: #fff;
+            box-shadow: 0 0 30px var(--cp-cyan), inset 0 0 30px var(--cp-cyan); 
+            text-shadow: 0 0 10px white; transform: scale(0.98); 
+        }
+
+        .menu-btn .jp-sub {
+            font-family: var(--font-jp); font-size: 0.85rem; font-weight: 700; letter-spacing: 4px;
+            color: var(--cp-pink); text-shadow: 0 0 10px var(--cp-pink); margin-top: 8px;
+        }
+
+        /* Pink Accent Lab Button */
+        .btn-lab { border-color: var(--cp-pink); box-shadow: 0 0 15px rgba(255, 0, 85, 0.4), inset 0 0 20px rgba(255, 0, 85, 0.2); }
+        .btn-lab:hover, .btn-lab:active {
+            background: rgba(255, 0, 85, 0.1); border-color: #fff;
+            box-shadow: 0 0 30px var(--cp-pink), inset 0 0 30px var(--cp-pink); 
+        }
+        .btn-lab .jp-sub { color: var(--cp-cyan); text-shadow: 0 0 10px var(--cp-cyan); }
 
         .sub-menu-container {
             width: 100%; display: none; flex-direction: column; gap: 15px; margin-bottom: 30px;
+            animation: slideDown 0.3s ease-out forwards; transform-origin: top;
         }
+
+        @keyframes slideDown {
+            0% { opacity: 0; transform: scaleY(0); }
+            100% { opacity: 1; transform: scaleY(1); }
+        }
+
         .sub-menu-btn {
-            width: 100%; height: 90px; border: 1px solid var(--cp-lime); color: var(--cp-lime); cursor: pointer;
-            font-size: 1.2rem; font-family: var(--cp-font-mono); font-weight: bold; letter-spacing: 1px;
+            width: 100%; height: 85px; 
+            background: rgba(0, 10, 5, 0.7); backdrop-filter: blur(5px);
+            border: 1px solid var(--cp-lime); border-left: 6px solid var(--cp-lime);
+            color: white; font-family: var(--font-en); font-weight: 700; font-size: 1.1rem; letter-spacing: 1px;
             clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            text-shadow: 2px 2px 5px rgba(0,0,0,1), 0 0 10px var(--cp-lime);
-            text-align: left; padding-left: 20px; display: flex; align-items: center; transition: all 0.2s;
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.2); transition: all 0.2s; cursor: pointer;
+            display: flex; flex-direction: column; justify-content: center; padding-left: 20px; text-align: left;
         }
-        .sub-menu-btn:active { box-shadow: 0 0 15px var(--cp-lime); border-color: #fff; color: #fff; transform: scale(0.98); }
+        
+        .sub-menu-btn:hover, .sub-menu-btn:active { 
+            background: rgba(57, 255, 20, 0.15); box-shadow: 0 0 20px var(--cp-lime); border-color: #fff;
+        }
+
+        .sub-menu-btn .jp-sub {
+            font-family: var(--font-jp); font-size: 0.75rem; color: var(--cp-lime); text-shadow: 0 0 8px var(--cp-lime); margin-top: 4px; letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
 
+<div class="tron-grid"></div>
+<div class="scanlines"></div>
+
 <div class="hub-container">
     <div class="landing-title">
-        NEURAL_OS<br>
-        <span>MAIN TERMINAL</span>
+        NEURAL_OS
+        <span class="jp-text">メイン・ターミナル</span>
     </div>
 
-    <!-- Routes directly to your existing qrtrans.html -->
-    <button class="menu-btn" onclick="window.location.href='qrtrans.html'" style="background: linear-gradient(rgba(0,15,20,0.6), rgba(0,15,20,0.9)), url('https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcRfDv_zFZJQoR86BvZAjq4oNFYzMFLSz2LI9DsPmP9FzAwHSHMt2jTWNX6Vsp4mDV2VXuBOEG5-i33xgV0') center/cover;">
+    <button class="menu-btn" onclick="window.location.href='qrtrans.html'">
         [ QR TRANSLATOR ]
+        <span class="jp-sub">データ変換</span>
     </button>
 
-    <!-- Toggles the Dropdown for the Bridge Protocols -->
-    <button class="menu-btn" onclick="toggleLabRoutine()" style="background: linear-gradient(rgba(0,15,20,0.6), rgba(0,15,20,0.9)), url('https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcRSd2kSUxCYRc0NhGofEXiApcPWVRelCMnkUudi9_N5JXIXbPs8pjiNwvoV2V7ar4cZJ5LxvBjwy9EaXF4') center/cover;">
+    <button class="menu-btn btn-lab" onclick="toggleLabRoutine()">
         [ LAB ROUTINE ]
+        <span class="jp-sub">研究所ルーチン</span>
     </button>
 
     <div id="labSubMenu" class="sub-menu-container">
-        <!-- Passes the ?mode parameter directly into bridge.html -->
-        <button class="sub-menu-btn" onclick="window.location.href='bridge.html?mode=T1'" style="background: linear-gradient(rgba(0,20,10,0.6), rgba(0,20,10,0.9)), url('https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcRSnWDuOcvZvt0hxAuaknROZCRBCteetIMAoIP1DRWTZeKeBFgT2zttfYj42kF37-rEl0qF-8uLyJYNpuo') center/cover;">
+        <button class="sub-menu-btn" onclick="window.location.href='bridge.html?mode=T1'">
             > PROTOCOL T1: Tg MATCH
+            <span class="jp-sub">Tg マッチ</span>
         </button>
         
-        <button class="sub-menu-btn" onclick="window.location.href='bridge.html?mode=T2'" style="background: linear-gradient(rgba(0,20,10,0.6), rgba(0,20,10,0.9)), url('https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcRa9vVZFjKWJexsPDq2M_-n14tCNScD83aJ6elMoielvQaN6np43iJGTJyIV8A5Vd9vClDtcyZyQoPDw9E') center/cover;">
+        <button class="sub-menu-btn" onclick="window.location.href='bridge.html?mode=T2'">
             > PROTOCOL T2: JOINT MASS
+            <span class="jp-sub">継手質量</span>
         </button>
         
-        <button class="sub-menu-btn" onclick="window.location.href='bridge.html?mode=T3'" style="background: linear-gradient(rgba(0,20,10,0.6), rgba(0,20,10,0.9)), url('https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcRXFKKQA7HQ70Lhlaw2Mre1cQMDb8d36VFDqzVNm4KnpE6NE8TfTtr9WXkpv0ztJ19lixpoDfq9eXjmvUA') center/cover;">
+        <button class="sub-menu-btn" onclick="window.location.href='bridge.html?mode=T3'">
             > PROTOCOL T3: THICKNESS
+            <span class="jp-sub">厚さ測定</span>
         </button>
     </div>
 </div>
