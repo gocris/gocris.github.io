@@ -5,181 +5,332 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>NEURAL_OS // HUB</title>
+    <title>WARNING // UNAUTHORIZED UPLINK</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Noto+Sans+JP:wght@300;500;700&display=swap');
 
         :root {
-            --cp-cyan: #00f0ff;
-            --cp-pink: #ff0055;
-            --cp-lime: #39ff14;
-            --cp-dark: #050507;
-            --font-en: 'Orbitron', sans-serif;
+            --crimson: #ff1e46;
+            --blood-glow: rgba(255, 30, 70, 0.5);
+            --violet: #9d00ff;
+            --void-purple: #120322;
+            --bg-deep: #020104;
+            --glass-bg: rgba(12, 5, 18, 0.65);
+            --glass-border: rgba(157, 0, 255, 0.15);
+            --text-main: #f0e6fa;
+            --text-muted: #84729c;
+            --font-en: 'Rajdhani', sans-serif;
             --font-jp: 'Noto Sans JP', sans-serif;
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; min-height: 100vh; 
-            background-color: var(--cp-dark); color: white;
+            background-color: var(--bg-deep); color: var(--text-main);
             display: flex; flex-direction: column; align-items: center; 
-            overflow-x: hidden; position: relative;
+            overflow-x: hidden; position: relative; font-family: var(--font-en);
         }
 
-        /* Gritty Liberty City Cityscape Overlay */
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(5,5,7,0.8) 0%, rgba(5,5,7,0.95) 100%), 
-                        url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=2000&auto=format&fit=crop');
-            background-size: cover; background-position: center; z-index: 1; pointer-events: none;
-        }
-
-        /* Animated TRON Floor Grid */
-        .tron-grid {
-            position: fixed; top: 40%; left: -50%; width: 200%; height: 120%;
-            background-image: 
-                linear-gradient(rgba(0, 240, 255, 0.4) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.4) 2px, transparent 2px);
-            background-size: 50px 50px;
-            transform: perspective(600px) rotateX(75deg);
-            z-index: 2; pointer-events: none;
-            animation: grid-scroll 2s linear infinite;
-            box-shadow: inset 0 100px 150px var(--cp-dark); /* Fades grid into the horizon */
-        }
-
-        @keyframes grid-scroll {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 50px; }
-        }
-
-        /* CRT Scanlines */
-        .scanlines {
+        /* --- THE INTRUSION BOOT SCREEN --- */
+        #bootScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 3px, 3px 100%; z-index: 20; pointer-events: none;
+            background: #000; z-index: 9999; display: flex; flex-direction: column;
+            padding: 30px; font-family: 'Courier New', monospace; color: var(--crimson);
+            box-sizing: border-box; overflow: hidden; pointer-events: none;
+            transition: opacity 0.5s ease-out, filter 0.5s ease-out;
+        }
+        .boot-line { font-size: 0.9rem; margin-bottom: 5px; text-shadow: 0 0 5px var(--crimson); opacity: 0; }
+
+        #particleCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+
+        /* --- ROGUE WATERMARK & VIOLENT GLITCH --- */
+        .corsair-mark {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 40vw; color: rgba(255, 30, 70, 0.02); z-index: 2;
+            pointer-events: none; text-shadow: 0 0 60px rgba(157, 0, 255, 0.05);
+            animation: phantom-pulse 6s infinite alternate ease-in-out; font-family: monospace;
+        }
+        @keyframes phantom-pulse { 0% { opacity: 0.2; filter: blur(8px); transform: translate(-50%, -50%) scale(0.98); } 100% { opacity: 1; filter: blur(12px); transform: translate(-50%, -50%) scale(1.02); } }
+        
+        .glitch-violent { animation: glitch-snap 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+        @keyframes glitch-snap {
+            0% { transform: translate(-50%, -50%); filter: drop-shadow(0 0 0 transparent); }
+            20% { transform: translate(-52%, -49%); filter: drop-shadow(-5px 0 0 var(--crimson)) drop-shadow(5px 0 0 var(--cyan)); }
+            40% { transform: translate(-48%, -51%); filter: drop-shadow(5px 0 0 var(--crimson)) drop-shadow(-5px 0 0 var(--cyan)); }
+            60% { transform: translate(-51%, -50%); filter: drop-shadow(-2px 0 0 var(--crimson)); }
+            80% { transform: translate(-49%, -48%); filter: drop-shadow(2px 0 0 var(--cyan)); }
+            100% { transform: translate(-50%, -50%); filter: drop-shadow(0 0 0 transparent); }
+        }
+
+        body::before {
+            content: ""; position: fixed; top: -20%; left: -20%; width: 80vw; height: 80vw;
+            background: radial-gradient(circle at center, rgba(157, 0, 255, 0.08) 0%, transparent 60%);
+            z-index: 3; pointer-events: none;
+        }
+        body::after {
+            content: ""; position: fixed; bottom: -20%; right: -20%; width: 80vw; height: 80vw;
+            background: radial-gradient(circle at center, rgba(255, 30, 70, 0.06) 0%, transparent 60%);
+            z-index: 3; pointer-events: none;
         }
 
         .hub-container {
-            position: relative; z-index: 30; width: 100%; max-width: 420px;
-            padding: 50px 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;
+            position: relative; z-index: 10; width: 100%; max-width: 460px;
+            padding: clamp(30px, 6vh, 60px) 25px 80px 25px; box-sizing: border-box; display: flex; flex-direction: column;
+            perspective: 1000px;
+        }
+
+        .threat-banner {
+            font-family: monospace; font-size: 0.65rem; color: var(--crimson);
+            letter-spacing: 2px; border-left: 2px solid var(--crimson); padding-left: 8px;
+            margin-bottom: 20px; animation: glitch-flash 4s infinite;
+        }
+
+        .header-section {
+            margin-bottom: 40px; display: flex; flex-direction: column; align-items: flex-start;
+            border-bottom: 1px solid rgba(255, 30, 70, 0.2); padding-bottom: 20px; position: relative;
         }
 
         .landing-title {
-            color: var(--cp-cyan); font-family: var(--font-en);
-            font-size: 2.5rem; font-weight: 900; letter-spacing: 3px; text-align: center; margin-bottom: 40px;
-            text-shadow: 0 0 15px rgba(0, 240, 255, 0.8), 0 0 30px rgba(0, 240, 255, 0.4);
+            color: #ffffff; font-size: clamp(2.4rem, 8vw, 3.2rem); font-weight: 900; letter-spacing: 4px; line-height: 1;
+            text-shadow: 0 0 20px rgba(157, 0, 255, 0.4); position: relative;
         }
-        
-        .landing-title .jp-text {
-            display: block; font-family: var(--font-jp); font-size: 1.2rem; color: white;
-            text-shadow: 0 0 10px white, 0 0 20px var(--cp-cyan); letter-spacing: 6px; margin-top: 5px;
-        }
+        .landing-title .highlight { color: var(--crimson); text-shadow: 0 0 15px var(--blood-glow); }
 
-        /* TRON Glowing Buttons */
+        @keyframes glitch-flash { 0%, 96%, 98%, 100% { opacity: 1; } 97%, 99% { opacity: 0; transform: translateX(2px); } }
+
+        .landing-subtitle {
+            display: flex; align-items: center; gap: 12px; margin-top: 15px;
+            font-family: var(--font-jp); font-size: 0.85rem; color: var(--text-muted); font-weight: 500; letter-spacing: 4px;
+        }
+        .status-dot { width: 6px; height: 6px; background-color: var(--crimson); border-radius: 50%; box-shadow: 0 0 10px var(--crimson); animation: pulse-dot 1.2s infinite; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--crimson); } 50% { opacity: 0.2; box-shadow: 0 0 2px var(--crimson); } }
+
+        /* --- 3D KINETIC BUTTONS --- */
         .menu-btn {
-            width: 100%; height: 120px; 
-            background: rgba(0, 10, 15, 0.6); backdrop-filter: blur(8px); border: 2px solid var(--cp-cyan);
-            color: white; font-family: var(--font-en); font-weight: 900; font-size: 1.5rem; letter-spacing: 2px;
-            margin-bottom: 25px; position: relative; cursor: pointer;
-            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), inset 0 0 20px rgba(0, 240, 255, 0.2); 
-            transition: all 0.2s ease-in-out;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 100%; height: clamp(105px, 15vh, 125px); 
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.02); border-right: 1px solid var(--glass-border);
+            border-radius: 2px; color: var(--text-main); font-family: var(--font-en); cursor: pointer;
+            margin-bottom: 20px; position: relative; overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, background 0.3s ease;
+            display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+            padding: 0 35px; text-align: left; transform-style: preserve-3d;
         }
         
+        .menu-btn::before {
+            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+            background: var(--crimson); transition: width 0.3s ease, box-shadow 0.3s ease;
+        }
+        .btn-lab::before { background: var(--violet); }
+
+        .menu-btn::after {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at left center, rgba(255, 30, 70, 0.1) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
+        }
+        .btn-lab::after { background: radial-gradient(circle at left center, rgba(157, 0, 255, 0.1) 0%, transparent 70%); }
+
         .menu-btn:hover, .menu-btn:active { 
-            background: rgba(0, 240, 255, 0.1); border-color: #fff;
-            box-shadow: 0 0 30px var(--cp-cyan), inset 0 0 30px var(--cp-cyan); 
-            text-shadow: 0 0 10px white; transform: scale(0.98); 
+            background: rgba(15, 5, 20, 0.85); border-color: rgba(255, 30, 70, 0.3);
+            transform: translateY(-2px) scale(0.98) rotateX(2deg); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,30,70,0.1);
         }
+        .btn-lab:hover, .btn-lab:active { border-color: rgba(157, 0, 255, 0.3); inset 0 0 20px rgba(157,0,255,0.1); }
 
-        .menu-btn .jp-sub {
-            font-family: var(--font-jp); font-size: 0.85rem; font-weight: 700; letter-spacing: 4px;
-            color: var(--cp-pink); text-shadow: 0 0 10px var(--cp-pink); margin-top: 8px;
-        }
+        .menu-btn:hover::after, .menu-btn:active::after { opacity: 1; }
+        .menu-btn:hover::before, .menu-btn:active::before { width: 4px; box-shadow: 0 0 20px var(--crimson); }
+        .btn-lab:hover::before, .btn-lab:active::before { box-shadow: 0 0 20px var(--violet); }
 
-        /* Pink Accent Lab Button */
-        .btn-lab { border-color: var(--cp-pink); box-shadow: 0 0 15px rgba(255, 0, 85, 0.4), inset 0 0 20px rgba(255, 0, 85, 0.2); }
-        .btn-lab:hover, .btn-lab:active {
-            background: rgba(255, 0, 85, 0.1); border-color: #fff;
-            box-shadow: 0 0 30px var(--cp-pink), inset 0 0 30px var(--cp-pink); 
+        .btn-title { font-size: clamp(1.4rem, 5vw, 1.7rem); font-weight: 700; letter-spacing: 3px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .btn-jp {
+            font-family: var(--font-jp); font-size: 0.75rem; font-weight: 500; color: var(--crimson); 
+            letter-spacing: 5px; margin-top: 6px; text-transform: uppercase; transition: color 0.3s ease;
         }
-        .btn-lab .jp-sub { color: var(--cp-cyan); text-shadow: 0 0 10px var(--cp-cyan); }
-
-        .sub-menu-container {
-            width: 100%; display: none; flex-direction: column; gap: 15px; margin-bottom: 30px;
-            animation: slideDown 0.3s ease-out forwards; transform-origin: top;
-        }
-
-        @keyframes slideDown {
-            0% { opacity: 0; transform: scaleY(0); }
-            100% { opacity: 1; transform: scaleY(1); }
-        }
-
-        .sub-menu-btn {
-            width: 100%; height: 85px; 
-            background: rgba(0, 10, 5, 0.7); backdrop-filter: blur(5px);
-            border: 1px solid var(--cp-lime); border-left: 6px solid var(--cp-lime);
-            color: white; font-family: var(--font-en); font-weight: 700; font-size: 1.1rem; letter-spacing: 1px;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            box-shadow: 0 0 10px rgba(57, 255, 20, 0.2); transition: all 0.2s; cursor: pointer;
-            display: flex; flex-direction: column; justify-content: center; padding-left: 20px; text-align: left;
-        }
+        .btn-lab .btn-jp { color: var(--violet); }
         
-        .sub-menu-btn:hover, .sub-menu-btn:active { 
-            background: rgba(57, 255, 20, 0.15); box-shadow: 0 0 20px var(--cp-lime); border-color: #fff;
-        }
+        /* Submenu */
+        .submenu-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.25, 1, 0.5, 1); width: 100%; margin-bottom: 5px; }
+        .submenu-wrapper.open { grid-template-rows: 1fr; margin-bottom: 30px; }
+        .sub-menu-container { overflow: hidden; display: flex; flex-direction: column; gap: 10px; padding-left: 20px; border-left: 1px solid rgba(157, 0, 255, 0.2); margin-left: 10px; }
+        .sub-menu-btn { width: 100%; height: 75px; background: rgba(18, 5, 30, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.02); border-radius: 2px; color: #d1d5db; font-family: var(--font-en); font-weight: 600; font-size: 1.1rem; letter-spacing: 1px; transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        .sub-menu-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--violet); opacity: 0.2; transition: 0.3s; }
+        .sub-menu-btn:hover { background: rgba(157, 0, 255, 0.1); border-color: rgba(157, 0, 255, 0.3); transform: translateX(8px); color: #fff; }
+        .sub-menu-btn:hover::before { opacity: 1; box-shadow: 0 0 15px var(--violet); }
+        .sub-btn-content { display: flex; flex-direction: column; align-items: flex-start; }
+        .sub-btn-jp { font-family: var(--font-jp); font-size: 0.65rem; color: #76658a; letter-spacing: 3px; margin-top: 3px; }
+        .icon-arrow { font-family: 'Rajdhani', sans-serif; font-weight: 900; color: var(--violet); opacity: 0.4; font-size: 1.3rem; transition: 0.3s; }
+        .sub-menu-btn:hover .icon-arrow { opacity: 1; transform: translateX(5px); text-shadow: 0 0 10px var(--violet); }
 
-        .sub-menu-btn .jp-sub {
-            font-family: var(--font-jp); font-size: 0.75rem; color: var(--cp-lime); text-shadow: 0 0 8px var(--cp-lime); margin-top: 4px; letter-spacing: 2px;
+        /* Fake Data Harvester */
+        .threat-stream {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 45px; background: rgba(5, 2, 8, 0.9); border-top: 1px solid var(--crimson);
+            font-family: monospace; font-size: 0.7rem; color: var(--crimson); display: flex; align-items: center; padding: 0 15px; box-sizing: border-box;
+            z-index: 50; overflow: hidden; white-space: nowrap; box-shadow: 0 0 20px rgba(255, 30, 70, 0.2);
         }
+        .stream-content { opacity: 0.7; letter-spacing: 1px; }
+        @keyframes fade-in { 0% { opacity: 0; transform: translateY(5px); } 100% { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="tron-grid"></div>
-<div class="scanlines"></div>
+<div id="bootScreen">
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.1s;">> INITIATING HANDSHAKE PROTOCOL...</div>
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.3s; color: white;">> BYPASSING FIREWALL [NODE 7]... OK</div>
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.5s; color: white;">> INJECTING PAYLOAD... OK</div>
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.7s; font-weight: bold; font-size: 1.1rem;">> ACCESS GRANTED. LOGGING DEVICE INTEL...</div>
+</div>
+
+<canvas id="particleCanvas"></canvas>
+<div class="corsair-mark" id="jollyRoger">☠</div>
 
 <div class="hub-container">
-    <div class="landing-title">
-        NEURAL_OS
-        <span class="jp-text">メイン・ターミナル</span>
+    <div class="threat-banner" id="threatBanner">
+        [ SYSTEM BREACH ] TARGET NODE IDENTIFIED: UNKNOWN
     </div>
 
-    <button class="menu-btn" onclick="window.location.href='qrtrans.html'">
-        [ QR TRANSLATOR ]
-        <span class="jp-sub">データ変換</span>
+    <div class="header-section">
+        <div class="landing-title">NEURAL<span class="highlight">_OS</span></div>
+        <div class="landing-subtitle">
+            <div class="status-dot"></div> CORSAIR UPLINK // 海賊通信
+        </div>
+    </div>
+
+    <button class="menu-btn cipher-btn" data-cipher="[ CIPHER BYPASS ]" onclick="window.location.href='qrtrans.html'">
+        <span class="btn-title">[ CIPHER BYPASS ]</span>
+        <span class="btn-jp">QR TRANSLATOR // 暗号解読</span>
     </button>
 
-    <button class="menu-btn btn-lab" onclick="toggleLabRoutine()">
-        [ LAB ROUTINE ]
-        <span class="jp-sub">研究所ルーチン</span>
+    <button class="menu-btn btn-lab cipher-btn" data-cipher="[ BLACK LAB ]" onclick="toggleLabRoutine()">
+        <span class="btn-title">[ BLACK LAB ]</span>
+        <span class="btn-jp">ROUTINES // 闇研究所</span>
     </button>
 
-    <div id="labSubMenu" class="sub-menu-container">
-        <button class="sub-menu-btn" onclick="window.location.href='bridge.html?mode=T1'">
-            > PROTOCOL T1: Tg MATCH
-            <span class="jp-sub">Tg マッチ</span>
-        </button>
-        
-        <button class="sub-menu-btn" onclick="window.location.href='bridge.html?mode=T2'">
-            > PROTOCOL T2: JOINT MASS
-            <span class="jp-sub">継手質量</span>
-        </button>
-        
-        <button class="sub-menu-btn" onclick="window.location.href='bridge.html?mode=T3'">
-            > PROTOCOL T3: THICKNESS
-            <span class="jp-sub">厚さ測定</span>
-        </button>
+    <div class="submenu-wrapper" id="labWrapper">
+        <div id="labSubMenu" class="sub-menu-container">
+            <button class="sub-menu-btn cipher-sub" data-cipher="PROTOCOL T1: Tg MATCH" onclick="window.location.href='bridge.html?mode=T1'">
+                <div class="sub-btn-content">
+                    <span class="sub-title">PROTOCOL T1: Tg MATCH</span>
+                    <span class="sub-btn-jp">熱特性 // THERMAL</span>
+                </div>
+                <span class="icon-arrow">»</span>
+            </button>
+            <button class="sub-menu-btn cipher-sub" data-cipher="PROTOCOL T2: JOINT MASS" onclick="window.location.href='bridge.html?mode=T2'">
+                <div class="sub-btn-content">
+                    <span class="sub-title">PROTOCOL T2: JOINT MASS</span>
+                    <span class="sub-btn-jp">構造質量 // STRUCTURAL</span>
+                </div>
+                <span class="icon-arrow">»</span>
+            </button>
+            <button class="sub-menu-btn cipher-sub" data-cipher="PROTOCOL T3: THICKNESS" onclick="window.location.href='bridge.html?mode=T3'">
+                <div class="sub-btn-content">
+                    <span class="sub-title">PROTOCOL T3: THICKNESS</span>
+                    <span class="sub-btn-jp">装甲厚 // ARMOR PLATING</span>
+                </div>
+                <span class="icon-arrow">»</span>
+            </button>
+        </div>
     </div>
 </div>
 
-<script>
-    function toggleLabRoutine() {
-        const sub = document.getElementById('labSubMenu');
-        sub.style.display = (sub.style.display === 'none' || sub.style.display === '') ? 'flex' : 'none';
-    }
-</script>
+<div class="threat-stream"><div class="stream-content" id="streamContent">> INTERCEPTING... </div></div>
 
+<script>
+    // --- MALICIOUS BOOT SCREEN ---
+    window.onload = () => {
+        let os = "UNKNOWN SECURE TERMINAL";
+        if (navigator.userAgent.indexOf("Win") !== -1) os = "WINDOWS KERNEL DETECTED";
+        if (navigator.userAgent.indexOf("Mac") !== -1) os = "APPLE DARWIN ARCHITECTURE";
+        if (navigator.userAgent.indexOf("Linux") !== -1) os = "LINUX NODE DETECTED";
+        if (navigator.userAgent.indexOf("iPhone") !== -1) os = "IOS MOBILE TARGET LOCKED";
+        if (navigator.userAgent.indexOf("Android") !== -1) os = "ANDROID OS COMPROMISED";
+        document.getElementById('threatBanner').innerText = `[ SYSTEM BREACH ] TARGET: ${os} | RES: ${window.innerWidth}x${window.innerHeight}`;
+        
+        setTimeout(() => {
+            const boot = document.getElementById('bootScreen');
+            boot.style.opacity = '0'; boot.style.filter = 'blur(10px)';
+        }, 1200);
+    };
+
+    // --- LIVE CIPHER DECRYPTION ENGINE ---
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
+    function applyCipherEffect(elements, selector) {
+        elements.forEach(btn => {
+            btn.addEventListener('mouseenter', event => {
+                let iterations = 0;
+                const targetText = btn.dataset.cipher;
+                const textElement = btn.querySelector(selector);
+                
+                clearInterval(btn.dataset.interval);
+                btn.dataset.interval = setInterval(() => {
+                    textElement.innerText = targetText.split("")
+                        .map((letter, index) => {
+                            if(index < iterations) return targetText[index];
+                            return letters[Math.floor(Math.random() * letters.length)];
+                        })
+                        .join("");
+                    if(iterations >= targetText.length) clearInterval(btn.dataset.interval);
+                    iterations += 1 / 2;
+                }, 20);
+            });
+        });
+    }
+    applyCipherEffect(document.querySelectorAll('.cipher-btn'), '.btn-title');
+    applyCipherEffect(document.querySelectorAll('.cipher-sub'), '.sub-title');
+
+    // --- VIOLENT CORE GLITCH ENGINE ---
+    function triggerRandomGlitch() {
+        const mark = document.getElementById('jollyRoger');
+        mark.classList.add('glitch-violent');
+        setTimeout(() => { mark.classList.remove('glitch-violent'); }, 300);
+        setTimeout(triggerRandomGlitch, Math.random() * 7000 + 3000);
+    }
+    setTimeout(triggerRandomGlitch, 3000);
+
+    // --- FAKE DATA HARVESTER ---
+    const stream = document.getElementById('streamContent');
+    function generateHex() {
+        let result = ''; const chars = 'ABCDEF0123456789';
+        for (let i = 0; i < 8; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+        return `0x${result}`;
+    }
+    setInterval(() => {
+        let currentText = stream.innerText;
+        if (currentText.length > 80) currentText = "> EXTRACTING: "; 
+        stream.innerText = currentText + " " + generateHex();
+    }, 120);
+
+    // --- UI LOGIC ---
+    function toggleLabRoutine() { document.getElementById('labWrapper').classList.toggle('open'); }
+
+    // --- PARTICLE ENGINE ---
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particlesArray = [];
+    function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', initCanvas); initCanvas();
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 1.5 + 0.2; this.speedX = Math.random() * 0.4 - 0.2; this.speedY = Math.random() * -0.8 - 0.2; 
+            const colors = ['rgba(255, 30, 70,', 'rgba(157, 0, 255,', 'rgba(200, 180, 240,'];
+            this.colorBase = colors[Math.floor(Math.random() * colors.length)]; this.opacity = Math.random() * 0.4 + 0.05;
+        }
+        update() {
+            this.x += this.speedX; this.y += this.speedY;
+            if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; }
+            if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX;
+        }
+        draw() { ctx.fillStyle = `${this.colorBase} ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+    }
+    function initParticles() {
+        particlesArray = []; const numberOfParticles = Math.floor((canvas.width * canvas.height) / 7000);
+        for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
+    }
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); }
+        requestAnimationFrame(animateParticles);
+    }
+    initParticles(); animateParticles();
+</script>
 </body>
 </html>
