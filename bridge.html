@@ -5,129 +5,261 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>NEURAL BRIDGE</title>
+    <title>NEURAL BRIDGE // CORSAIR DATA INPUT</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Noto+Sans+JP:wght@300;500;700&display=swap');
+
         :root {
-            --cp-lime: #39ff14;
-            --cp-cyan: #00f0ff;
-            --cp-pink: #ff0055;
-            --cp-dark: #070709;
-            --cp-grey: #1a1a20;
-            --cp-font-mono: 'Courier New', Courier, monospace;
-            --cp-font-sans: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --crimson: #ff1e46;
+            --blood-glow: rgba(255, 30, 70, 0.5);
+            --violet: #9d00ff;
+            --void-purple: #120322;
+            --bg-deep: #020104;
+            --glass-bg: rgba(12, 5, 18, 0.7);
+            --glass-border: rgba(157, 0, 255, 0.2);
+            --text-main: #f0e6fa;
+            --text-muted: #84729c;
+            --font-en: 'Rajdhani', sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+            --font-jp: 'Noto Sans JP', sans-serif;
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            background-color: var(--cp-dark); font-family: var(--cp-font-sans); color: white;
-            display: flex; flex-direction: column; overscroll-behavior-y: none;
-            background-image: 
-                linear-gradient(rgba(0, 240, 255, 0.07) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.07) 1px, transparent 1px);
-            background-size: 20px 20px; position: relative;
+            background-color: var(--bg-deep); color: var(--text-main);
+            display: flex; flex-direction: column; align-items: center; 
+            overflow-x: hidden; position: relative; font-family: var(--font-en);
+            overscroll-behavior-y: none;
         }
 
+        /* --- INTRUSION BOOT SCREEN --- */
+        #bootScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; display: flex; flex-direction: column;
+            padding: 30px; font-family: var(--font-mono); color: var(--crimson);
+            box-sizing: border-box; overflow: hidden; pointer-events: none;
+            transition: opacity 0.5s ease-out, filter 0.5s ease-out;
+        }
+        .boot-line { font-size: 0.9rem; margin-bottom: 5px; text-shadow: 0 0 5px var(--crimson); opacity: 0; }
+
+        /* PLASMA CANVAS & ATMOSPHERE */
+        #particleCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+
+        .corsair-mark {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 40vw; color: rgba(255, 30, 70, 0.02); z-index: 2;
+            pointer-events: none; text-shadow: 0 0 60px rgba(157, 0, 255, 0.05);
+            animation: phantom-pulse 6s infinite alternate ease-in-out; font-family: monospace;
+        }
+        @keyframes phantom-pulse { 
+            0% { opacity: 0.2; filter: blur(8px); transform: translate(-50%, -50%) scale(0.98); } 
+            100% { opacity: 1; filter: blur(12px); transform: translate(-50%, -50%) scale(1.02); } 
+        }
+
+        body::before {
+            content: ""; position: fixed; top: -20%; left: -20%; width: 80vw; height: 80vw;
+            background: radial-gradient(circle at center, rgba(157, 0, 255, 0.08) 0%, transparent 60%);
+            z-index: 3; pointer-events: none;
+        }
         body::after {
-            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
+            content: ""; position: fixed; bottom: -20%; right: -20%; width: 80vw; height: 80vw;
+            background: radial-gradient(circle at center, rgba(255, 30, 70, 0.06) 0%, transparent 60%);
+            z-index: 3; pointer-events: none;
         }
 
-        .ui-layer { position: relative; z-index: 10; display: flex; flex-direction: column; height: 100%; }
+        /* APPLICATION LAYER CONTAINER */
+        .ui-layer {
+            position: relative; z-index: 10; display: flex; flex-direction: column;
+            width: 100%; max-width: 480px; height: 100vh; box-sizing: border-box;
+            padding-bottom: 40px; /* Leave room for threat stream footer */
+        }
 
-        .header { background: linear-gradient(90deg, var(--cp-cyan) 0%, var(--cp-lime) 100%); padding: 0 0 2px 0; }
-        .header-inner { background: var(--cp-dark); padding: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.15);}
-        
-        .header-title { font-family: var(--cp-font-mono); font-weight: bold; letter-spacing: 2px; color: var(--cp-cyan); text-shadow: 0 0 5px var(--cp-cyan); }
+        /* HEADER NAV BAR */
+        .header {
+            background: rgba(12, 5, 18, 0.85); backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 30, 70, 0.3); padding: 12px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8); flex-shrink: 0;
+        }
 
-        select { background: #111; color: var(--cp-cyan); border: 1px solid var(--cp-cyan); font-family: var(--cp-font-mono); font-size: 0.8rem; padding: 5px; outline: none; }
+        .btn-sys-back {
+            background: rgba(255, 30, 70, 0.1); border: 1px solid var(--crimson);
+            color: var(--crimson); font-family: var(--font-en); font-weight: 700;
+            font-size: 0.85rem; letter-spacing: 2px; text-decoration: none;
+            padding: 6px 12px; border-radius: 2px; transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 30, 70, 0.2);
+        }
+        .btn-sys-back:hover { background: var(--crimson); color: #000; box-shadow: 0 0 15px var(--crimson); }
 
-        .btn-sys-back { background: transparent; border: none; color: var(--cp-pink); font-family: var(--cp-font-mono); font-weight: bold; font-size: 1.1rem; cursor: pointer; padding: 0; text-shadow: 0 0 5px var(--cp-pink); text-decoration: none;}
+        .header-title {
+            font-family: var(--font-en); font-weight: 900; font-size: 1.2rem;
+            letter-spacing: 3px; color: #fff; text-shadow: 0 0 10px rgba(157, 0, 255, 0.5);
+            margin-left: 10px;
+        }
 
+        select {
+            background: rgba(5, 2, 10, 0.9); color: var(--crimson);
+            border: 1px solid var(--crimson); font-family: var(--font-en); font-weight: 700;
+            font-size: 0.8rem; padding: 6px; outline: none; border-radius: 2px;
+            box-shadow: 0 0 10px rgba(255, 30, 70, 0.2);
+        }
+
+        /* THREAT STATUS BAR */
         .status-bar {
-            background: rgba(10, 10, 15, 0.9); color: white; text-align: center; padding: 8px;
-            font-family: var(--cp-font-mono); font-weight: bold; font-size: 0.9rem;
-            border-bottom: 1px solid var(--cp-lime); transition: color 0.3s;
-            text-transform: uppercase; letter-spacing: 1px;
+            background: rgba(8, 2, 15, 0.9); color: #fff; text-align: center;
+            padding: 10px 15px; font-family: var(--font-mono); font-weight: bold;
+            font-size: 0.85rem; border-bottom: 1px solid var(--violet);
+            text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0;
+            text-shadow: 0 0 5px rgba(157,0,255,0.5); transition: color 0.3s ease;
         }
 
+        /* LOG DISPLAY TERMINAL */
         .display-area {
             flex: 1; display: flex; flex-direction: column; padding: 15px;
-            background: rgba(0, 0, 0, 0.6); border-bottom: 2px solid var(--cp-grey); overflow-y: auto;
+            background: rgba(5, 2, 10, 0.65); backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255,255,255,0.05); overflow-y: auto;
         }
 
         .history-log {
             flex: 1; display: flex; flex-direction: column; justify-content: flex-end;
-            font-family: var(--cp-font-mono); color: #0aa; font-size: 1rem; line-height: 1.4; margin-bottom: 10px;
+            font-family: var(--font-mono); color: var(--text-muted); font-size: 0.9rem;
+            line-height: 1.5; margin-bottom: 10px;
         }
-        .history-item { margin-bottom: 4px; border-left: 2px solid #055; padding-left: 8px;}
-        .history-skip { color: var(--cp-pink); font-style: italic; border-left: 2px solid var(--cp-pink);}
+        .history-item { margin-bottom: 4px; border-left: 2px solid var(--violet); padding-left: 8px; }
+        .history-skip { color: var(--crimson); font-style: italic; border-left: 2px solid var(--crimson); }
 
         .current-input {
-            font-family: var(--cp-font-mono); font-size: 2.8rem; color: var(--cp-lime); text-shadow: 0 0 10px rgba(57, 255, 20, 0.4);
-            text-align: right; min-height: 55px; border-bottom: 2px solid var(--cp-lime); margin-bottom: 10px;
+            font-family: var(--font-mono); font-size: 2.8rem; color: var(--crimson);
+            text-shadow: 0 0 15px var(--blood-glow); text-align: right;
+            min-height: 55px; border-bottom: 2px solid var(--crimson); margin-bottom: 5px;
+            font-weight: bold;
         }
 
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: #000; padding: 6px; }
+        /* KINETIC 3D KEYPAD */
+        .keypad {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+            background: rgba(2, 1, 4, 0.95); padding: 10px; flex-shrink: 0;
+            border-top: 1px solid rgba(157, 0, 255, 0.2);
+        }
 
         .btn {
-            background: var(--cp-grey); border: none; color: white; font-size: 1.8rem;
-            padding: 18px 0; font-family: var(--cp-font-mono); touch-action: manipulation;
-            transition: all 0.1s; position: relative;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            background: rgba(18, 5, 30, 0.7); border: 1px solid rgba(255,255,255,0.03);
+            border-left: 2px solid var(--violet); color: #fff; font-size: 1.8rem;
+            padding: 16px 0; font-family: var(--font-en); font-weight: 700;
+            touch-action: manipulation; transition: all 0.1s ease; position: relative;
+            cursor: pointer; outline: none; border-radius: 2px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
-        .btn:active { background: var(--cp-lime) !important; color: black !important; text-shadow: none !important; box-shadow: 0 0 15px var(--cp-lime) !important; animation: none !important; }
-        
-        @keyframes cyber-pulse {
-            0% { background-color: var(--cp-grey); color: rgba(255, 255, 255, 0.5); box-shadow: inset 0 0 0px transparent; }
-            100% { background-color: #1a2930; color: #ffffff; box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.3), 0 0 8px rgba(0, 240, 255, 0.2); text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); }
+        .btn:active {
+            background: var(--crimson) !important; color: #000 !important;
+            text-shadow: none !important; box-shadow: 0 0 20px var(--crimson) !important;
+            transform: scale(0.96);
         }
-        .num-btn { animation: cyber-pulse 1.2s infinite alternate ease-in-out; }
-        .btn-disabled { opacity: 0.15; pointer-events: none; filter: grayscale(100%); border-color: transparent !important; animation: none !important; color: white !important; background-color: var(--cp-grey) !important; box-shadow: none !important;}
-        .btn-action { background: #111a22; color: var(--cp-cyan); font-size: 1.1rem; font-weight: bold; animation: none; }
-        .btn-undo { background: #220a11; color: var(--cp-pink); }
-        .btn-enter { background: #0a1f0a; color: var(--cp-lime); font-weight: bold; grid-column: span 3; animation: none;}
-        .btn-compile { background: var(--cp-cyan); color: black; grid-column: span 3; font-weight: bold; padding: 18px 0; font-size: 1.4rem; box-shadow: 0 0 10px rgba(0,240,255,0.4); animation: none; }
 
-        /* --- QR MODAL --- */
+        @keyframes cyber-pulse {
+            0% { background-color: rgba(18, 5, 30, 0.7); color: rgba(240, 230, 250, 0.7); }
+            100% { background-color: rgba(30, 10, 50, 0.9); color: #ffffff; text-shadow: 0 0 10px var(--violet); }
+        }
+        .num-btn { animation: cyber-pulse 1.5s infinite alternate ease-in-out; }
+
+        .btn-disabled {
+            opacity: 0.12; pointer-events: none; filter: grayscale(100%);
+            border-color: transparent !important; animation: none !important;
+            color: #fff !important; background-color: rgba(10,10,12,0.5) !important;
+            box-shadow: none !important;
+        }
+
+        .btn-action { background: rgba(25, 8, 40, 0.8); color: var(--violet); font-size: 1.1rem; font-weight: 900; animation: none; }
+        .btn-undo { background: rgba(30, 5, 15, 0.8); color: var(--crimson); border-left-color: var(--crimson); }
+        
+        .btn-enter {
+            background: rgba(10, 30, 15, 0.8); border-left: 3px solid #39ff14; color: #39ff14;
+            font-weight: 900; grid-column: span 3; animation: none; font-size: 1.2rem;
+            letter-spacing: 2px; text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+        }
+        .btn-compile {
+            background: var(--crimson); color: #000; grid-column: span 3; font-weight: 900;
+            padding: 16px 0; font-size: 1.4rem; letter-spacing: 3px;
+            box-shadow: 0 0 20px var(--blood-glow); animation: none; border: none;
+        }
+
+        /* QR PAYLOAD OVERLAY MODAL */
         #qrModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 8, 0.95); z-index: 100; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; overflow-y: auto;
+            background: rgba(2, 1, 4, 0.95); backdrop-filter: blur(15px); z-index: 100;
+            flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; overflow-y: auto;
         }
-        #validationMessage { width: 100%; max-width: 380px; margin-top: 10px; font-family: var(--cp-font-mono); }
-        .qr-container { background: white; padding: 15px; border-radius: 4px; box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); margin: 20px 0; border: 4px solid var(--cp-cyan); outline: 2px solid var(--cp-pink); outline-offset: -10px; }
-        .btn-toggle-data { background: transparent; border: 2px solid var(--cp-cyan); color: var(--cp-cyan); padding: 12px 20px; font-size: 1rem; font-family: var(--cp-font-mono); font-weight: bold; width: 100%; max-width: 380px; margin-bottom: 15px; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
-        .btn-close { background: var(--cp-pink); border: none; color: white; padding: 15px 40px; font-weight: bold; font-size: 1.2rem; font-family: var(--cp-font-mono); width: 100%; max-width: 380px; margin-bottom: 40px; box-shadow: 0 0 15px rgba(255,0,85,0.5); clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+        #validationMessage { width: 100%; max-width: 380px; margin-top: 10px; font-family: var(--font-mono); }
+        .qr-container {
+            background: white; padding: 15px; border-radius: 2px;
+            box-shadow: 0 0 30px var(--blood-glow); margin: 20px 0; border: 4px solid var(--crimson);
+        }
+        .btn-toggle-data {
+            background: transparent; border: 1px solid var(--violet); color: var(--violet);
+            padding: 12px 20px; font-size: 1rem; font-family: var(--font-en); font-weight: bold;
+            width: 100%; max-width: 380px; margin-bottom: 15px; letter-spacing: 2px;
+        }
+        .btn-close {
+            background: var(--crimson); border: none; color: #000; padding: 15px 40px;
+            font-weight: 900; font-size: 1.2rem; font-family: var(--font-en); width: 100%;
+            max-width: 380px; margin-bottom: 40px; box-shadow: 0 0 20px var(--blood-glow);
+            letter-spacing: 2px; cursor: pointer;
+        }
 
         #expandedData { width: 100%; max-width: 380px; margin-bottom: 20px; }
-        .data-card { background: rgba(0, 0, 0, 0.7); border: 1px solid #333; padding: 12px; margin-bottom: 10px; font-family: var(--cp-font-mono); font-size: 0.95rem; line-height: 1.5; position: relative; }
-        .data-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
-        .card-pass { border-color: rgba(57,255,20,0.3); } .card-pass::before { background: var(--cp-lime); box-shadow: 0 0 10px var(--cp-lime); }
-        .card-fail { border-color: rgba(255,0,85,0.3); } .card-fail::before { background: var(--cp-pink); box-shadow: 0 0 10px var(--cp-pink); }
-        .zone-title { font-weight: bold; color: var(--cp-cyan); border-bottom: 1px solid #333; padding-bottom: 4px; margin-bottom: 6px;}
-        .zone-values { color: #ccc; font-size: 0.85rem; line-height: 1.6;}
-        .zone-result-pass { color: var(--cp-lime); font-weight: bold; margin-top: 4px;}
-        .zone-result-fail { color: var(--cp-pink); font-weight: bold; margin-top: 4px;}
+        .data-card {
+            background: rgba(12, 5, 18, 0.8); border: 1px solid rgba(255,255,255,0.05);
+            padding: 12px; margin-bottom: 10px; font-family: var(--font-mono); font-size: 0.9rem;
+            line-height: 1.5; position: relative;
+        }
+        .data-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+        .card-pass { border-color: rgba(57,255,20,0.3); } .card-pass::before { background: #39ff14; box-shadow: 0 0 10px #39ff14; }
+        .card-fail { border-color: rgba(255,30,70,0.3); } .card-fail::before { background: var(--crimson); box-shadow: 0 0 10px var(--crimson); }
+        .zone-title { font-weight: bold; color: var(--violet); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; margin-bottom: 6px; }
+        .zone-values { color: #ccc; font-size: 0.85rem; line-height: 1.6; }
+        .zone-result-pass { color: #39ff14; font-weight: bold; margin-top: 4px; }
+        .zone-result-fail { color: var(--crimson); font-weight: bold; margin-top: 4px; }
+
+        /* DATA HARVESTER STREAM */
+        .threat-stream {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 40px;
+            background: rgba(5, 2, 8, 0.95); border-top: 1px solid var(--crimson);
+            font-family: monospace; font-size: 0.7rem; color: var(--crimson);
+            display: flex; align-items: center; padding: 0 15px; box-sizing: border-box;
+            z-index: 50; overflow: hidden; white-space: nowrap; box-shadow: 0 0 20px rgba(255, 30, 70, 0.2);
+        }
+        .stream-content { opacity: 0.7; letter-spacing: 1px; }
+
+        @keyframes fade-in { 0% { opacity: 0; transform: translateY(5px); } 100% { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
+<!-- BOOT INTERCEPT SEQUENCE -->
+<div id="bootScreen">
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.1s;">> INITIATING BRIDGE PROTOCOL...</div>
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.3s; color: white;">> CONNECTING TO NEURAL DATA BUS... OK</div>
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.5s; color: white;">> CALIBRATING SENSOR BLUEPRINT... OK</div>
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.7s; font-weight: bold; font-size: 1.1rem;">> ACCESS GRANTED. SENSOR MATRIX READY...</div>
+</div>
+
+<canvas id="particleCanvas"></canvas>
+<div class="corsair-mark">☠</div>
+
 <div id="appLayer" class="ui-layer">
     <div class="header">
-        <div class="header-inner">
-            <a href="index.html" class="btn-sys-back">&lt; SYS</a>
-            <span class="header-title" style="margin-left: 10px;">BRIDGE</span>
-            <select id="modeSelector" onchange="changeMode()" style="margin-left: auto;">
-                <option value="T1">T1 (Tg Match)</option>
-                <option value="T2">T2 (Joint Mass)</option>
-                <option value="T3">T3 (Thickness)</option>
-                <option value="FREE">FREE MODE</option>
-            </select>
-        </div>
+        <a href="index.html" class="btn-sys-back">&lt; SYS</a>
+        <span class="header-title">BRIDGE</span>
+        <select id="modeSelector" onchange="changeMode()">
+            <option value="T1">T1 (Tg Match)</option>
+            <option value="T2">T2 (Joint Mass)</option>
+            <option value="T3">T3 (Thickness)</option>
+            <option value="FREE">FREE MODE</option>
+        </select>
     </div>
 
-    <div class="status-bar" id="statusBar">INITIATING...</div>
+    <div class="status-bar" id="statusBar">INITIATING DATA MATRIX...</div>
 
     <div class="display-area" id="displayArea">
         <div class="history-log" id="historyLog"></div>
@@ -135,7 +267,9 @@
     </div>
 
     <div class="keypad">
-        <button class="btn btn-action btn-undo" style="grid-column: span 3;" onclick="clearLast()">[ UNDO LAST ]</button>
+        <button class="btn btn-action btn-undo cipher-btn" data-cipher="[ UNDO LAST ]" style="grid-column: span 3;" onclick="clearLast()">
+            <span class="btn-title">[ UNDO LAST ]</span>
+        </button>
 
         <button class="btn num-btn" onclick="typeNum('1')">1</button>
         <button class="btn num-btn" onclick="typeNum('2')">2</button>
@@ -153,12 +287,17 @@
         <button class="btn num-btn" onclick="typeNum('0')">0</button>
         <button class="btn btn-action" style="opacity: 0.1; pointer-events: none; animation: none;">+/-</button>
 
-        <button class="btn btn-enter" id="btnEnter" onclick="submitNumber()">INSERT DATA</button>
-        <button class="btn btn-compile" onclick="generateQR()">ENCODE PAYLOAD</button>
+        <button class="btn btn-enter cipher-btn" data-cipher="INSERT DATA" id="btnEnter" onclick="submitNumber()">
+            <span class="btn-title">INSERT DATA</span>
+        </button>
+        <button class="btn btn-compile cipher-btn" data-cipher="ENCODE PAYLOAD" onclick="generateQR()">
+            <span class="btn-title">ENCODE PAYLOAD</span>
+        </button>
     </div>
 </div>
 
-<div id="qrModal" class="ui-layer" style="z-index: 100;">
+<!-- QR MODAL -->
+<div id="qrModal">
     <div id="validationMessage"></div>
     <div class="qr-container"><canvas id="qrCanvas"></canvas></div>
     <button class="btn-toggle-data" id="btnToggleData" onclick="toggleData()" style="display:none;">[ ACCESS ZONE DATA ]</button>
@@ -166,7 +305,21 @@
     <button class="btn-close" onclick="closeQR()">PURGE MEMORY & CLOSE</button>
 </div>
 
+<!-- DATA HARVESTER STREAM -->
+<div class="threat-stream">
+    <div class="stream-content" id="streamContent">> LOGGING: </div>
+</div>
+
 <script>
+    // --- MALICIOUS BOOT SCREEN LOGIC ---
+    window.onload = () => {
+        setTimeout(() => {
+            const boot = document.getElementById('bootScreen');
+            boot.style.opacity = '0'; boot.style.filter = 'blur(10px)';
+        }, 1100);
+    };
+
+    // --- DATA BRIDGE ENGINE ---
     let dataList = [];
     let currentString = "";
     let isAutoSkipping = false;
@@ -185,7 +338,7 @@
         'A','B','X', 'A','B','-', 'A','-', 'A','-', 'A','X','-','-'       
     ];
 
-    // TEMPLATE 3
+    // TEMPLATE 3 
     const template3 = [
         'A','B','C','D','E','F','J','K','A','B','C','D','E','F',
         'A','B','C','D','E','F','J','K','A','B','C','D','E','F',
@@ -204,8 +357,7 @@
 
     let activeBlueprint = template1; 
 
-    // --- INITIALIZATION ---
-    // Read the URL parameter to auto-select the mode from the Hub
+    // --- URL PARAMETER AUTO-SELECT ---
     const urlParams = new URLSearchParams(window.location.search);
     const modeParam = urlParams.get('mode');
     if (modeParam && ['T1', 'T2', 'T3', 'FREE'].includes(modeParam)) {
@@ -279,7 +431,7 @@
 
         if (!activeBlueprint) {
             statusBar.innerText = "SYSTEM: MANUAL OVERRIDE ACTIVE";
-            statusBar.style.color = "var(--cp-cyan)";
+            statusBar.style.color = "var(--violet)";
             return;
         }
 
@@ -287,7 +439,7 @@
         
         if (step >= activeBlueprint.length) {
             statusBar.innerText = "PAYLOAD COMPLETE. READY TO ENCODE.";
-            statusBar.style.color = "var(--cp-lime)";
+            statusBar.style.color = "#39ff14";
             numBtns.forEach(b => b.classList.add('btn-disabled'));
             btnEnter.classList.add('btn-disabled');
             return;
@@ -295,12 +447,13 @@
 
         const expected = activeBlueprint[step];
 
+        // --- GHOST AUTOMATION ---
         if (expected === 'X' || expected === '-') {
             btnEnter.classList.add('btn-disabled');
             if (!isAutoSkipping) {
                 isAutoSkipping = true;
                 statusBar.innerText = `AUTO-JUMPING... [${expected}]`;
-                statusBar.style.color = "var(--cp-pink)";
+                statusBar.style.color = "var(--crimson)";
                 numBtns.forEach(b => b.classList.add('btn-disabled'));
                 
                 setTimeout(() => {
@@ -327,6 +480,7 @@
             for(let i=0; i<=step; i++) if(activeBlueprint[i] === 'A') aCount++;
             if(aCount > 0) zoneLabel = t2Labels[aCount - 1];
             else zoneLabel = "SYS";
+
             if (expected === 'A') prompt = "Fillet Length";
             if (expected === 'B') prompt = "Porosity Length";
             regex = /^\d*\.?\d*$/; 
@@ -467,8 +621,8 @@
                 }
             }
 
-            if (allPassed) validationHTML = `<div style="color: var(--cp-lime); font-size: 1.1rem; font-weight: bold; text-align: center; text-shadow: 0 0 5px var(--cp-lime); margin-bottom: 10px;">> ALL ZONES Tg: PASSED <</div>`;
-            else validationHTML = `<div style="color: var(--cp-pink); font-size: 1rem; font-weight: bold; text-align: center; border: 1px solid var(--cp-pink); padding: 10px; border-radius: 4px; background: rgba(255,0,85,0.1); margin-bottom: 10px; box-shadow: 0 0 10px rgba(255,0,85,0.4);">[!] SYS WARNING: Tg LIMIT EXCEEDED<br><br>${errorMessages.join('<br>')}</div>`;
+            if (allPassed) validationHTML = `<div style="color: #39ff14; font-size: 1.1rem; font-weight: bold; text-align: center; text-shadow: 0 0 10px #39ff14; margin-bottom: 10px;">> ALL ZONES Tg: PASSED <</div>`;
+            else validationHTML = `<div style="color: var(--crimson); font-size: 1rem; font-weight: bold; text-align: center; border: 1px solid var(--crimson); padding: 10px; border-radius: 2px; background: rgba(255,30,70,0.1); margin-bottom: 10px; box-shadow: 0 0 15px rgba(255,30,70,0.4);">[!] SYS WARNING: Tg LIMIT EXCEEDED<br><br>${errorMessages.join('<br>')}</div>`;
             document.getElementById('expandedData').innerHTML = expandedHTML;
             document.getElementById('btnToggleData').style.display = 'block';
         }
@@ -481,12 +635,12 @@
             t2Data.forEach(zone => {
                 expandedHTML += `<div class="data-card card-pass"><div class="zone-title">${zone.name}</div><div class="zone-values">Fillet Length: ${zone.a} ${zone.b !== '--' ? `| Porosity Total: ${zone.b}` : ''}</div></div>`;
             });
-            validationHTML = `<div style="color: var(--cp-cyan); font-size: 1.1rem; font-weight: bold; text-align: center; text-shadow: 0 0 5px var(--cp-cyan); margin-bottom: 10px;">> T2 DATA LOGGED SUCCESSFULLY <</div>`;
+            validationHTML = `<div style="color: var(--violet); font-size: 1.1rem; font-weight: bold; text-align: center; text-shadow: 0 0 10px var(--violet); margin-bottom: 10px;">> T2 DATA LOGGED SUCCESSFULLY <</div>`;
             document.getElementById('expandedData').innerHTML = expandedHTML;
             document.getElementById('btnToggleData').style.display = 'block';
         }
         else if (mode === 'T3') {
-            validationHTML = `<div style="color: var(--cp-cyan); font-size: 1.1rem; font-weight: bold; text-align: center; text-shadow: 0 0 5px var(--cp-cyan); margin-bottom: 10px;">> THICKNESS LOGGED SUCCESSFULLY <</div>`;
+            validationHTML = `<div style="color: var(--violet); font-size: 1.1rem; font-weight: bold; text-align: center; text-shadow: 0 0 10px var(--violet); margin-bottom: 10px;">> THICKNESS LOGGED SUCCESSFULLY <</div>`;
         }
 
         document.getElementById('validationMessage').innerHTML = validationHTML;
@@ -502,7 +656,7 @@
         }
 
         document.getElementById('qrModal').style.display = 'flex';
-        new QRious({ element: document.getElementById('qrCanvas'), value: payload, size: 260, level: 'M' });
+        new QRious({ element: document.getElementById('qrCanvas'), value: payload, size: 240, level: 'M' });
     }
 
     function closeQR() {
@@ -510,7 +664,81 @@
         dataList = []; updateDisplay();
     }
 
-    // Call on load to process any URL parameters
+    // --- CIPHER TEXT ENGINE ---
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
+    function applyCipherEffect(elements) {
+        elements.forEach(btn => {
+            btn.addEventListener('mouseenter', event => {
+                let iterations = 0;
+                const targetText = btn.dataset.cipher;
+                const textElement = btn.querySelector('.btn-title');
+                
+                clearInterval(btn.dataset.interval);
+                btn.dataset.interval = setInterval(() => {
+                    textElement.innerText = targetText.split("")
+                        .map((letter, index) => {
+                            if(index < iterations) return targetText[index];
+                            return letters[Math.floor(Math.random() * letters.length)];
+                        })
+                        .join("");
+                    if(iterations >= targetText.length) clearInterval(btn.dataset.interval);
+                    iterations += 1 / 2;
+                }, 20);
+            });
+        });
+    }
+    applyCipherEffect(document.querySelectorAll('.cipher-btn'));
+
+    // --- DATA HARVESTER STREAM ---
+    const stream = document.getElementById('streamContent');
+    function generateHex() {
+        let result = ''; const chars = 'ABCDEF0123456789';
+        for (let i = 0; i < 8; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+        return `0x${result}`;
+    }
+    setInterval(() => {
+        let currentText = stream.innerText;
+        if (currentText.length > 80) currentText = "> LOGGING: "; 
+        stream.innerText = currentText + " " + generateHex();
+    }, 120);
+
+    // --- PLASMA PARTICLE ENGINE ---
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particlesArray = [];
+    
+    function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', initCanvas); initCanvas();
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 1.5 + 0.2; this.speedX = Math.random() * 0.4 - 0.2; this.speedY = Math.random() * -0.8 - 0.2; 
+            const colors = ['rgba(255, 30, 70,', 'rgba(157, 0, 255,', 'rgba(200, 180, 240,'];
+            this.colorBase = colors[Math.floor(Math.random() * colors.length)]; this.opacity = Math.random() * 0.4 + 0.05;
+        }
+        update() {
+            this.x += this.speedX; this.y += this.speedY;
+            if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; }
+            if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX;
+        }
+        draw() { ctx.fillStyle = `${this.colorBase} ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+    }
+
+    function initParticles() {
+        particlesArray = []; const numberOfParticles = Math.floor((canvas.width * canvas.height) / 7000);
+        for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
+    }
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); }
+        requestAnimationFrame(animateParticles);
+    }
+
+    initParticles(); animateParticles();
+
+    // Initialize Blueprint Mode from URL on boot
     changeMode();
 </script>
 </body>
