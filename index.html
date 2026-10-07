@@ -194,6 +194,7 @@
         </div>
     </div>
 
+    <!-- The data-cipher attribute stores the final word -->
     <button class="menu-btn cipher-btn" data-cipher="[ CIPHER BYPASS ]" onclick="window.location.href='qrtrans.html'">
         <span class="btn-title">[ CIPHER BYPASS ]</span>
         <span class="btn-jp">QR TRANSLATOR // 暗号解読</span>
@@ -213,13 +214,16 @@
                 </div>
                 <span class="icon-arrow">»</span>
             </button>
-            <button class="sub-menu-btn cipher-sub" data-cipher="PROTOCOL T2: JOINT MASS" onclick="window.location.href='bridge.html?mode=T2'">
+            
+            <!-- UPDATED T2 BUTTON -->
+            <button class="sub-menu-btn cipher-sub" data-cipher="PROTOCOL T2: BRAZE JOINTS" onclick="window.location.href='bridge.html?mode=T2'">
                 <div class="sub-btn-content">
-                    <span class="sub-title">PROTOCOL T2: JOINT MASS</span>
-                    <span class="sub-btn-jp">構造質量 // STRUCTURAL</span>
+                    <span class="sub-title">PROTOCOL T2: BRAZE JOINTS</span>
+                    <span class="sub-btn-jp">接合部⾧ // JOINT LENGTH</span>
                 </div>
                 <span class="icon-arrow">»</span>
             </button>
+            
             <button class="sub-menu-btn cipher-sub" data-cipher="PROTOCOL T3: THICKNESS" onclick="window.location.href='bridge.html?mode=T3'">
                 <div class="sub-btn-content">
                     <span class="sub-title">PROTOCOL T3: THICKNESS</span>
@@ -268,7 +272,7 @@
                         })
                         .join("");
                     if(iterations >= targetText.length) clearInterval(btn.dataset.interval);
-                    iterations += 1 / 2;
+                    iterations += 1 / 2; // Speed of decryption
                 }, 20);
             });
         });
