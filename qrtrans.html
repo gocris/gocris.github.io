@@ -8,26 +8,35 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Scanner OS">
     
-    <title>QR Data Extractor // CYBERPUNK_OS</title>
+    <title>QR Data Extractor // ROGUE_UPLINK</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Noto+Sans+JP:wght@300;500;700&display=swap');
+
         :root {
-            --cp-lime: #39ff14;
-            --cp-cyan: #00f0ff;
-            --cp-dark: #0a0a0c;
-            --cp-grey: #222225;
-            --cp-danger: #ff003c;
-            --cp-font-mono: 'Courier New', Courier, monospace;
-            --cp-font-sans: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --crimson: #ff1e46;
+            --blood-glow: rgba(255, 30, 70, 0.5);
+            --violet: #9d00ff;
+            --void-purple: #120322;
+            --bg-deep: #020104;
+            
+            --glass-bg: rgba(12, 5, 18, 0.7);
+            --glass-border: rgba(157, 0, 255, 0.2);
+            --text-main: #f0e6fa;
+            --text-muted: #84729c;
+            
+            --font-en: 'Rajdhani', sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+            --font-jp: 'Noto Sans JP', sans-serif;
         }
 
         body, html {
             margin: 0;
-            padding: calc(env(safe-area-inset-top) + 1rem) 1rem calc(env(safe-area-inset-bottom) + 1rem) 1rem;
+            padding: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--cp-dark);
-            font-family: var(--cp-font-sans);
-            color: white;
+            background-color: var(--bg-deep);
+            font-family: var(--font-en);
+            color: var(--text-main);
             overflow: hidden; 
             display: flex;
             justify-content: center;
@@ -37,89 +46,310 @@
             -webkit-user-select: none;
         }
 
-        .bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1920&auto=format&fit=crop'); background-size: cover; background-position: center; z-index: -3; }
-        .bg-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 15, 0.85); z-index: -2; }
-        .scanlines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1)); background-size: 100% 4px; z-index: -1; pointer-events: none; }
+        /* BOOT INTERCEPT LAYER */
+        #bootScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; display: flex; flex-direction: column;
+            padding: 30px; font-family: var(--font-mono); color: var(--crimson);
+            box-sizing: border-box; overflow: hidden; pointer-events: none;
+            transition: opacity 0.5s ease-out, filter 0.5s ease-out;
+        }
+        .boot-line { font-size: 0.9rem; margin-bottom: 5px; text-shadow: 0 0 5px var(--crimson); opacity: 0; }
 
-        .neon-kanji { position: absolute; font-weight: 900; font-size: 3rem; opacity: 0.15; writing-mode: vertical-rl; text-orientation: upright; letter-spacing: 0.5rem; z-index: 0; }
-        .kanji-1 { top: 10%; left: 5%; color: var(--cp-cyan); text-shadow: 0 0 10px var(--cp-cyan); }
-        .kanji-2 { bottom: 10%; right: 5%; color: var(--cp-lime); text-shadow: 0 0 10px var(--cp-lime); }
+        /* PLASMA CANVAS & ATMOSPHERE */
+        #particleCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 
-        .wrapper { position: relative; z-index: 10; width: 100%; max-width: 600px; padding: 3px; margin: 0 auto; background: linear-gradient(135deg, var(--cp-cyan) 0%, var(--cp-lime) 100%); clip-path: polygon(0 15px, 15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%); box-shadow: 0 0 20px rgba(57, 255, 20, 0.15); max-height: 100%; display: flex; flex-direction: column; }
-        .container { background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 1.5rem; clip-path: polygon(0 13px, 13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%); display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+        .corsair-mark {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 40vw; color: rgba(255, 30, 70, 0.02); z-index: 2;
+            pointer-events: none; text-shadow: 0 0 60px rgba(157, 0, 255, 0.05);
+            animation: phantom-pulse 6s infinite alternate ease-in-out; font-family: monospace;
+        }
+        @keyframes phantom-pulse { 
+            0% { opacity: 0.2; filter: blur(8px); transform: translate(-50%, -50%) scale(0.98); } 
+            100% { opacity: 1; filter: blur(12px); transform: translate(-50%, -50%) scale(1.02); } 
+        }
 
-        h2 { margin: 0 0 1rem 0; font-size: 1.5rem; text-transform: uppercase; color: white; position: relative; display: inline-block; letter-spacing: 2px; }
-        .glitch { position: relative; color: white; font-weight: 800; }
-        .glitch::before, .glitch::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; }
-        .glitch::before { left: 2px; text-shadow: -2px 0 var(--cp-lime); clip: rect(24px, 550px, 90px, 0); animation: glitch-anim-2 3s infinite linear alternate-reverse; }
-        .glitch::after { left: -2px; text-shadow: -2px 0 var(--cp-cyan); clip: rect(85px, 550px, 140px, 0); animation: glitch-anim 2.5s infinite linear alternate-reverse; }
+        body::before {
+            content: ""; position: fixed; top: -20%; left: -20%; width: 80vw; height: 80vw;
+            background: radial-gradient(circle at center, rgba(157, 0, 255, 0.08) 0%, transparent 60%);
+            z-index: 3; pointer-events: none;
+        }
+        body::after {
+            content: ""; position: fixed; bottom: -20%; right: -20%; width: 80vw; height: 80vw;
+            background: radial-gradient(circle at center, rgba(255, 30, 70, 0.06) 0%, transparent 60%);
+            z-index: 3; pointer-events: none;
+        }
 
-        @keyframes glitch-anim { 0% { clip: rect(10px, 9999px, 44px, 0); } 20% { clip: rect(80px, 9999px, 12px, 0); } 40% { clip: rect(15px, 9999px, 98px, 0); } 60% { clip: rect(55px, 9999px, 23px, 0); } 80% { clip: rect(3px, 9999px, 85px, 0); } 100% { clip: rect(90px, 9999px, 4px, 0); } }
-        @keyframes glitch-anim-2 { 0% { clip: rect(65px, 9999px, 100px, 0); } 20% { clip: rect(3px, 9999px, 20px, 0); } 40% { clip: rect(44px, 9999px, 70px, 0); } 60% { clip: rect(80px, 9999px, 5px, 0); } 80% { clip: rect(15px, 9999px, 30px, 0); } 100% { clip: rect(98px, 9999px, 55px, 0); } }
+        /* MAIN LAYOUT WRAPPER */
+        .wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px 15px;
+            box-sizing: border-box;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-        .input-group { margin-bottom: 1.5rem; position: relative; flex-shrink: 0; }
-        .input-group label { display: block; margin-bottom: 0.5rem; color: var(--cp-cyan); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        /* HEADER NAV BAR */
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 30, 70, 0.25);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .btn-sys-back {
+            background: rgba(255, 30, 70, 0.1);
+            border: 1px solid var(--crimson);
+            color: var(--crimson);
+            font-family: var(--font-en);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 30, 70, 0.2);
+        }
+        .btn-sys-back:hover {
+            background: var(--crimson);
+            color: #000;
+            box-shadow: 0 0 20px var(--crimson);
+        }
+
+        .sys-badge {
+            background: rgba(157, 0, 255, 0.2);
+            border: 1px solid var(--violet);
+            color: #fff;
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px var(--violet);
+        }
+
+        .threat-banner {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--crimson);
+            letter-spacing: 2px;
+            border-left: 2px solid var(--crimson);
+            padding-left: 8px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+            animation: glitch-flash 4s infinite;
+        }
+        @keyframes glitch-flash { 0%, 96%, 98%, 100% { opacity: 1; } 97%, 99% { opacity: 0; transform: translateX(2px); } }
+
+        .container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-left: 3px solid var(--violet);
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            margin-bottom: 40px; /* Clearance for data harvester stream */
+        }
+
+        h2 {
+            margin: 0 0 1rem 0;
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            color: #fff;
+            position: relative;
+            letter-spacing: 3px;
+            font-weight: 900;
+            flex-shrink: 0;
+            text-shadow: 0 0 15px rgba(157,0,255,0.4);
+        }
+        .highlight { color: var(--crimson); text-shadow: 0 0 15px var(--blood-glow); }
+
+        .input-group { margin-bottom: 1.2rem; position: relative; flex-shrink: 0; }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--violet);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
         
-        input[type="text"] { width: 100%; padding: 0.8rem; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--cp-grey); color: var(--cp-lime); font-family: var(--cp-font-mono); font-size: 1rem; box-sizing: border-box; outline: none; border-left: 4px solid var(--cp-cyan); transition: all 0.3s ease; appearance: none; border-radius: 0; user-select: auto; -webkit-user-select: auto; }
-        input[type="text"]:focus { border-color: var(--cp-lime); border-left: 4px solid var(--cp-lime); box-shadow: 0 0 10px rgba(57, 255, 20, 0.2); background: rgba(0, 0, 0, 0.8); }
-        input[type="text"]::placeholder { color: rgba(57, 255, 20, 0.3); }
+        input[type="text"] {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(5, 2, 10, 0.8);
+            border: 1px solid rgba(157, 0, 255, 0.3);
+            color: var(--crimson);
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+            border-left: 3px solid var(--crimson);
+            transition: all 0.3s ease;
+            appearance: none;
+            border-radius: 0;
+            user-select: auto;
+            -webkit-user-select: auto;
+        }
+        input[type="text"]:focus {
+            border-color: var(--crimson);
+            box-shadow: 0 0 15px rgba(255, 30, 70, 0.3);
+            background: rgba(8, 2, 15, 0.95);
+        }
+        input[type="text"]::placeholder { color: rgba(255, 30, 70, 0.3); }
 
-        .results { display: flex; flex-direction: column; gap: 0.5rem; flex-shrink: 0; }
-        .data-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); padding: 0.8rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        .data-label { color: #aaa; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-        .data-value { font-family: var(--cp-font-mono); font-size: 1rem; color: var(--cp-cyan); font-weight: bold; text-shadow: 0 0 5px rgba(0, 240, 255, 0.3); }
-        .data-value.highlight { color: var(--cp-lime); text-shadow: 0 0 5px rgba(57, 255, 20, 0.3); font-size: 1.1rem; }
-        .empty-state { color: rgba(255, 255, 255, 0.2); font-style: italic; }
-        
-        .sys-badge { position: absolute; top: 1rem; right: 1rem; background: var(--cp-lime); color: var(--cp-dark); padding: 2px 6px; font-size: 0.6rem; font-weight: bold; letter-spacing: 1px; box-shadow: 0 0 5px rgba(57, 255, 20, 0.4); }
+        .results { display: flex; flex-direction: column; gap: 0.4rem; flex-shrink: 0; }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.7rem 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .data-label { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+        .data-value { font-family: var(--font-mono); font-size: 1rem; color: #fff; font-weight: bold; }
+        .data-value.highlight { color: var(--crimson); text-shadow: 0 0 10px rgba(255, 30, 70, 0.4); font-size: 1.1rem; }
+        .empty-state { color: rgba(240, 230, 250, 0.2); font-style: italic; }
 
-        .log-section { margin-top: 1.5rem; border-top: 1px dashed rgba(57, 255, 20, 0.3); padding-top: 1rem; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+        .log-section {
+            margin-top: 1.2rem;
+            border-top: 1px dashed rgba(157, 0, 255, 0.25);
+            padding-top: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
         .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-shrink: 0; }
-        .log-title { color: var(--cp-cyan); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; }
+        .log-title { color: var(--violet); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
         
-        .clear-btn { background: transparent; border: 1px solid var(--cp-cyan); color: var(--cp-cyan); font-family: var(--cp-font-mono); font-size: 0.7rem; padding: 4px 8px; cursor: pointer; text-transform: uppercase; transition: all 0.3s ease; }
-        .clear-btn:active { background: var(--cp-cyan); color: var(--cp-dark); }
+        .clear-btn {
+            background: transparent;
+            border: 1px solid var(--crimson);
+            color: var(--crimson);
+            font-family: var(--font-en);
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        .clear-btn:hover { background: var(--crimson); color: #000; box-shadow: 0 0 10px var(--crimson); }
 
-        .tally-container { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; flex-shrink: 0; }
-        .tally-tag { background: rgba(57, 255, 20, 0.1); border: 1px solid var(--cp-lime); color: var(--cp-lime); padding: 4px 6px; font-size: 0.75rem; font-family: var(--cp-font-mono); border-radius: 2px; }
+        .tally-container { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.8rem; flex-shrink: 0; }
+        .tally-tag {
+            background: rgba(255, 30, 70, 0.1);
+            border: 1px solid var(--crimson);
+            color: var(--crimson);
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            border-radius: 2px;
+        }
 
         .log-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 0.4rem; padding-right: 4px; }
         .log-list::-webkit-scrollbar { width: 4px; }
-        .log-list::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
-        .log-list::-webkit-scrollbar-thumb { background: var(--cp-cyan); }
+        .log-list::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+        .log-list::-webkit-scrollbar-thumb { background: var(--violet); }
 
-        .log-item { font-family: var(--cp-font-mono); font-size: 0.8rem; color: #aaa; display: flex; flex-direction: column; background: rgba(0, 0, 0, 0.5); padding: 8px; border-left: 2px solid var(--cp-cyan); cursor: pointer; transition: background 0.2s ease; }
-        .log-item:active { background: rgba(0, 240, 255, 0.15); }
+        .log-item {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            background: rgba(5, 2, 10, 0.6);
+            padding: 8px 12px;
+            border-left: 2px solid var(--violet);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .log-item:hover { background: rgba(157, 0, 255, 0.15); color: #fff; }
         .log-item-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .log-time { color: var(--cp-cyan); opacity: 0.7; font-size: 0.7rem; }
-        .log-arrow { display: inline-block; margin-left: 8px; font-size: 0.7rem; color: var(--cp-lime); transition: transform 0.3s ease; }
+        .log-time { color: var(--text-muted); font-size: 0.7rem; }
+        .log-arrow { display: inline-block; margin-left: 8px; font-size: 0.7rem; color: var(--crimson); transition: transform 0.3s ease; }
         .log-item.expanded .log-arrow { transform: rotate(180deg); }
-        .log-item-detail { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(57, 255, 20, 0.2); color: var(--cp-lime); word-break: break-all; font-size: 0.7rem; opacity: 0.9; }
+        .log-item-detail { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(157, 0, 255, 0.2); color: var(--crimson); word-break: break-all; font-size: 0.7rem; opacity: 0.9; }
         .log-item.expanded .log-item-detail { display: block; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 100; display: none; justify-content: center; align-items: center; }
-        .modal-box { background: var(--cp-dark); border: 1px solid var(--cp-danger); box-shadow: 0 0 20px rgba(255, 0, 60, 0.3); padding: 1.5rem; width: 80%; max-width: 300px; text-align: center; }
-        .modal-title { color: var(--cp-danger); font-weight: bold; margin-bottom: 1rem; letter-spacing: 1px; }
+        /* PURGE MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 1, 4, 0.85); backdrop-filter: blur(10px);
+            z-index: 100; display: none; justify-content: center; align-items: center;
+        }
+        .modal-box {
+            background: rgba(12, 5, 18, 0.95);
+            border: 1px solid var(--crimson);
+            box-shadow: 0 0 30px rgba(255, 30, 70, 0.3);
+            padding: 1.5rem; width: 80%; max-width: 320px; text-align: center;
+        }
+        .modal-title { color: var(--crimson); font-weight: bold; margin-bottom: 1rem; letter-spacing: 2px; }
         .modal-buttons { display: flex; justify-content: space-between; gap: 1rem; }
-        .modal-btn { flex: 1; padding: 8px; background: transparent; font-family: var(--cp-font-mono); font-weight: bold; cursor: pointer; text-transform: uppercase; border: 1px solid; }
-        .modal-btn-cancel { border-color: var(--cp-grey); color: white; }
-        .modal-btn-confirm { border-color: var(--cp-danger); color: var(--cp-danger); }
-        .modal-btn-confirm:active { background: var(--cp-danger); color: var(--cp-dark); }
+        .modal-btn {
+            flex: 1; padding: 8px; background: transparent; font-family: var(--font-en);
+            font-weight: bold; cursor: pointer; text-transform: uppercase; border: 1px solid; letter-spacing: 1px;
+        }
+        .modal-btn-cancel { border-color: rgba(255,255,255,0.2); color: white; }
+        .modal-btn-confirm { border-color: var(--crimson); color: var(--crimson); }
+        .modal-btn-confirm:hover { background: var(--crimson); color: #000; }
+
+        /* DATA HARVESTER STREAM */
+        .threat-stream {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 40px; background: rgba(5, 2, 8, 0.95);
+            border-top: 1px solid var(--crimson); font-family: monospace; font-size: 0.7rem; color: var(--crimson);
+            display: flex; align-items: center; padding: 0 15px; box-sizing: border-box;
+            z-index: 50; overflow: hidden; white-space: nowrap; box-shadow: 0 0 20px rgba(255, 30, 70, 0.2);
+        }
+        .stream-content { opacity: 0.7; letter-spacing: 1px; }
+
+        @keyframes fade-in { 0% { opacity: 0; transform: translateY(5px); } 100% { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="bg-layer"></div>
-    <div class="bg-overlay"></div>
-    <div class="scanlines"></div>
+    <!-- BOOT INTERCEPT SEQUENCE -->
+    <div id="bootScreen">
+        <div class="boot-line" style="animation: fade-in 0.1s forwards 0.1s;">> INITIATING SCANNER UPLINK...</div>
+        <div class="boot-line" style="animation: fade-in 0.1s forwards 0.3s; color: white;">> MOUNTING EXTRACTOR MODULE... OK</div>
+        <div class="boot-line" style="animation: fade-in 0.1s forwards 0.5s; color: white;">> HOOKING LOCAL STORAGE BUFFER... OK</div>
+        <div class="boot-line" style="animation: fade-in 0.1s forwards 0.7s; font-weight: bold; font-size: 1.1rem;">> DECRYPTOR READY. AWAITING SCAN INPUT...</div>
+    </div>
 
-    <div class="neon-kanji kanji-1">サイバーパンク</div>
-    <div class="neon-kanji kanji-2">アクセス</div>
+    <canvas id="particleCanvas"></canvas>
+    <div class="corsair-mark">☠</div>
 
     <div class="wrapper">
+        
+        <!-- NAV HEADER -->
+        <div class="nav-header">
+            <a href="index.html" class="btn-sys-back">&lt; SYS</a>
+            <div class="sys-badge">v6.1-CORSAIR</div>
+        </div>
+
+        <div class="threat-banner" id="threatBanner">
+            [ SCANNER UPLINK ] EXTRACTOR PROTOCOL // ターミナル入力
+        </div>
+
         <div class="container">
-            <div class="sys-badge">v6.1-STATIC_UI</div>
-            <h2 class="glitch" data-text="DECRYPT_DATA">DECRYPT_DATA</h2>
+            <h2 class="cipher-title" data-cipher="DECRYPT_DATA">DECRYPT<span class="highlight">_DATA</span></h2>
             
             <div class="input-group">
                 <label for="qrInput">Scanner Input // ターミナル入力</label>
@@ -150,7 +380,7 @@
             <div class="log-section">
                 <div class="log-header">
                     <span class="log-title">Session Log</span>
-                    <button class="clear-btn" onclick="openClearModal()">Clear Data</button>
+                    <button class="clear-btn cipher-btn" data-cipher="PURGE DATA" onclick="openClearModal()">Purge Data</button>
                 </div>
                 <div class="tally-container" id="tallyContainer"></div>
                 <div class="log-list" id="logList"></div>
@@ -158,10 +388,11 @@
         </div>
     </div>
 
+    <!-- PURGE MODAL -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal-box">
             <div class="modal-title">WARNING: DATA PURGE</div>
-            <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 1.5rem;">Wipe all local session data? This cannot be undone.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Wipe all local session data? This cannot be undone.</p>
             <div class="modal-buttons">
                 <button class="modal-btn modal-btn-cancel" onclick="closeClearModal()">Abort</button>
                 <button class="modal-btn modal-btn-confirm" onclick="confirmClearData()">Purge</button>
@@ -169,7 +400,28 @@
         </div>
     </div>
 
+    <!-- DATA HARVESTER STREAM -->
+    <div class="threat-stream">
+        <div class="stream-content" id="streamContent">> EXTRACTING: </div>
+    </div>
+
     <script>
+        // MALICIOUS BOOT SCREEN LOGIC
+        window.onload = () => {
+            let os = "UNKNOWN SECURE TERMINAL";
+            if (navigator.userAgent.indexOf("Win") !== -1) os = "WINDOWS NODE";
+            if (navigator.userAgent.indexOf("Mac") !== -1) os = "DARWIN ARCHITECTURE";
+            if (navigator.userAgent.indexOf("iPhone") !== -1) os = "IOS TARGET LOCKED";
+            if (navigator.userAgent.indexOf("Android") !== -1) os = "ANDROID OS COMPROMISED";
+            document.getElementById('threatBanner').innerText = `[ SCANNER UPLINK ] TARGET: ${os} | STATUS: ACTIVE`;
+
+            setTimeout(() => {
+                const boot = document.getElementById('bootScreen');
+                boot.style.opacity = '0'; boot.style.filter = 'blur(10px)';
+            }, 1100);
+        };
+
+        // SCANNER LOGIC
         const inputField = document.getElementById('qrInput');
         const modalOverlay = document.getElementById('confirmModal');
 
@@ -218,7 +470,7 @@
                 item.className = 'log-item';
                 item.innerHTML = `
                     <div class="log-item-header">
-                        <span><span style="color: var(--cp-lime); font-weight: bold;">WK-${log.week}</span></span>
+                        <span><span style="color: var(--crimson); font-weight: bold;">WK-${log.week}</span></span>
                         <div>
                             <span class="log-time">${log.time}</span>
                             <span class="log-arrow">▼</span>
@@ -231,7 +483,6 @@
             });
         }
 
-        // Dedicated function to update the top neon boxes (so it doesn't clear them when the input clears)
         function updateNeonDisplay(qr, weekNum) {
             const valModelEl = document.getElementById('valModel');
             const val25El = document.getElementById('val25');
@@ -270,13 +521,8 @@
                             localStorage.setItem('cp_sessionLogs', JSON.stringify(sessionLogs));
                             localStorage.setItem('cp_weekTally', JSON.stringify(weekTally));
 
-                            // Update the neon display with the successful scan
                             updateNeonDisplay(qr, weekNum);
-                            
-                            // Update the log list at the bottom
                             updateLogUI();
-                            
-                            // Clear the text box for the next scan (this no longer wipes the display!)
                             inputField.value = ''; 
                         }
                     }
@@ -296,7 +542,6 @@
             localStorage.removeItem('cp_sessionLogs');
             localStorage.removeItem('cp_weekTally');
             
-            // Reset the UI when data is wiped
             document.getElementById('valModel').innerHTML = '<span class="empty-state">NULL</span>';
             document.getElementById('val25').innerHTML = '<span class="empty-state">NULL</span>';
             document.getElementById('val26').innerHTML = '<span class="empty-state">NULL</span>';
@@ -307,7 +552,7 @@
         }
 
         function enforceFocus(e) {
-            const isClickingInteractable = e.target.closest('.clear-btn') || e.target.closest('.modal-overlay') || e.target.closest('.log-item');
+            const isClickingInteractable = e.target.closest('.clear-btn') || e.target.closest('.modal-overlay') || e.target.closest('.log-item') || e.target.closest('.btn-sys-back');
             if (e.target !== inputField && !isClickingInteractable) {
                 setTimeout(() => inputField.focus(), 100);
             }
@@ -316,14 +561,84 @@
         document.addEventListener('click', enforceFocus);
         document.addEventListener('touchstart', enforceFocus, { passive: true });
 
-        // Initial setup calls
-        updateLogUI();
+        // CIPHER TEXT ENGINE
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
+        function applyCipherEffect(elements) {
+            elements.forEach(btn => {
+                btn.addEventListener('mouseenter', event => {
+                    let iterations = 0;
+                    const targetText = btn.dataset.cipher;
+                    
+                    clearInterval(btn.dataset.interval);
+                    btn.dataset.interval = setInterval(() => {
+                        btn.innerText = targetText.split("")
+                            .map((letter, index) => {
+                                if(index < iterations) return targetText[index];
+                                return letters[Math.floor(Math.random() * letters.length)];
+                            })
+                            .join("");
+                        if(iterations >= targetText.length) clearInterval(btn.dataset.interval);
+                        iterations += 1 / 2;
+                    }, 20);
+                });
+            });
+        }
+        applyCipherEffect(document.querySelectorAll('.cipher-btn'));
+
+        // DATA HARVESTER STREAM
+        const stream = document.getElementById('streamContent');
+        function generateHex() {
+            let result = ''; const chars = 'ABCDEF0123456789';
+            for (let i = 0; i < 8; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+            return `0x${result}`;
+        }
+        setInterval(() => {
+            let currentText = stream.innerText;
+            if (currentText.length > 80) currentText = "> EXTRACTING: "; 
+            stream.innerText = currentText + " " + generateHex();
+        }, 120);
+
+        // PLASMA PARTICLE ENGINE
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
         
-        // Bonus: If you reopen the app, pull your very last scan and display it
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', initCanvas); initCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.2; this.speedX = Math.random() * 0.4 - 0.2; this.speedY = Math.random() * -0.8 - 0.2; 
+                const colors = ['rgba(255, 30, 70,', 'rgba(157, 0, 255,', 'rgba(200, 180, 240,'];
+                this.colorBase = colors[Math.floor(Math.random() * colors.length)]; this.opacity = Math.random() * 0.4 + 0.05;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; }
+                if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX;
+            }
+            draw() { ctx.fillStyle = `${this.colorBase} ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+
+        function initParticles() {
+            particlesArray = []; const numberOfParticles = Math.floor((canvas.width * canvas.height) / 7000);
+            for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); }
+            requestAnimationFrame(animateParticles);
+        }
+
+        initParticles(); animateParticles();
+
+        // Initial setup
+        updateLogUI();
         if (sessionLogs.length > 0) {
             updateNeonDisplay(sessionLogs[0].qr, sessionLogs[0].week);
         }
-        
         inputField.focus();
     </script>
 </body>
