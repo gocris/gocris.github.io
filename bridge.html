@@ -72,7 +72,7 @@
         .ui-layer {
             position: relative; z-index: 10; display: flex; flex-direction: column;
             width: 100%; max-width: 480px; height: 100vh; box-sizing: border-box;
-            padding-bottom: 40px; /* Leave room for threat stream footer */
+            padding-bottom: 40px; 
         }
 
         /* HEADER NAV BAR */
@@ -253,7 +253,7 @@
         <span class="header-title">BRIDGE</span>
         <select id="modeSelector" onchange="changeMode()">
             <option value="T1">T1 (Tg Match)</option>
-            <option value="T2">T2 (Joint Mass)</option>
+            <option value="T2">T2 (Braze Joints)</option>
             <option value="T3">T3 (Thickness)</option>
             <option value="FREE">FREE MODE</option>
         </select>
@@ -392,7 +392,7 @@
                     else if(expectedVar === 'C') varName = "2nd Tg:";
                     else if(expectedVar === 'D') varName = "3rd Tg:";
                 } else if (mode === 'T2') {
-                    if(expectedVar === 'A') varName = "Fillet Length:";
+                    if(expectedVar === 'A') varName = "Braze Length:";
                     else if(expectedVar === 'B') varName = "Porosity Total:";
                 } else if (mode === 'T3') {
                     if(expectedVar === 'A') varName = "Slot 1:";
@@ -481,7 +481,7 @@
             if(aCount > 0) zoneLabel = t2Labels[aCount - 1];
             else zoneLabel = "SYS";
 
-            if (expected === 'A') prompt = "Fillet Length";
+            if (expected === 'A') prompt = "Braze Length";
             if (expected === 'B') prompt = "Porosity Length";
             regex = /^\d*\.?\d*$/; 
         } else if (mode === 'T3') {
@@ -495,10 +495,16 @@
             if (expected === 'D') prompt = "Slot 17 [ .2x - .4x ]";
             if (expected === 'E') prompt = "Slot 27 [ .2x - .4x ]";
             if (expected === 'F') prompt = "Slot 28 [ .2x - .4x ]";
-            if (expected === 'J') prompt = "Right Edge [ .2x - .4x ]";
-            if (expected === 'K') prompt = "Left Edge [ .2x - .4x ]";
+            if (expected === 'J') prompt = "Right Edge [ .1x - .4x ]";
+            if (expected === 'K') prompt = "Left Edge [ .1x - .4x ]";
             
-            regex = /^[2-4][0-9]?$/; 
+            // Allow 1, 2, 3, or 4 for Edges. Only 2, 3, or 4 for standard slots.
+            if (expected === 'J' || expected === 'K') {
+                regex = /^[1-4][0-9]?$/; 
+            } else {
+                regex = /^[2-4][0-9]?$/; 
+            }
+            
             btnDecimal.classList.add('btn-disabled'); 
         }
 
@@ -633,7 +639,7 @@
                 else if (activeBlueprint[i] === 'B') t2Data[aCount].b = dataList[i];
             }
             t2Data.forEach(zone => {
-                expandedHTML += `<div class="data-card card-pass"><div class="zone-title">${zone.name}</div><div class="zone-values">Fillet Length: ${zone.a} ${zone.b !== '--' ? `| Porosity Total: ${zone.b}` : ''}</div></div>`;
+                expandedHTML += `<div class="data-card card-pass"><div class="zone-title">${zone.name}</div><div class="zone-values">Braze Length: ${zone.a} ${zone.b !== '--' ? `| Porosity Total: ${zone.b}` : ''}</div></div>`;
             });
             validationHTML = `<div style="color: var(--violet); font-size: 1.1rem; font-weight: bold; text-align: center; text-shadow: 0 0 10px var(--violet); margin-bottom: 10px;">> T2 DATA LOGGED SUCCESSFULLY <</div>`;
             document.getElementById('expandedData').innerHTML = expandedHTML;
