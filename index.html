@@ -1,1 +1,113 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>NEURAL_OS // HUB</title>
+    <style>
+        :root {
+            --cp-lime: #39ff14;
+            --cp-cyan: #00f0ff;
+            --cp-pink: #ff0055;
+            --cp-dark: #070709;
+            --cp-font-mono: 'Courier New', Courier, monospace;
+            --cp-font-sans: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; min-height: 100vh; 
+            background-color: var(--cp-dark); font-family: var(--cp-font-sans); color: white;
+            display: flex; flex-direction: column; align-items: center; 
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.07) 1px, transparent 1px);
+            background-size: 20px 20px; position: relative;
+        }
+
+        body::after {
+            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        }
+
+        .hub-container {
+            position: relative; z-index: 10; width: 100%; max-width: 400px;
+            padding: 40px 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;
+        }
+
+        .landing-title {
+            color: var(--cp-cyan); text-shadow: 0 0 15px var(--cp-cyan); font-family: var(--cp-font-mono);
+            font-size: 2.5rem; font-weight: bold; letter-spacing: 4px; text-align: center; margin-bottom: 40px;
+        }
+        .landing-title span { font-size: 1.1rem; color: var(--cp-lime); text-shadow: 0 0 10px var(--cp-lime); letter-spacing: 2px; }
+
+        .menu-btn {
+            width: 100%; height: 130px; border: 2px solid var(--cp-cyan); color: var(--cp-cyan);
+            font-size: 1.6rem; font-family: var(--cp-font-mono); font-weight: bold; letter-spacing: 2px;
+            margin-bottom: 20px; position: relative; cursor: pointer;
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); transition: all 0.2s;
+            text-shadow: 2px 2px 5px rgba(0,0,0,1), 0 0 10px var(--cp-cyan);
+            display: flex; align-items: center; justify-content: center; text-align: center;
+        }
+        .menu-btn:active { box-shadow: 0 0 25px var(--cp-cyan); border-color: #fff; color: #fff; transform: scale(0.98); }
+
+        .sub-menu-container {
+            width: 100%; display: none; flex-direction: column; gap: 15px; margin-bottom: 30px;
+        }
+        .sub-menu-btn {
+            width: 100%; height: 90px; border: 1px solid var(--cp-lime); color: var(--cp-lime); cursor: pointer;
+            font-size: 1.2rem; font-family: var(--cp-font-mono); font-weight: bold; letter-spacing: 1px;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            text-shadow: 2px 2px 5px rgba(0,0,0,1), 0 0 10px var(--cp-lime);
+            text-align: left; padding-left: 20px; display: flex; align-items: center; transition: all 0.2s;
+        }
+        .sub-menu-btn:active { box-shadow: 0 0 15px var(--cp-lime); border-color: #fff; color: #fff; transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+<div class="hub-container">
+    <div class="landing-title">
+        NEURAL_OS<br>
+        <span>MAIN TERMINAL</span>
+    </div>
+
+    <!-- Routes directly to your existing qrtrans.html -->
+    <button class="menu-btn" onclick="window.location.href='qrtrans.html'" style="background: linear-gradient(rgba(0,15,20,0.6), rgba(0,15,20,0.9)), url('https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcRfDv_zFZJQoR86BvZAjq4oNFYzMFLSz2LI9DsPmP9FzAwHSHMt2jTWNX6Vsp4mDV2VXuBOEG5-i33xgV0') center/cover;">
+        [ QR TRANSLATOR ]
+    </button>
+
+    <!-- Toggles the Dropdown for the Bridge Protocols -->
+    <button class="menu-btn" onclick="toggleLabRoutine()" style="background: linear-gradient(rgba(0,15,20,0.6), rgba(0,15,20,0.9)), url('https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcRSd2kSUxCYRc0NhGofEXiApcPWVRelCMnkUudi9_N5JXIXbPs8pjiNwvoV2V7ar4cZJ5LxvBjwy9EaXF4') center/cover;">
+        [ LAB ROUTINE ]
+    </button>
+
+    <div id="labSubMenu" class="sub-menu-container">
+        <!-- Passes the ?mode parameter directly into bridge.html -->
+        <button class="sub-menu-btn" onclick="window.location.href='bridge.html?mode=T1'" style="background: linear-gradient(rgba(0,20,10,0.6), rgba(0,20,10,0.9)), url('https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcRSnWDuOcvZvt0hxAuaknROZCRBCteetIMAoIP1DRWTZeKeBFgT2zttfYj42kF37-rEl0qF-8uLyJYNpuo') center/cover;">
+            > PROTOCOL T1: Tg MATCH
+        </button>
+        
+        <button class="sub-menu-btn" onclick="window.location.href='bridge.html?mode=T2'" style="background: linear-gradient(rgba(0,20,10,0.6), rgba(0,20,10,0.9)), url('https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcRa9vVZFjKWJexsPDq2M_-n14tCNScD83aJ6elMoielvQaN6np43iJGTJyIV8A5Vd9vClDtcyZyQoPDw9E') center/cover;">
+            > PROTOCOL T2: JOINT MASS
+        </button>
+        
+        <button class="sub-menu-btn" onclick="window.location.href='bridge.html?mode=T3'" style="background: linear-gradient(rgba(0,20,10,0.6), rgba(0,20,10,0.9)), url('https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcRXFKKQA7HQ70Lhlaw2Mre1cQMDb8d36VFDqzVNm4KnpE6NE8TfTtr9WXkpv0ztJ19lixpoDfq9eXjmvUA') center/cover;">
+            > PROTOCOL T3: THICKNESS
+        </button>
+    </div>
+</div>
+
+<script>
+    function toggleLabRoutine() {
+        const sub = document.getElementById('labSubMenu');
+        sub.style.display = (sub.style.display === 'none' || sub.style.display === '') ? 'flex' : 'none';
+    }
+</script>
+
+</body>
+</html>
