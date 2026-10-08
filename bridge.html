@@ -169,18 +169,12 @@
         .num-btn { animation: cyber-pulse 1.5s infinite alternate ease-in-out; }
         .btn-disabled { opacity: 0.12; pointer-events: none; filter: grayscale(100%); border-color: transparent !important; animation: none !important; color: #fff !important; background-color: rgba(10,10,12,0.5) !important; box-shadow: none !important; }
         
-        /* --- CSS-ONLY EMOJI GLITCH OVERLAY (Safe HTML/CSS injection) --- */
-        
-        /* Layer 1: Solid Background Blocker (Hides Physical Number) */
+        /* --- CSS-ONLY EMOJI GLITCH OVERLAY --- */
         .num-btn::before {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: #120322; /* Pure solid void purple */
-            border-radius: 2px; pointer-events: none; opacity: 0;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: #120322; border-radius: 2px; pointer-events: none; opacity: 0;
             animation: emoji-glitch-cycle 30s infinite;
         }
-
-        /* Layer 2: Emoji Container (Renders Hologram on Top) */
         .num-btn::after {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             display: flex; align-items: center; justify-content: center;
@@ -188,43 +182,23 @@
             filter: drop-shadow(0 0 8px var(--violet));
         }
 
-        /* Standard 30-second cycle: 27 seconds hidden, 3 seconds active */
-        @keyframes emoji-glitch-cycle {
-            0%, 90% { opacity: 0; }
-            90.1%, 100% { opacity: 1; }
-        }
+        @keyframes emoji-glitch-cycle { 0%, 90% { opacity: 0; } 90.1%, 100% { opacity: 1; } }
+        @keyframes emoji-glitch-blink-fast { 0%, 90% { opacity: 0; } 90.1%, 91.5%, 93.0%, 94.5%, 96.0%, 97.5%, 99.0% { opacity: 1; } 90.8%, 92.2%, 93.8%, 95.2%, 96.8%, 98.2%, 99.8%, 100% { opacity: 0; } }
+        @keyframes emoji-glitch-blink-chaos { 0%, 90% { opacity: 0; } 90.1%, 92.5%, 93.1%, 96.5%, 98.1%, 99.5% { opacity: 1; } 91.5%, 92.8%, 95.0%, 97.2%, 98.8%, 100% { opacity: 0; } }
 
-        /* Blinking Cycle 1: Aggressive Strobe */
-        @keyframes emoji-glitch-blink-fast {
-            0%, 90% { opacity: 0; }
-            90.1%, 91.5%, 93.0%, 94.5%, 96.0%, 97.5%, 99.0% { opacity: 1; }
-            90.8%, 92.2%, 93.8%, 95.2%, 96.8%, 98.2%, 99.8%, 100% { opacity: 0; }
-        }
-
-        /* Blinking Cycle 2: Chaotic Glitch */
-        @keyframes emoji-glitch-blink-chaos {
-            0%, 90% { opacity: 0; }
-            90.1%, 92.5%, 93.1%, 96.5%, 98.1%, 99.5% { opacity: 1; }
-            91.5%, 92.8%, 95.0%, 97.2%, 98.8%, 100% { opacity: 0; }
-        }
-
-        /* Solid Non-Blinking Emojis */
         .num-btn[data-key="1"]::after { content: '💀'; animation: emoji-glitch-cycle 30s infinite; }
         .num-btn[data-key="3"]::after { content: '👾'; animation: emoji-glitch-cycle 30s infinite; }
         .num-btn[data-key="5"]::after { content: '👁️'; animation: emoji-glitch-cycle 30s infinite; }
         .num-btn[data-key="6"]::after { content: '⚡'; animation: emoji-glitch-cycle 30s infinite; }
         .num-btn[data-key="8"]::after { content: '🔥'; animation: emoji-glitch-cycle 30s infinite; }
         .num-btn[data-key="0"]::after { content: '🏴‍☠️'; animation: emoji-glitch-cycle 30s infinite; }
-
-        /* Randomly Blinking Emojis */
         .num-btn[data-key="2"]::after { content: '👽'; animation: emoji-glitch-blink-fast 30s step-end infinite; }
         .num-btn[data-key="4"]::after { content: '🤖'; animation: emoji-glitch-blink-chaos 30s step-end infinite; }
         .num-btn[data-key="7"]::after { content: '☢️'; animation: emoji-glitch-blink-fast 30s step-end infinite; }
         .num-btn[data-key="9"]::after { content: '🩸'; animation: emoji-glitch-blink-chaos 30s step-end infinite; }
 
-
-        /* ACTION BUTTONS (NO !IMPORTANT SO JS CAN OVERRIDE COLOR) */
-        .btn-action { font-size: 1.2rem; font-weight: 900; animation: none; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); transition: color 0.3s ease, font-size 0.3s ease; }
+        /* ACTION BUTTONS */
+        .btn-action { font-size: 1.2rem; font-weight: 900; animation: none; color: #ffffff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.8); transition: color 0.3s ease, font-size 0.3s ease; }
         .btn-undo { background: rgba(30, 5, 15, 0.8); border-left-color: var(--crimson); }
         .btn-enter { background: rgba(10, 30, 15, 0.8); border-left-color: #39ff14; }
 
@@ -574,6 +548,13 @@
             }, 3000);
         }, 300);
     }, 25000);
+
+    // RE-ADDED URL PARSING FOR ROUTING
+    const urlParams = new URLSearchParams(window.location.search);
+    const modeParam = urlParams.get('mode');
+    if (modeParam && ['T1', 'T2', 'T3', 'FREE'].includes(modeParam)) {
+        document.getElementById('modeSelector').value = modeParam;
+    }
 
     // INITIALIZATION ROOT CALL
     window.onload = () => { 
