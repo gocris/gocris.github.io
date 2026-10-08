@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="apple-mobile-web-app-title" content="NEURAL_OS">
-    <title>NEURAL BRIDGE // CORSAIR DATA INPUT</title>
+    <title>VALEO // CORSAIR DATA INPUT</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Noto+Sans+JP:wght@300;500;700&display=swap');
@@ -73,50 +73,100 @@
         .header { background: rgba(12, 5, 18, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 30, 70, 0.3); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.8); flex-shrink: 0; }
         .btn-sys-back { background: rgba(255, 30, 70, 0.1); border: 1px solid var(--crimson); color: var(--crimson); font-family: var(--font-en); font-weight: 700; font-size: 0.85rem; letter-spacing: 2px; text-decoration: none; padding: 6px 12px; border-radius: 2px; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(255, 30, 70, 0.2); }
         .btn-sys-back:hover { background: var(--crimson); color: #000; box-shadow: 0 0 15px var(--crimson); }
-        .header-title { font-family: var(--font-en); font-weight: 900; font-size: 1.2rem; letter-spacing: 3px; color: #fff; text-shadow: 0 0 10px rgba(157, 0, 255, 0.5); margin-left: 10px; }
+        .header-title { font-family: var(--font-en); font-weight: 900; font-size: 1.2rem; letter-spacing: 3px; color: #fff; text-shadow: 0 0 10px rgba(157, 0, 255, 0.5); margin-left: 10px; transition: opacity 0.3s ease; }
         select { background: rgba(5, 2, 10, 0.9); color: var(--crimson); border: 1px solid var(--crimson); font-family: var(--font-en); font-weight: 700; font-size: 0.8rem; padding: 6px; outline: none; border-radius: 2px; box-shadow: 0 0 10px rgba(255, 30, 70, 0.2); }
 
-        .payload-container { width: 100%; height: 22px; background: rgba(5, 2, 8, 0.9); border-bottom: 1px solid rgba(157, 0, 255, 0.3); flex-shrink: 0; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .payload-text { position: absolute; z-index: 5; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 900; color: #fff; text-shadow: 0px 0px 4px #000, 0px 0px 4px #000, 0 0 10px var(--violet); letter-spacing: 2px; }
-        .payload-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--crimson); box-shadow: 0 0 15px var(--crimson); transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1); z-index: 1; overflow: hidden; }
-        .payload-fill::after { content: ""; position: absolute; top: 0; left: -100%; width: 60%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); animation: payload-sweep 1.2s infinite linear; }
+        /* --- UNIFIED TACTICAL TELEMETRY BAR --- */
+        .payload-container { 
+            width: 100%; height: 32px; background: rgba(5, 2, 8, 0.9); 
+            border-bottom: 1px solid rgba(157, 0, 255, 0.3); flex-shrink: 0; 
+            position: relative; overflow: hidden; display: flex; align-items: center; 
+        }
+        .payload-fill { 
+            position: absolute; left: 0; top: 0; height: 100%; width: 0%; 
+            background: var(--crimson); box-shadow: 0 0 15px var(--crimson); 
+            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1); z-index: 1; overflow: hidden; 
+        }
+        .payload-fill::after { 
+            content: ""; position: absolute; top: 0; left: -100%; width: 60%; height: 100%; 
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); 
+            animation: payload-sweep 1.2s infinite linear; 
+        }
         @keyframes payload-sweep { 0% { left: -100%; } 100% { left: 200%; } }
 
-        .status-bar { background: rgba(8, 2, 15, 0.9); color: #fff; text-align: center; padding: 10px 15px; font-family: var(--font-mono); font-weight: bold; font-size: 0.85rem; border-bottom: 1px solid var(--violet); text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; text-shadow: 0 0 5px rgba(157,0,255,0.5); transition: color 0.3s ease; }
+        .s-level-wrapper { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: flex; z-index: 2; pointer-events: none; }
+        .s-segment { flex: 1; display: flex; align-items: center; justify-content: flex-start; padding-left: 12px; border-right: 1px solid rgba(157, 0, 255, 0.2); opacity: 0.35; transition: all 0.3s ease; box-sizing: border-box; }
+        .s-segment:last-child { border-right: none; }
+        .s-segment span { font-family: var(--font-mono); font-size: 0.85rem; font-weight: bold; color: var(--text-muted); letter-spacing: 2px; text-shadow: 0 0 5px #000; transition: all 0.3s ease; display: flex; align-items: center; }
+        
+        /* The High-Contrast Active Target State */
+        .s-segment.active { opacity: 1; background: linear-gradient(90deg, rgba(216, 132, 255, 0.2) 0%, transparent 90%); border-left: 2px solid var(--bright-purple); box-shadow: inset 5px 0 15px -5px var(--bright-purple); }
+        .s-segment.active span { color: #fff; text-shadow: 0 0 8px var(--bright-purple), 0 0 15px var(--bright-purple); font-size: 0.95rem; }
+        .s-segment.active span::before { content: "»"; color: #39ff14; text-shadow: 0 0 10px rgba(57, 255, 20, 0.8); margin-right: 6px; font-size: 1.1rem; animation: pulse-arrow 0.8s infinite alternate ease-in-out; }
+        
+        @keyframes pulse-arrow { 0% { opacity: 0.4; transform: translateX(-3px); } 100% { opacity: 1; transform: translateX(3px); } }
+
+        .payload-text { 
+            position: absolute; right: 15px; z-index: 5; font-family: var(--font-mono); 
+            font-size: 1.1rem; font-weight: 900; color: #fff; 
+            text-shadow: 0px 0px 4px #000, 0px 0px 6px #000, 0 0 10px var(--crimson); 
+            letter-spacing: 2px; pointer-events: none; 
+        }
+
+        .status-bar { background: rgba(8, 2, 15, 0.9); color: #fff; text-align: center; padding: 10px 15px; font-family: var(--font-mono); font-weight: bold; font-size: 0.85rem; border-bottom: 1px solid rgba(157,0,255,0.4); text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; text-shadow: 0 0 5px rgba(157,0,255,0.5); transition: color 0.3s ease; }
+        
         .display-area { flex: 1; display: flex; flex-direction: column; padding: 15px; background: rgba(5, 2, 10, 0.65); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05); overflow-y: auto; }
         .history-log { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; font-family: var(--font-mono); color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; margin-bottom: 10px; }
         .history-item { margin-bottom: 6px; border-left: 2px solid var(--violet); padding-left: 8px; animation: fade-up 0.2s ease-out forwards; }
         .history-skip { color: #888; font-style: italic; border-left: 2px solid rgba(255, 255, 255, 0.2); }
         
-        /* CORRECTED PHASE BOUNDARY UI (PURPLE) */
-        .phase-boundary {
-            width: 100%; text-align: center; border-top: 1px dashed var(--violet); border-bottom: 1px dashed var(--violet);
-            color: var(--bright-purple); padding: 10px 0; margin: 15px 0; font-weight: 900; letter-spacing: 4px;
-            background: rgba(216, 132, 255, 0.05); text-shadow: 0 0 10px rgba(216, 132, 255, 0.5);
-            animation: fade-up 0.2s ease-out forwards;
-        }
-
+        .phase-boundary { width: 100%; text-align: center; border-top: 1px dashed var(--violet); border-bottom: 1px dashed var(--violet); color: var(--bright-purple); padding: 10px 0; margin: 15px 0; font-weight: 900; letter-spacing: 4px; background: rgba(216, 132, 255, 0.05); text-shadow: 0 0 10px rgba(216, 132, 255, 0.5); animation: fade-up 0.2s ease-out forwards; }
         @keyframes fade-up { 0% { opacity: 0; transform: translateY(5px); } 100% { opacity: 1; transform: translateY(0); } }
 
         .current-input { font-family: var(--font-mono); font-size: 2.8rem; color: var(--crimson); text-shadow: 0 0 15px var(--blood-glow); text-align: right; min-height: 55px; border-bottom: 2px solid var(--crimson); margin-bottom: 5px; font-weight: bold; letter-spacing: 2px; }
 
+        /* CONDENSED 4x3 KEYPAD */
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: rgba(2, 1, 4, 0.95); padding: 10px; flex-shrink: 0; border-top: 1px solid rgba(157, 0, 255, 0.2); }
+        
         .btn { background: rgba(18, 5, 30, 0.7); border: 1px solid rgba(255,255,255,0.03); border-left: 2px solid var(--violet); color: #fff; font-size: 1.8rem; padding: 16px 0; font-family: var(--font-en); font-weight: 700; touch-action: manipulation; transition: all 0.1s ease; position: relative; cursor: pointer; outline: none; border-radius: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .btn:active { background: var(--crimson) !important; color: #000 !important; text-shadow: none !important; box-shadow: 0 0 20px var(--crimson) !important; transform: scale(0.92); }
+        .btn:active, .btn.keyboard-active { background: var(--crimson) !important; color: #000 !important; text-shadow: none !important; box-shadow: 0 0 20px var(--crimson) !important; transform: scale(0.92); }
         @keyframes cyber-pulse { 0% { background-color: rgba(18, 5, 30, 0.7); color: rgba(240, 230, 250, 0.7); } 100% { background-color: rgba(30, 10, 50, 0.9); color: #ffffff; text-shadow: 0 0 10px var(--violet); } }
         .num-btn { animation: cyber-pulse 1.5s infinite alternate ease-in-out; }
         .btn-disabled { opacity: 0.12; pointer-events: none; filter: grayscale(100%); border-color: transparent !important; animation: none !important; color: #fff !important; background-color: rgba(10,10,12,0.5) !important; box-shadow: none !important; }
-        .btn-action { background: rgba(25, 8, 40, 0.8); color: var(--violet); font-size: 1.1rem; font-weight: 900; animation: none; }
-        .btn-undo { background: rgba(30, 5, 15, 0.8); color: var(--crimson); border-left-color: var(--crimson); }
-        .btn-enter { background: rgba(10, 30, 15, 0.8); border-left: 3px solid #39ff14; color: #39ff14; font-weight: 900; grid-column: span 3; animation: none; font-size: 1.2rem; letter-spacing: 2px; text-shadow: 0 0 10px rgba(57, 255, 20, 0.5); }
-        .btn-compile { background: var(--crimson); color: #000; grid-column: span 3; font-weight: 900; padding: 16px 0; font-size: 1.4rem; letter-spacing: 3px; box-shadow: 0 0 20px var(--blood-glow); animation: none; border: none; }
+        
+        /* ACTION BUTTONS (FORCED PURE WHITE TEXT) */
+        .btn-action { font-size: 1.2rem; font-weight: 900; animation: none; color: #ffffff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .btn-undo { background: rgba(30, 5, 15, 0.8); border-left-color: var(--crimson); }
+        .btn-enter { background: rgba(10, 30, 15, 0.8); border-left-color: #39ff14; }
+
+        /* --- DYNAMIC THREAT STREAM -> ENCODE BUTTON --- */
+        .threat-stream { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 40px; 
+            background: rgba(5, 2, 8, 0.95); border-top: 1px solid var(--crimson); 
+            font-family: monospace; font-size: 0.7rem; color: var(--crimson); 
+            display: flex; align-items: center; justify-content: flex-start;
+            padding: 0 15px; box-sizing: border-box; z-index: 50; overflow: hidden; 
+            white-space: nowrap; box-shadow: 0 0 20px rgba(255, 30, 70, 0.2); 
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: default;
+        }
+        .stream-content { opacity: 0.7; letter-spacing: 1px; }
+
+        .threat-stream.encode-ready {
+            background: var(--crimson); color: #000; font-family: var(--font-en); font-size: 1.4rem;
+            font-weight: 900; justify-content: center; letter-spacing: 4px; cursor: pointer;
+            box-shadow: 0 0 30px var(--blood-glow); height: 70px;
+            padding-bottom: max(10px, env(safe-area-inset-bottom)); border-top: none;
+        }
+        .threat-stream.encode-ready:active { transform: scale(0.98); background: #fff; }
+        .threat-stream.encode-ready .stream-content { opacity: 1; }
 
         /* --- 3D KINETIC MENU BUTTON (GOLD ONLY FOR PHASE 2) --- */
         .menu-btn { width: 100%; max-width: 380px; height: 110px; background: rgba(15, 5, 20, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.02); border-right: 1px solid rgba(255, 234, 0, 0.2); border-radius: 2px; color: var(--text-main); font-family: var(--font-en); cursor: pointer; margin: 0 auto; position: relative; overflow: hidden; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, background 0.3s ease; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 0 35px; text-align: left; transform-style: preserve-3d; }
         .menu-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--gold); transition: width 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 0 20px var(--gold); }
         .menu-btn::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at left center, rgba(255, 234, 0, 0.15) 0%, transparent 70%); opacity: 1; transition: opacity 0.4s ease; pointer-events: none; }
         .menu-btn:hover, .menu-btn:active { background: rgba(25, 20, 5, 0.95); border-color: rgba(255, 234, 0, 0.4); transform: translateY(-2px) scale(0.98) rotateX(2deg); box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,234,0,0.1); }
-        .btn-title { font-size: 1.5rem; font-weight: 900; letter-spacing: 3px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); color: var(--gold); }
+        .menu-btn .btn-title { font-size: 1.5rem; font-weight: 900; letter-spacing: 3px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); color: var(--gold); }
         .btn-jp { font-family: var(--font-jp); font-size: 0.75rem; font-weight: 500; color: #fff; letter-spacing: 5px; margin-top: 6px; text-transform: uppercase; opacity: 0.8; }
 
         /* --- QR / AI DIAGNOSTIC MODAL --- */
@@ -131,7 +181,7 @@
         @keyframes morph-out { 0% { transform: scale(1) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 15px var(--crimson)) blur(0px); } 50% { transform: scale(1.3) rotate(15deg); opacity: 0.8; filter: drop-shadow(0 0 30px var(--violet)) blur(4px); } 100% { transform: scale(0.1) rotate(45deg); opacity: 0; filter: blur(20px); } }
         @keyframes morph-in { 0% { opacity: 0; filter: blur(20px) contrast(5); transform: scale(0.8); } 50% { opacity: 0.5; filter: blur(4px) contrast(2); transform: scale(1.05); } 100% { opacity: 1; filter: blur(0) contrast(1); transform: scale(1); } }
 
-        /* CORRECTED AI TYPO DIAGNOSTICS UI (PURPLE) */
+        /* --- AI TYPO DIAGNOSTICS UI --- */
         #aiConsoleWrapper { width: 100%; max-width: 420px; font-family: var(--font-mono); font-size: 0.9rem; margin-bottom: 20px; display: none; }
         .ai-diagnostic { background: rgba(5, 1, 10, 0.9); border: 1px solid var(--violet); border-left: 4px solid var(--violet); padding: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.9); text-align: left; position: relative; }
         .ai-title { font-weight: 900; letter-spacing: 2px; border-bottom: 1px dashed rgba(157,0,255,0.5); padding-bottom: 8px; margin-bottom: 15px; }
@@ -147,7 +197,6 @@
         .typo-input { background: rgba(0,0,0,0.5); border: 1px solid var(--violet); color: var(--bright-purple); font-family: var(--font-mono); font-size: 1.2rem; font-weight: bold; width: 80px; text-align: center; padding: 5px; outline: none; }
         .typo-input:focus { border-color: var(--bright-purple); box-shadow: 0 0 15px rgba(216, 132, 255, 0.3); }
 
-        /* UPGRADED: AI ACTION BUTTONS */
         .btn-ai-action { 
             width: 100%; padding: 14px; margin-top: 10px; background: rgba(10, 2, 15, 0.8); 
             font-family: var(--font-en); font-weight: bold; font-size: 1.1rem; letter-spacing: 2px; 
@@ -159,7 +208,6 @@
         .btn-override { border-left: 3px solid var(--crimson); color: #fff; text-shadow: 0 0 5px var(--crimson); margin-top: 15px; font-size: 0.95rem; }
         .btn-override:hover, .btn-override:active { background: var(--crimson); color: #000; box-shadow: 0 0 15px var(--crimson); text-shadow: none; transform: scale(0.98); }
 
-        /* UPGRADED: ACCESS ZONE DATA BUTTON */
         .btn-toggle-data { 
             background: rgba(18, 5, 30, 0.6); border: 1px solid rgba(255,255,255,0.05); 
             border-left: 3px solid var(--violet); color: #fff; padding: 14px 20px; 
@@ -169,7 +217,6 @@
         }
         .btn-toggle-data:hover, .btn-toggle-data:active { background: var(--violet); color: #000; box-shadow: 0 0 15px var(--violet); text-shadow: none; transform: scale(0.98); }
 
-        /* UPGRADED: PURGE & CLOSE BUTTON */
         .btn-close { 
             background: var(--crimson); border: 1px solid rgba(255,255,255,0.1); border-left: 4px solid #fff; 
             color: #000; padding: 15px 40px; font-weight: 900; font-size: 1.2rem; font-family: var(--font-en); 
@@ -178,7 +225,6 @@
         }
         .btn-close:active, .btn-close:hover { transform: scale(0.95); background: #fff; box-shadow: 0 0 25px #fff; border-left-color: var(--crimson); color: var(--crimson); }
         
-        .threat-stream { position: fixed; bottom: 0; left: 0; width: 100%; height: 40px; background: rgba(5, 2, 8, 0.95); border-top: 1px solid var(--crimson); font-family: monospace; font-size: 0.7rem; color: var(--crimson); display: flex; align-items: center; padding: 0 15px; box-sizing: border-box; z-index: 50; overflow: hidden; white-space: nowrap; box-shadow: 0 0 20px rgba(255, 30, 70, 0.2); }
         @keyframes fade-in { 0% { opacity: 0; transform: translateY(5px); } 100% { opacity: 1; transform: translateY(0); } }
 
         #validationMessage { width: 100%; max-width: 380px; margin-top: 10px; font-family: var(--font-mono); }
@@ -196,7 +242,6 @@
 </head>
 <body id="mainBody">
 
-<!-- BOOT INTERCEPT SEQUENCE -->
 <div id="bootScreen">
     <div class="boot-line" style="animation: fade-in 0.1s forwards 0.1s;">> INITIATING BRIDGE PROTOCOL...</div>
     <div class="boot-line" style="animation: fade-in 0.1s forwards 0.3s; color: white;">> CONNECTING TO NEURAL DATA BUS... OK</div>
@@ -210,7 +255,7 @@
 <div id="appLayer" class="ui-layer">
     <div class="header">
         <a href="index.html" class="btn-sys-back">&lt; SYS</a>
-        <span class="header-title">BRIDGE</span>
+        <span class="header-title" id="appTitle">VALEO</span>
         <select id="modeSelector" onchange="changeMode()">
             <option value="T1">T1 (Tg Match)</option>
             <option value="T2">T2 (Braze Joints)</option>
@@ -219,49 +264,50 @@
         </select>
     </div>
 
+    <!-- COMBINED TACTICAL TELEMETRY BAR -->
     <div class="payload-container">
-        <div class="payload-text" id="payloadText">0% COMPLETE</div>
         <div class="payload-fill" id="payloadFill"></div>
+        <div class="s-level-wrapper" id="sLevelWrapper">
+            <div class="s-segment" id="segS1"><span>S1</span></div>
+            <div class="s-segment" id="segS5"><span>S5</span></div>
+            <div class="s-segment" id="segS7"><span>S7/8</span></div>
+        </div>
+        <div class="payload-text" id="payloadText">0%</div>
     </div>
 
-    <div class="status-bar" id="statusBar">INITIATING DATA MATRIX...</div>
+    <div class="status-bar" id="statusBar" onclick="toggleTolerance()" style="cursor: pointer;">INITIATING DATA MATRIX...</div>
 
     <div class="display-area" id="displayArea">
         <div class="history-log" id="historyLog"></div>
         <div class="current-input" id="currentInput"></div>
     </div>
 
+    <!-- REFINED 4x3 KEYPAD COMPACT LAYOUT -->
     <div class="keypad">
-        <button class="btn btn-action btn-undo cipher-btn" data-cipher="[ UNDO LAST ]" style="grid-column: span 3;" onclick="clearLast()">
-            <span class="btn-title" style="font-size: 1.1rem;">[ UNDO LAST ]</span>
-        </button>
+        <button class="btn num-btn" data-key="1" onclick="typeNum('1')">1</button>
+        <button class="btn num-btn" data-key="2" onclick="typeNum('2')">2</button>
+        <button class="btn num-btn" data-key="3" onclick="typeNum('3')">3</button>
 
-        <button class="btn num-btn" onclick="typeNum('1')">1</button>
-        <button class="btn num-btn" onclick="typeNum('2')">2</button>
-        <button class="btn num-btn" onclick="typeNum('3')">3</button>
+        <button class="btn num-btn" data-key="4" onclick="typeNum('4')">4</button>
+        <button class="btn num-btn" data-key="5" onclick="typeNum('5')">5</button>
+        <button class="btn num-btn" data-key="6" onclick="typeNum('6')">6</button>
 
-        <button class="btn num-btn" onclick="typeNum('4')">4</button>
-        <button class="btn num-btn" onclick="typeNum('5')">5</button>
-        <button class="btn num-btn" onclick="typeNum('6')">6</button>
+        <button class="btn num-btn" data-key="7" onclick="typeNum('7')">7</button>
+        <button class="btn num-btn" data-key="8" onclick="typeNum('8')">8</button>
+        <button class="btn num-btn" data-key="9" onclick="typeNum('9')">9</button>
 
-        <button class="btn num-btn" onclick="typeNum('7')">7</button>
-        <button class="btn num-btn" onclick="typeNum('8')">8</button>
-        <button class="btn num-btn" onclick="typeNum('9')">9</button>
-
-        <button class="btn num-btn" id="btnDecimal" onclick="typeNum('.')">.</button>
-        <button class="btn num-btn" onclick="typeNum('0')">0</button>
-        <button class="btn btn-action" style="opacity: 0.1; pointer-events: none;">+/-</button>
-
-        <button class="btn btn-enter cipher-btn" data-cipher="INSERT DATA" id="btnEnter" onclick="submitNumber()">
-            <span class="btn-title" style="font-size: 1.2rem;">INSERT DATA</span>
-        </button>
-        <button class="btn btn-compile cipher-btn" data-cipher="ENCODE PAYLOAD" onclick="triggerEncoding()">
-            <span class="btn-title" style="font-size: 1.4rem;">ENCODE PAYLOAD</span>
-        </button>
+        <button class="btn btn-action btn-undo" data-key="Backspace" onclick="clearLast()">UNDO</button>
+        <button class="btn num-btn" data-key="0" onclick="typeNum('0')">0</button>
+        <button class="btn btn-action btn-enter" id="btnEnter" onclick="submitNumber()">ENTER</button>
     </div>
 </div>
 
-<!-- PHASE 2 TRANSITION MODAL WITH GLASSMORPHISM UI (GOLD ISOLATED HERE) -->
+<!-- DYNAMIC ENCODE BUTTON THREAT STREAM -->
+<div class="threat-stream" id="threatStreamBar" onclick="handleStreamClick()">
+    <div class="stream-content" id="streamContent">> LOGGING: </div>
+</div>
+
+<!-- PHASE 2 TRANSITION MODAL (GOLD ISOLATED HERE) -->
 <div class="modal-overlay" id="phase2Modal" style="align-items: center; justify-content: center; overflow-y: hidden; perspective: 1000px;">
     <div style="width: 100%; max-width: 380px; text-align: left;">
         <div style="font-family: var(--font-mono); color: var(--gold); font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 25px; text-shadow: 0 0 10px rgba(255,234,0,0.4); border-left: 2px solid var(--gold); padding-left: 10px; line-height: 1.5;">
@@ -269,7 +315,7 @@
         </div>
         <button class="menu-btn cipher-btn" data-cipher="[ INITIATE PHASE 2 ]" onclick="startPhase2()">
             <span class="btn-title">[ INITIATE PHASE 2 ]</span>
-            <span class="btn-jp">TG THERMAL INTERCEPT // 熱特性</span>
+            <span class="btn-jp">Tg THERMAL INTERCEPT // 熱特性</span>
         </button>
     </div>
 </div>
@@ -308,13 +354,44 @@
     </div>
 </div>
 
-<div class="threat-stream">
-    <div class="stream-content" id="streamContent">> LOGGING: </div>
-</div>
-
 <script>
+    // --- CAPYBARA SPACE PIRATE HEADER GLITCH ---
+    setInterval(() => {
+        const titleEl = document.getElementById('appTitle');
+        titleEl.style.opacity = '0';
+        setTimeout(() => {
+            titleEl.innerText = "水豚太空海盗";
+            titleEl.style.opacity = '1';
+            setTimeout(() => {
+                titleEl.style.opacity = '0';
+                setTimeout(() => {
+                    titleEl.innerText = "VALEO";
+                    titleEl.style.opacity = '1';
+                }, 300);
+            }, 4000);
+        }, 300);
+    }, 30000);
+
+    // --- MEMORY BANK SYSTEM ---
+    function saveLocalState() {
+        const mode = document.getElementById('modeSelector').value;
+        localStorage.setItem('valeo_data_' + mode, JSON.stringify(dataList));
+    }
+
+    function loadLocalState() {
+        const mode = document.getElementById('modeSelector').value;
+        const saved = localStorage.getItem('valeo_data_' + mode);
+        if (saved) {
+            try { dataList = JSON.parse(saved); } catch(e) { dataList = []; }
+        } else {
+            dataList = [];
+        }
+        currentString = "";
+    }
+
+    // INITIALIZATION ROOT CALL
     window.onload = () => { 
-        changeMode(); // CALLING THIS HERE FIXES THE '5' REGEX BUG IMMEDIATELY
+        changeMode(); 
         setTimeout(() => { 
             document.getElementById('bootScreen').style.opacity = '0'; 
             document.getElementById('bootScreen').style.filter = 'blur(10px)'; 
@@ -324,14 +401,23 @@
     let dataList = [];
     let currentString = "";
     let isAutoSkipping = false;
+    let isSubmitting = false; 
     let scrambleInterval = null;
     let failedZonesTracker = []; 
+    let showTolerance = false;
+    let isEncodeReady = false;
+    
+    function toggleTolerance() { showTolerance = !showTolerance; checkBlueprint(); }
+    
+    function handleStreamClick() {
+        if (isEncodeReady || !activeBlueprint) triggerEncoding();
+    }
     
     const template1 = ['A','B', 'A','B', 'A','B', 'A','B', 'A','B', 'A','B', 'P', 'C','D', 'C','D', 'C','D', 'C','D', 'C','D', 'C','D'];
     const template2 = ['A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','-', 'A','-', 'A','-', 'A','X','-','-', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','-', 'A','-', 'A','-', 'A','X','-','-'];
     const template3 = ['K','A','B','A','B','C','D','C','D','E','F','E','F','J','K','A','B','A','B','C','D','C','D','E','F','E','F','J','K','A','B','A','B','C','D','C','D','E','F','E','F','J'];
 
-    const t1Labels = ["S1 - QR SIDE", "S1 - BACK SIDE", "S5 - QR SIDE", "S5 - BACK SIDE", "S7/8 - QR SIDE", "S7/8 - BACK SIDE"];
+    const t1Labels = ["S1 QR", "S1 NQR", "S5 QR", "S5 NQR", "S7/8 QR", "S7/8 NQR"];
     const t2Labels = ["QR SIDE - A1", "QR SIDE - A2", "QR SIDE - B1", "QR SIDE - B2", "QR SIDE - B3", "QR SIDE - B4", "QR SIDE - C", "QR SIDE - D", "QR SIDE - E1", "QR SIDE - E2", "QR SIDE - W", "BACK SIDE - A1", "BACK SIDE - A2", "BACK SIDE - B1", "BACK SIDE - B2", "BACK SIDE - B3", "BACK SIDE - B4", "BACK SIDE - C", "BACK SIDE - D", "BACK SIDE - E1", "BACK SIDE - E2", "BACK SIDE - W"];
     const t3Names = ["Left Edge", "Slot 1 (QR)", "Slot 2 (QR)", "Slot 1 (Back)", "Slot 2 (Back)", "Slot 16 (QR)", "Slot 17 (QR)", "Slot 16 (Back)", "Slot 17 (Back)", "Slot 27 (QR)", "Slot 28 (QR)", "Slot 27 (Back)", "Slot 28 (Back)", "Right Edge"];
 
@@ -339,14 +425,15 @@
 
     let activeBlueprint = template1; 
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const modeParam = urlParams.get('mode');
-    if (modeParam && ['T1', 'T2', 'T3', 'FREE'].includes(modeParam)) document.getElementById('modeSelector').value = modeParam;
-
     function changeMode() {
         const val = document.getElementById('modeSelector').value;
         if (val === 'T1') activeBlueprint = template1; else if (val === 'T2') activeBlueprint = template2; else if (val === 'T3') activeBlueprint = template3; else activeBlueprint = null;
-        dataList = []; currentString = ""; updateDisplay();
+        
+        if (val === 'T1' || val === 'T3') document.getElementById('sLevelWrapper').style.display = 'flex';
+        else document.getElementById('sLevelWrapper').style.display = 'none';
+
+        loadLocalState(); 
+        updateDisplay();
     }
 
     function triggerShockwave() {
@@ -360,7 +447,7 @@
         clearInterval(scrambleInterval);
         scrambleInterval = setInterval(() => {
             el.innerText = currentString.split('').map(c => (c === '.') ? '.' : hexChars[Math.floor(Math.random() * hexChars.length)]).join('');
-            ticks++; if(ticks > 3) { clearInterval(scrambleInterval); el.innerText = currentString; }
+            ticks++; if(ticks > 3) { clearInterval(scrambleInterval); el.innerText = currentString; scrambleInterval = null; }
         }, 30);
     }
 
@@ -379,7 +466,7 @@
                 if (mode === 'T1') {
                     let zoneIdx = 0; if (index < 12) zoneIdx = Math.floor(index / 2); else if (index > 12) zoneIdx = Math.floor((index - 13) / 2);
                     let zName = t1Labels[zoneIdx] || "SYS";
-                    if(expectedVar === 'A') varName = `[${zName}] Total Mass`; else if(expectedVar === 'B') varName = `[${zName}] Sample Mass`; else if(expectedVar === 'C') varName = `[${zName}] 2nd Tg`; else if(expectedVar === 'D') varName = `[${zName}] 3rd Tg`;
+                    if(expectedVar === 'A') varName = `[${zName}] Total(mg)`; else if(expectedVar === 'B') varName = `[${zName}] Samp(mg)`; else if(expectedVar === 'C') varName = `[${zName}] 2nd Tg`; else if(expectedVar === 'D') varName = `[${zName}] 3rd Tg`;
                 } else if (mode === 'T2') {
                     if(expectedVar === 'A') varName = "Braze Length"; else if(expectedVar === 'B') varName = "Porosity Total";
                 } else if (mode === 'T3') { varName = t3Names[index % 14]; }
@@ -390,36 +477,76 @@
         });
         document.getElementById('historyLog').innerHTML = html;
         const displayArea = document.getElementById('displayArea'); displayArea.scrollTop = displayArea.scrollHeight;
+        
+        saveLocalState();
         checkBlueprint();
     }
 
+    // THE FLAWLESS, WORKING VALIDATION ENGINE 
     function checkBlueprint() {
-        const numBtns = document.querySelectorAll('.num-btn'); const btnEnter = document.getElementById('btnEnter'); const btnDecimal = document.getElementById('btnDecimal'); const statusBar = document.getElementById('statusBar'); const payloadFill = document.getElementById('payloadFill'); const payloadText = document.getElementById('payloadText'); const mode = document.getElementById('modeSelector').value;
+        const numBtns = document.querySelectorAll('.num-btn'); 
+        const btnEnter = document.getElementById('btnEnter'); 
+        const statusBar = document.getElementById('statusBar'); 
+        const payloadFill = document.getElementById('payloadFill'); 
+        const payloadText = document.getElementById('payloadText'); 
+        const mode = document.getElementById('modeSelector').value;
+        const streamBar = document.getElementById('threatStreamBar');
 
-        numBtns.forEach(b => b.classList.remove('btn-disabled')); btnEnter.classList.remove('btn-disabled');
+        numBtns.forEach(b => b.classList.remove('btn-disabled')); 
+        if (btnEnter) btnEnter.classList.remove('btn-disabled');
 
-        if (!activeBlueprint) { statusBar.innerText = "SYSTEM: MANUAL OVERRIDE ACTIVE"; statusBar.style.color = "var(--violet)"; payloadFill.style.width = "0%"; payloadText.innerText = "0% COMPLETE"; return; }
+        if (!activeBlueprint) { 
+            statusBar.innerText = "SYSTEM: MANUAL OVERRIDE ACTIVE"; 
+            statusBar.style.color = "var(--violet)"; 
+            payloadFill.style.width = "0%"; 
+            payloadText.innerText = "FREE"; 
+            
+            if (streamBar) {
+                streamBar.classList.add('encode-ready');
+                document.getElementById('streamContent').innerText = "[ ENCODE PAYLOAD ]";
+                isEncodeReady = true;
+            }
+            return; 
+        }
 
         const step = dataList.length;
         const pct = (step / activeBlueprint.length) * 100;
-        payloadFill.style.width = pct + "%"; payloadText.innerText = Math.round(pct) + "% COMPLETE";
+        payloadFill.style.width = pct + "%"; 
+        payloadText.innerText = Math.round(pct) + "%";
         
         if (step >= activeBlueprint.length) {
-            statusBar.innerText = "PAYLOAD COMPLETE. READY TO ENCODE."; statusBar.style.color = "#39ff14";
-            numBtns.forEach(b => b.classList.add('btn-disabled')); btnEnter.classList.add('btn-disabled'); return;
+            statusBar.innerText = "PAYLOAD COMPLETE. READY TO ENCODE."; 
+            statusBar.style.color = "#39ff14";
+            numBtns.forEach(b => b.classList.add('btn-disabled')); 
+            if (btnEnter) btnEnter.classList.add('btn-disabled'); 
+            
+            if (streamBar) {
+                streamBar.classList.add('encode-ready');
+                document.getElementById('streamContent').innerText = "[ ENCODE PAYLOAD ]";
+                isEncodeReady = true;
+            }
+            return;
+        } else {
+            if (isEncodeReady && streamBar) {
+                streamBar.classList.remove('encode-ready');
+                document.getElementById('streamContent').innerText = "> LOGGING: ";
+                isEncodeReady = false;
+            }
         }
 
         const expected = activeBlueprint[step];
 
         if (expected === 'X' || expected === '-' || expected === 'P') {
-            btnEnter.classList.add('btn-disabled');
+            if (btnEnter) btnEnter.classList.add('btn-disabled');
             if (!isAutoSkipping) {
                 isAutoSkipping = true;
                 if (expected === 'P') {
-                    statusBar.innerText = `[ SYSTEM HALT ] AWAITING PHASE 2...`; statusBar.style.color = "var(--gold)"; numBtns.forEach(b => b.classList.add('btn-disabled'));
+                    statusBar.innerText = `[ SYSTEM HALT ] AWAITING PHASE 2...`; statusBar.style.color = "var(--gold)"; 
+                    numBtns.forEach(b => b.classList.add('btn-disabled'));
                     document.getElementById('phase2Modal').style.display = 'flex';
                 } else {
-                    statusBar.innerText = `AUTO-JUMPING... [${expected}]`; statusBar.style.color = "var(--crimson)"; numBtns.forEach(b => b.classList.add('btn-disabled'));
+                    statusBar.innerText = `AUTO-JUMPING... [${expected}]`; statusBar.style.color = "var(--crimson)"; 
+                    numBtns.forEach(b => b.classList.add('btn-disabled'));
                     setTimeout(() => { isAutoSkipping = false; addSkip(expected); }, 80); 
                 }
             }
@@ -431,7 +558,10 @@
         if (mode === 'T1') {
             let zoneIdx = 0; if (step < 12) zoneIdx = Math.floor(step / 2); else if (step > 12) zoneIdx = Math.floor((step - 13) / 2);
             zoneLabel = t1Labels[zoneIdx] || "SYS";
-            if (expected === 'A') prompt = "Total Mass (mg) [50.0-59.9]"; if (expected === 'B') prompt = "Sample Mass (mg) [4.0-7.9]"; if (expected === 'C') prompt = "2nd Tg [80.0-95.9]"; if (expected === 'D') prompt = "3rd Tg [80.0-95.9]";
+            let tA = showTolerance ? " [50.0-59.9]" : " <span style='color: var(--crimson);'>[+]</span>";
+            let tB = showTolerance ? " [4.0-7.9]" : " <span style='color: var(--crimson);'>[+]</span>";
+            let tC = showTolerance ? " [80.0-95.9]" : " <span style='color: var(--crimson);'>[+]</span>";
+            if (expected === 'A') prompt = "Total(mg)" + tA; if (expected === 'B') prompt = "Samp(mg)" + tB; if (expected === 'C') prompt = "2nd Tg" + tC; if (expected === 'D') prompt = "3rd Tg" + tC;
             regex = regexRulesT1[expected];
         } else if (mode === 'T2') {
             let aCount = 0; for(let i=0; i<=step; i++) if(activeBlueprint[i] === 'A') aCount++;
@@ -439,24 +569,45 @@
             if (expected === 'A') prompt = "Braze Length"; if (expected === 'B') prompt = "Porosity Length"; regex = /^\d*\.?\d*$/; 
         } else if (mode === 'T3') {
             if (step < 14) zoneLabel = "S1"; else if (step < 28) zoneLabel = "S5"; else zoneLabel = "S7/8";
-            if (expected === 'J' || expected === 'K') { prompt = t3Names[step % 14] + " [ .1x - .4x ]"; regex = /^[1-4][0-9]?$/; } 
-            else { prompt = t3Names[step % 14] + " [ .2x - .4x ]"; regex = /^[2-4][0-9]?$/; }
-            btnDecimal.classList.add('btn-disabled'); 
+            if (expected === 'J' || expected === 'K') { prompt = t3Names[step % 14] + (showTolerance ? " [ .1x - .4x ]" : " <span style='color: var(--crimson);'>[+]</span>"); regex = /^[1-4][0-9]?$/; } 
+            else { prompt = t3Names[step % 14] + (showTolerance ? " [ .2x - .4x ]" : " <span style='color: var(--crimson);'>[+]</span>"); regex = /^[2-4][0-9]?$/; }
         }
 
-        statusBar.innerText = `[${zoneLabel}] ${prompt}`; statusBar.style.color = "white";
+        statusBar.innerHTML = `[${zoneLabel}] ${prompt}`; statusBar.style.color = "white";
+
+        // TACTICAL S-LEVEL LIGHT UPDATE WITH TARGET ARROW
+        if (mode === 'T1' || mode === 'T3') {
+            const segS1 = document.getElementById('segS1');
+            const segS5 = document.getElementById('segS5');
+            const segS7 = document.getElementById('segS7');
+            if (segS1) { segS1.classList.remove('active'); segS5.classList.remove('active'); segS7.classList.remove('active'); }
+            
+            if (zoneLabel.includes('S1')) { if (segS1) segS1.classList.add('active'); }
+            else if (zoneLabel.includes('S5')) { if (segS5) segS5.classList.add('active'); }
+            else if (zoneLabel.includes('S7')) { if (segS7) segS7.classList.add('active'); }
+        }
 
         numBtns.forEach(btn => {
-            let char = btn.innerText; if (char === '+/-' || char === '.') return; 
-            let testStr = currentString + char; if (regex && !regex.test(testStr)) btn.classList.add('btn-disabled');
+            let char = btn.innerText; 
+            if (!char || char === 'UNDO' || char === 'ENTER') return; 
+            let testStr = currentString + char; 
+            if (regex && !regex.test(testStr)) btn.classList.add('btn-disabled');
         });
 
-        if (mode === 'T1' || mode === 'T2') { if (currentString === "" || currentString.endsWith('.')) btnEnter.classList.add('btn-disabled'); } 
-        else if (mode === 'T3') { if (currentString === "") btnEnter.classList.add('btn-disabled'); }
+        if (mode === 'T1' || mode === 'T2') { 
+            if (currentString === "" || currentString.endsWith('.')) {
+                if (btnEnter) btnEnter.classList.add('btn-disabled'); 
+            }
+        } else if (mode === 'T3') { 
+            if (currentString === "") {
+                if (btnEnter) btnEnter.classList.add('btn-disabled'); 
+            }
+        }
     }
 
     function startPhase2() { document.getElementById('phase2Modal').style.display = 'none'; isAutoSkipping = false; triggerShockwave(); addSkip('P'); }
 
+    // THE FLAWLESS, WORKING TYPE ENGINE
     function typeNum(char) {
         if (isAutoSkipping) return;
         const mode = document.getElementById('modeSelector').value;
@@ -480,6 +631,7 @@
 
     function submitNumber() { if (currentString === "") return; triggerShockwave(); dataList.push(currentString); currentString = ""; updateDisplay(); }
     function addSkip(type) { if (currentString !== "") submitNumber(); dataList.push(type); updateDisplay(); }
+    
     function clearLast() {
         if (isAutoSkipping) return;
         if (currentString !== "") currentString = currentString.slice(0, -1);
@@ -547,6 +699,7 @@
                     
                     failedZonesTracker.forEach((err, index) => {
                         let severity = err.diff > 7 ? 'EXTREME' : 'MINOR';
+                        let severityClass = err.diff > 7 ? 'ai-extreme' : 'ai-minor';
                         let advice = err.diff > 7 
                             ? `<ul class="ai-list" style="color: var(--crimson);"><li>QUARANTINE BATCH. Substrate under-cure detected.</li><li>Verify oven burner profile & air flow.</li><li>Escalate to Process Engineer.</li></ul>`
                             : `<ul class="ai-list" style="color: var(--bright-purple);"><li>Review DSC thermogram curves.</li><li>Verify baseline tangent integration.</li><li>Check sample pan lid seating.</li></ul>`;
@@ -617,7 +770,7 @@
                         else { resultClass = "zone-result-pass"; }
                         diffText = `> Tg (D-C): ${difference.toFixed(2)} [${passed ? 'PASS' : 'FAIL'}]`;
                     }
-                    expandedHTML += `<div class="data-card ${statusClass}"><div class="zone-title">${zoneName}</div><div class="zone-values">Total Mass: ${a_val !== undefined ? a_val : '--'}mg | Sample: ${b_val !== undefined ? b_val : '--'}mg<br>2nd Tg: ${c_val !== undefined ? c_val.toFixed(2) : '--'} | 3rd Tg: ${d_val !== undefined ? d_val.toFixed(2) : '--'}</div><div class="${resultClass}">${diffText}</div></div>`;
+                    expandedHTML += `<div class="data-card ${statusClass}"><div class="zone-title">${zoneName}</div><div class="zone-values">Total(mg): ${a_val !== undefined ? a_val : '--'} | Samp(mg): ${b_val !== undefined ? b_val : '--'}<br>2nd Tg: ${c_val !== undefined ? c_val.toFixed(2) : '--'} | 3rd Tg: ${d_val !== undefined ? d_val.toFixed(2) : '--'}</div><div class="${resultClass}">${diffText}</div></div>`;
                 }
 
                 if (a_val !== undefined) payload += a_val + "\r\n"; if (b_val !== undefined) payload += b_val + "\r\n";
@@ -668,7 +821,12 @@
         else { el.style.display = 'none'; btn.innerText = "[ ACCESS ZONE DATA ]"; }
     }
 
-    function closeQR() { document.getElementById('qrModal').style.display = 'none'; dataList = []; updateDisplay(); }
+    function closeQR() { 
+        document.getElementById('qrModal').style.display = 'none'; 
+        dataList = []; 
+        saveLocalState(); 
+        updateDisplay(); 
+    }
 
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
     function applyCipherEffect(elements) {
@@ -694,6 +852,7 @@
         for (let i = 0; i < 8; i++) result += chars.charAt(Math.floor(Math.random() * chars.length)); return `0x${result}`;
     }
     setInterval(() => {
+        if (isEncodeReady) return; 
         let currentText = stream.innerText;
         if (currentText.length > 80) currentText = "> LOGGING: "; stream.innerText = currentText + " " + generateHex();
     }, 120);
