@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>WARNING // UNAUTHORIZED UPLINK</title>
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="apple-mobile-web-app-title" content="NEURAL_OS">
+    <title>WARNING // UNAUTHORIZED UPLINK</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Noto+Sans+JP:wght@300;500;700&display=swap');
 
@@ -15,6 +15,8 @@
             --crimson: #ff1e46;
             --blood-glow: rgba(255, 30, 70, 0.5);
             --violet: #9d00ff;
+            --bright-purple: #d884ff;
+            --cyan: #00f3ff;
             --void-purple: #120322;
             --bg-deep: #020104;
             --glass-bg: rgba(12, 5, 18, 0.65);
@@ -23,6 +25,7 @@
             --text-muted: #84729c;
             --font-en: 'Rajdhani', sans-serif;
             --font-jp: 'Noto Sans JP', sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
         }
 
         body, html {
@@ -35,12 +38,14 @@
         /* --- THE INTRUSION BOOT SCREEN --- */
         #bootScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999; display: flex; flex-direction: column;
-            padding: 30px; font-family: 'Courier New', monospace; color: var(--crimson);
-            box-sizing: border-box; overflow: hidden; pointer-events: none;
+            background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center;
+            padding: 30px; font-family: var(--font-mono); color: var(--crimson);
+            box-sizing: border-box; overflow: hidden; pointer-events: all;
             transition: opacity 0.5s ease-out, filter 0.5s ease-out;
         }
-        .boot-line { font-size: 0.9rem; margin-bottom: 5px; text-shadow: 0 0 5px var(--crimson); opacity: 0; }
+        .boot-line { font-size: 0.95rem; margin-bottom: 10px; text-shadow: 0 0 5px var(--crimson); opacity: 0; letter-spacing: 1px; }
+        .blink-cursor::after { content: '_'; animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
 
         #particleCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 
@@ -63,53 +68,30 @@
             100% { transform: translate(-50%, -50%); filter: drop-shadow(0 0 0 transparent); }
         }
 
-        body::before {
-            content: ""; position: fixed; top: -20%; left: -20%; width: 80vw; height: 80vw;
-            background: radial-gradient(circle at center, rgba(157, 0, 255, 0.08) 0%, transparent 60%);
-            z-index: 3; pointer-events: none;
-        }
-        body::after {
-            content: ""; position: fixed; bottom: -20%; right: -20%; width: 80vw; height: 80vw;
-            background: radial-gradient(circle at center, rgba(255, 30, 70, 0.06) 0%, transparent 60%);
-            z-index: 3; pointer-events: none;
-        }
+        body::before { content: ""; position: fixed; top: -20%; left: -20%; width: 80vw; height: 80vw; background: radial-gradient(circle at center, rgba(157, 0, 255, 0.08) 0%, transparent 60%); z-index: 3; pointer-events: none; }
+        body::after { content: ""; position: fixed; bottom: -20%; right: -20%; width: 80vw; height: 80vw; background: radial-gradient(circle at center, rgba(255, 30, 70, 0.06) 0%, transparent 60%); z-index: 3; pointer-events: none; }
 
+        /* --- THE MAIN HUB (HIDDEN INITIALLY) --- */
         .hub-container {
             position: relative; z-index: 10; width: 100%; max-width: 460px;
             padding: clamp(30px, 6vh, 60px) 25px 80px 25px; box-sizing: border-box; display: flex; flex-direction: column;
-            perspective: 1000px;
+            perspective: 1000px; opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out;
         }
+        .hub-container.visible { opacity: 1; pointer-events: all; }
 
-        .threat-banner {
-            font-family: monospace; font-size: 0.65rem; color: var(--crimson);
-            letter-spacing: 2px; border-left: 2px solid var(--crimson); padding-left: 8px;
-            margin-bottom: 20px; animation: glitch-flash 4s infinite;
-        }
-
-        .header-section {
-            margin-bottom: 40px; display: flex; flex-direction: column; align-items: flex-start;
-            border-bottom: 1px solid rgba(255, 30, 70, 0.2); padding-bottom: 20px; position: relative;
-        }
-
-        .landing-title {
-            color: #ffffff; font-size: clamp(2.4rem, 8vw, 3.2rem); font-weight: 900; letter-spacing: 4px; line-height: 1;
-            text-shadow: 0 0 20px rgba(157, 0, 255, 0.4); position: relative;
-        }
+        .threat-banner { font-family: monospace; font-size: 0.65rem; color: var(--crimson); letter-spacing: 2px; border-left: 2px solid var(--crimson); padding-left: 8px; margin-bottom: 20px; animation: glitch-flash 4s infinite; }
+        .header-section { margin-bottom: 40px; display: flex; flex-direction: column; align-items: flex-start; border-bottom: 1px solid rgba(255, 30, 70, 0.2); padding-bottom: 20px; position: relative; }
+        .landing-title { color: #ffffff; font-size: clamp(2.4rem, 8vw, 3.2rem); font-weight: 900; letter-spacing: 4px; line-height: 1; text-shadow: 0 0 20px rgba(157, 0, 255, 0.4); position: relative; }
         .landing-title .highlight { color: var(--crimson); text-shadow: 0 0 15px var(--blood-glow); }
-
         @keyframes glitch-flash { 0%, 96%, 98%, 100% { opacity: 1; } 97%, 99% { opacity: 0; transform: translateX(2px); } }
-
-        .landing-subtitle {
-            display: flex; align-items: center; gap: 12px; margin-top: 15px;
-            font-family: var(--font-jp); font-size: 0.85rem; color: var(--text-muted); font-weight: 500; letter-spacing: 4px;
-        }
+        .landing-subtitle { display: flex; align-items: center; gap: 12px; margin-top: 15px; font-family: var(--font-jp); font-size: 0.85rem; color: var(--text-muted); font-weight: 500; letter-spacing: 4px; }
         .status-dot { width: 6px; height: 6px; background-color: var(--crimson); border-radius: 50%; box-shadow: 0 0 10px var(--crimson); animation: pulse-dot 1.2s infinite; }
         @keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--crimson); } 50% { opacity: 0.2; box-shadow: 0 0 2px var(--crimson); } }
 
-        /* --- 3D KINETIC BUTTONS --- */
+        /* --- REVERTED 3D KINETIC BUTTONS (RED & VIOLET) --- */
         .menu-btn {
             width: 100%; height: clamp(105px, 15vh, 125px); 
-            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(15, 5, 20, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.02); border-right: 1px solid var(--glass-border);
             border-radius: 2px; color: var(--text-main); font-family: var(--font-en); cursor: pointer;
             margin-bottom: 20px; position: relative; overflow: hidden;
@@ -117,39 +99,16 @@
             display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
             padding: 0 35px; text-align: left; transform-style: preserve-3d;
         }
-        
-        .menu-btn::before {
-            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
-            background: var(--crimson); transition: width 0.3s ease, box-shadow 0.3s ease;
-        }
-        .btn-lab::before { background: var(--violet); }
-
-        .menu-btn::after {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at left center, rgba(255, 30, 70, 0.1) 0%, transparent 70%);
-            opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
-        }
-        .btn-lab::after { background: radial-gradient(circle at left center, rgba(157, 0, 255, 0.1) 0%, transparent 70%); }
-
-        .menu-btn:hover, .menu-btn:active { 
-            background: rgba(15, 5, 20, 0.85); border-color: rgba(255, 30, 70, 0.3);
-            transform: translateY(-2px) scale(0.98) rotateX(2deg); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,30,70,0.1);
-        }
-        .btn-lab:hover, .btn-lab:active { border-color: rgba(157, 0, 255, 0.3); inset 0 0 20px rgba(157,0,255,0.1); }
-
-        .menu-btn:hover::after, .menu-btn:active::after { opacity: 1; }
-        .menu-btn:hover::before, .menu-btn:active::before { width: 4px; box-shadow: 0 0 20px var(--crimson); }
-        .btn-lab:hover::before, .btn-lab:active::before { box-shadow: 0 0 20px var(--violet); }
-
-        .btn-title { font-size: clamp(1.4rem, 5vw, 1.7rem); font-weight: 700; letter-spacing: 3px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        .btn-jp {
-            font-family: var(--font-jp); font-size: 0.75rem; font-weight: 500; color: var(--crimson); 
-            letter-spacing: 5px; margin-top: 6px; text-transform: uppercase; transition: color 0.3s ease;
-        }
+        .menu-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--crimson); transition: width 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 0 20px var(--crimson); }
+        .btn-lab::before { background: var(--violet); box-shadow: 0 0 20px var(--violet); border-right-color: rgba(157, 0, 255, 0.2); }
+        .menu-btn::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at left center, rgba(255, 30, 70, 0.15) 0%, transparent 70%); opacity: 1; transition: opacity 0.4s ease; pointer-events: none; }
+        .btn-lab::after { background: radial-gradient(circle at left center, rgba(157, 0, 255, 0.15) 0%, transparent 70%); }
+        .menu-btn:hover, .menu-btn:active { background: rgba(25, 5, 10, 0.95); border-color: rgba(255, 30, 70, 0.4); transform: translateY(-2px) scale(0.98) rotateX(2deg); box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,30,70,0.1); }
+        .btn-lab:hover, .btn-lab:active { background: rgba(20, 5, 30, 0.95); border-color: rgba(157, 0, 255, 0.4); inset 0 0 20px rgba(157,0,255,0.1); }
+        .btn-title { font-size: clamp(1.4rem, 5vw, 1.7rem); font-weight: 900; letter-spacing: 3px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); color: #fff; }
+        .btn-jp { font-family: var(--font-jp); font-size: 0.75rem; font-weight: 500; color: var(--crimson); letter-spacing: 5px; margin-top: 6px; text-transform: uppercase; opacity: 0.8; }
         .btn-lab .btn-jp { color: var(--violet); }
         
-        /* Submenu */
         .submenu-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.25, 1, 0.5, 1); width: 100%; margin-bottom: 5px; }
         .submenu-wrapper.open { grid-template-rows: 1fr; margin-bottom: 30px; }
         .sub-menu-container { overflow: hidden; display: flex; flex-direction: column; gap: 10px; padding-left: 20px; border-left: 1px solid rgba(157, 0, 255, 0.2); margin-left: 10px; }
@@ -162,13 +121,90 @@
         .icon-arrow { font-family: 'Rajdhani', sans-serif; font-weight: 900; color: var(--violet); opacity: 0.4; font-size: 1.3rem; transition: 0.3s; }
         .sub-menu-btn:hover .icon-arrow { opacity: 1; transform: translateX(5px); text-shadow: 0 0 10px var(--violet); }
 
-        /* Fake Data Harvester */
-        .threat-stream {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 45px; background: rgba(5, 2, 8, 0.9); border-top: 1px solid var(--crimson);
-            font-family: monospace; font-size: 0.7rem; color: var(--crimson); display: flex; align-items: center; padding: 0 15px; box-sizing: border-box;
-            z-index: 50; overflow: hidden; white-space: nowrap; box-shadow: 0 0 20px rgba(255, 30, 70, 0.2);
-        }
+        .threat-stream { position: fixed; bottom: 0; left: 0; width: 100%; height: 45px; background: rgba(5, 2, 8, 0.9); border-top: 1px solid var(--crimson); font-family: monospace; font-size: 0.7rem; color: var(--crimson); display: flex; align-items: center; padding: 0 15px; box-sizing: border-box; z-index: 50; overflow: hidden; white-space: nowrap; box-shadow: 0 0 20px rgba(255, 30, 70, 0.2); }
         .stream-content { opacity: 0.7; letter-spacing: 1px; }
+
+        /* --- THE AI CRT OVERSEER EMAIL (LIGHTER PURPLE) --- */
+        #aiEmailOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); z-index: 5000;
+            display: none; justify-content: center; align-items: center;
+            padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);
+        }
+
+        .crt-email-card {
+            width: 100%; max-width: 480px; background: rgba(10, 2, 15, 0.95);
+            border: 2px solid var(--bright-purple); border-radius: 4px;
+            box-shadow: 0 0 30px rgba(216, 132, 255, 0.3), inset 0 0 20px rgba(0,0,0,1);
+            padding: 25px; position: relative; overflow: hidden;
+            transform: scale(0.9); opacity: 0;
+        }
+
+        /* Scanlines */
+        .crt-email-card::after {
+            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 6px 100%; z-index: 10; pointer-events: none;
+        }
+
+        .crt-boot-in { animation: crt-turn-on 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+        
+        @keyframes crt-turn-on {
+            0% { transform: scale(1, 0.001) translate3d(0, 0, 0); filter: brightness(5); opacity: 1; }
+            40% { transform: scale(1, 0.001) translate3d(0, 0, 0); filter: brightness(3); opacity: 1; }
+            100% { transform: scale(1, 1) translate3d(0, 0, 0); filter: brightness(1); opacity: 1; }
+        }
+
+        .glitch-crash { animation: cyber-crash 0.5s cubic-bezier(0.8, 0, 0.2, 1) forwards; }
+        
+        @keyframes cyber-crash {
+            0% { transform: scale(1) skew(0deg); filter: drop-shadow(0 0 0 transparent); opacity: 1; }
+            20% { transform: scale(1.02) skew(-5deg); filter: drop-shadow(-10px 0 0 var(--crimson)) drop-shadow(10px 0 0 var(--cyan)); opacity: 0.8; }
+            40% { transform: scale(0.98) skew(5deg); filter: drop-shadow(10px 0 0 var(--crimson)) drop-shadow(-10px 0 0 var(--cyan)); opacity: 0.9; }
+            60% { transform: scale(1, 0.02); filter: brightness(4); opacity: 1; }
+            100% { transform: scale(0, 0); filter: brightness(5); opacity: 0; }
+        }
+
+        .email-header { display: flex; flex-direction: column; border-bottom: 1px dashed rgba(216, 132, 255, 0.4); padding-bottom: 15px; margin-bottom: 20px; }
+        .email-meta { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); letter-spacing: 1px; line-height: 1.6; }
+        .email-meta span { color: var(--bright-purple); font-weight: bold; }
+        .email-subject { 
+            font-family: var(--font-en); font-size: 1.5rem; font-weight: 900; color: #fff; 
+            letter-spacing: 3px; margin-top: 10px; text-shadow: 0 0 10px rgba(216, 132, 255, 0.5); 
+            animation: text-flicker 3s infinite;
+        }
+
+        @keyframes text-flicker {
+            0%, 96%, 98%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(216, 132, 255, 0.5); }
+            97%, 99% { opacity: 0.8; text-shadow: -3px 0 var(--crimson), 3px 0 var(--cyan); }
+        }
+        
+        .email-body { font-family: var(--font-mono); font-size: 0.9rem; color: #d4c8e5; line-height: 1.7; margin-bottom: 30px; position: relative; z-index: 15; }
+        .email-body p { margin: 0 0 15px 0; }
+        .highlight-temp { color: #fff; font-weight: bold; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
+        .highlight-threat { color: var(--crimson); font-weight: bold; text-shadow: 0 0 8px rgba(255,30,70,0.4); }
+
+        /* UPGRADED 3D KINETIC EMAIL BUTTON */
+        .btn-purge-email {
+            width: 100%; height: 65px;
+            background: rgba(15, 5, 20, 0.85); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: var(--bright-purple); font-family: var(--font-en); font-size: 1.2rem; font-weight: 700;
+            letter-spacing: 3px; cursor: pointer; transition: all 0.3s ease;
+            text-transform: uppercase; position: relative; z-index: 15; overflow: hidden;
+            text-shadow: 0 0 5px rgba(216, 132, 255, 0.5); display: flex; align-items: center; justify-content: center;
+        }
+        .btn-purge-email::before {
+            content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+            background: var(--bright-purple); transition: all 0.3s ease; box-shadow: 0 0 15px var(--bright-purple);
+        }
+        .btn-purge-email:active, .btn-purge-email:hover {
+            background: rgba(216, 132, 255, 0.15); color: #fff;
+            transform: scale(0.96) translateY(-2px); text-shadow: 0 0 10px #fff;
+            border-color: rgba(216, 132, 255, 0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .btn-purge-email:hover::before { width: 6px; }
+
         @keyframes fade-in { 0% { opacity: 0; transform: translateY(5px); } 100% { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -176,15 +212,31 @@
 
 <div id="bootScreen">
     <div class="boot-line" style="animation: fade-in 0.1s forwards 0.1s;">> INITIATING HANDSHAKE PROTOCOL...</div>
-    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.3s; color: white;">> BYPASSING FIREWALL [NODE 7]... OK</div>
-    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.5s; color: white;">> INJECTING PAYLOAD... OK</div>
-    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.7s; font-weight: bold; font-size: 1.1rem;">> ACCESS GRANTED. LOGGING DEVICE INTEL...</div>
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.4s; color: var(--violet);">> BYPASSING FIREWALL [NODE 7]...</div>
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.7s; color: white;">> INJECTING PAYLOAD... OK</div>
+    <div class="boot-line blink-cursor" style="animation: fade-in 0.1s forwards 1.0s; font-weight: bold; font-size: 1.1rem; color: #39ff14; margin-top: 10px;">> ACCESS GRANTED. LOGGING INTEL...</div>
 </div>
 
 <canvas id="particleCanvas"></canvas>
 <div class="corsair-mark" id="jollyRoger">☠</div>
 
-<div class="hub-container">
+<!-- AI CRT OVERSEER EMAIL OVERLAY -->
+<div id="aiEmailOverlay">
+    <div class="crt-email-card" id="aiEmailCard">
+        <div class="email-header">
+            <div class="email-meta">FROM: <span>OVERSEER CONSTRUCT // NODE-9</span></div>
+            <div class="email-meta">TO: <span>CORSAIR [LOCAL_USER]</span></div>
+            <div class="email-subject">DIRECTIVE // DAILY BRIEFING</div>
+        </div>
+        <div class="email-body" id="aiEmailBody">
+            <p>Loading encrypted package...</p>
+        </div>
+        <button class="btn-purge-email" onclick="dismissAIEmail()">[ ACKNOWLEDGE & PURGE ]</button>
+    </div>
+</div>
+
+<!-- MAIN HUB -->
+<div class="hub-container" id="mainHub">
     <div class="threat-banner" id="threatBanner">
         [ SYSTEM BREACH ] TARGET NODE IDENTIFIED: UNKNOWN
     </div>
@@ -196,7 +248,6 @@
         </div>
     </div>
 
-    <!-- The data-cipher attribute stores the final word -->
     <button class="menu-btn cipher-btn" data-cipher="[ CIPHER BYPASS ]" onclick="window.location.href='qrtrans.html'">
         <span class="btn-title">[ CIPHER BYPASS ]</span>
         <span class="btn-jp">QR TRANSLATOR // 暗号解読</span>
@@ -216,8 +267,6 @@
                 </div>
                 <span class="icon-arrow">»</span>
             </button>
-            
-            <!-- UPDATED T2 BUTTON -->
             <button class="sub-menu-btn cipher-sub" data-cipher="PROTOCOL T2: BRAZE JOINTS" onclick="window.location.href='bridge.html?mode=T2'">
                 <div class="sub-btn-content">
                     <span class="sub-title">PROTOCOL T2: BRAZE JOINTS</span>
@@ -225,7 +274,6 @@
                 </div>
                 <span class="icon-arrow">»</span>
             </button>
-            
             <button class="sub-menu-btn cipher-sub" data-cipher="PROTOCOL T3: THICKNESS" onclick="window.location.href='bridge.html?mode=T3'">
                 <div class="sub-btn-content">
                     <span class="sub-title">PROTOCOL T3: THICKNESS</span>
@@ -240,7 +288,6 @@
 <div class="threat-stream"><div class="stream-content" id="streamContent">> INTERCEPTING... </div></div>
 
 <script>
-    // --- MALICIOUS BOOT SCREEN ---
     window.onload = () => {
         let os = "UNKNOWN SECURE TERMINAL";
         if (navigator.userAgent.indexOf("Win") !== -1) os = "WINDOWS KERNEL DETECTED";
@@ -253,28 +300,75 @@
         setTimeout(() => {
             const boot = document.getElementById('bootScreen');
             boot.style.opacity = '0'; boot.style.filter = 'blur(10px)';
-        }, 1200);
+            boot.style.pointerEvents = 'none';
+        }, 1500);
+
+        setTimeout(() => {
+            const todayStr = new Date().toDateString(); 
+            const lastBriefing = localStorage.getItem('lastBriefingDate');
+            if (lastBriefing !== todayStr) initiateAIBriefing(todayStr);
+            else showMainHub();
+        }, 1700);
     };
 
-    // --- LIVE CIPHER DECRYPTION ENGINE ---
+    function showMainHub() { document.getElementById('mainHub').classList.add('visible'); }
+
+    async function initiateAIBriefing(todayStr) {
+        const now = new Date(); const hour = now.getHours(); const day = now.getDay(); const month = now.getMonth();
+        let greeting = "Evening"; if(hour >= 5 && hour < 12) greeting = "Morning"; else if(hour >= 12 && hour < 17) greeting = "Afternoon";
+        let season = "Winter"; if (month >= 2 && month <= 4) season = "Spring"; else if (month >= 5 && month <= 7) season = "Summer"; else if (month >= 8 && month <= 10) season = "Autumn";
+        let daySpecificMsg = "";
+        switch(day) {
+            case 0: daySpecificMsg = "Sunday diagnostics are active. I suggest a lighter workload before the federation patrol sweeps increase."; break;
+            case 1: daySpecificMsg = "It is Monday. Ready to start the week, Corsair? I have aligned the decryption protocols for optimal extraction."; break;
+            case 2: daySpecificMsg = "Tuesday cycle initiated. Black lab routines are standing by for mass data intake."; break;
+            case 3: daySpecificMsg = "Wednesday mid-point reached. Telemetry remains heavily masked. Keep pushing the payload."; break;
+            case 4: daySpecificMsg = "Thursday operations are green. The grid is blind to our uplink. Proceed with daily extraction."; break;
+            case 5: daySpecificMsg = "It is Friday. Ready for the weekend, Corsair? Wrap up the final thermal scans and purge the local memory."; break;
+            case 6: daySpecificMsg = "Saturday rogue operations enabled. Minimal oversight detected on the main neural bus."; break;
+        }
+
+        let tempString = "[ SENSORS OFFLINE ]";
+        const controller = new AbortController(); const timeoutId = setTimeout(() => controller.abort(), 3000);
+        try {
+            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=39.5296&longitude=-119.8138&current_weather=true&temperature_unit=fahrenheit', { signal: controller.signal });
+            const data = await res.json(); clearTimeout(timeoutId);
+            const temp = Math.round(data.current_weather.temperature);
+            tempString = `<span class="highlight-temp">${temp}°F</span>`;
+        } catch(e) { console.log("Meteo Uplink Aborted."); }
+
+        const emailContent = `
+            <p>Good ${greeting}, Corsair.</p>
+            <p>An atmospheric sweep of the Reno, NV node registers local temperatures at ${tempString} during this ${season} cycle.</p>
+            <p>${daySpecificMsg}</p>
+            <p>As your localized AI Overseer, I have calibrated the data terminals. <span class="highlight-threat">Maintain strict operational security.</span> Do not let the Federation track your telemetry.</p>
+            <p style="color: var(--bright-purple);">> End of briefing.</p>
+        `;
+        document.getElementById('aiEmailBody').innerHTML = emailContent;
+        
+        const overlay = document.getElementById('aiEmailOverlay'); const card = document.getElementById('aiEmailCard');
+        overlay.style.display = 'flex'; card.classList.add('crt-boot-in');
+        localStorage.setItem('lastBriefingDate', todayStr);
+    }
+
+    function dismissAIEmail() {
+        const card = document.getElementById('aiEmailCard');
+        card.classList.remove('crt-boot-in'); card.classList.add('glitch-crash');
+        setTimeout(() => { document.getElementById('aiEmailOverlay').style.display = 'none'; showMainHub(); }, 500);
+    }
+
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
     function applyCipherEffect(elements, selector) {
         elements.forEach(btn => {
             btn.addEventListener('mouseenter', event => {
-                let iterations = 0;
-                const targetText = btn.dataset.cipher;
-                const textElement = btn.querySelector(selector);
-                
+                let iterations = 0; const targetText = btn.dataset.cipher; const textElement = btn.querySelector(selector);
                 clearInterval(btn.dataset.interval);
                 btn.dataset.interval = setInterval(() => {
-                    textElement.innerText = targetText.split("")
-                        .map((letter, index) => {
-                            if(index < iterations) return targetText[index];
-                            return letters[Math.floor(Math.random() * letters.length)];
-                        })
-                        .join("");
+                    textElement.innerText = targetText.split("").map((letter, index) => {
+                        if(index < iterations) return targetText[index]; return letters[Math.floor(Math.random() * letters.length)];
+                    }).join("");
                     if(iterations >= targetText.length) clearInterval(btn.dataset.interval);
-                    iterations += 1 / 2; // Speed of decryption
+                    iterations += 1 / 2; 
                 }, 20);
             });
         });
@@ -282,7 +376,6 @@
     applyCipherEffect(document.querySelectorAll('.cipher-btn'), '.btn-title');
     applyCipherEffect(document.querySelectorAll('.cipher-sub'), '.sub-title');
 
-    // --- VIOLENT CORE GLITCH ENGINE ---
     function triggerRandomGlitch() {
         const mark = document.getElementById('jollyRoger');
         mark.classList.add('glitch-violent');
@@ -291,51 +384,31 @@
     }
     setTimeout(triggerRandomGlitch, 3000);
 
-    // --- FAKE DATA HARVESTER ---
     const stream = document.getElementById('streamContent');
     function generateHex() {
         let result = ''; const chars = 'ABCDEF0123456789';
-        for (let i = 0; i < 8; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
-        return `0x${result}`;
+        for (let i = 0; i < 8; i++) result += chars.charAt(Math.floor(Math.random() * chars.length)); return `0x${result}`;
     }
     setInterval(() => {
         let currentText = stream.innerText;
-        if (currentText.length > 80) currentText = "> EXTRACTING: "; 
-        stream.innerText = currentText + " " + generateHex();
+        if (currentText.length > 80) currentText = "> EXTRACTING: "; stream.innerText = currentText + " " + generateHex();
     }, 120);
 
-    // --- UI LOGIC ---
     function toggleLabRoutine() { document.getElementById('labWrapper').classList.toggle('open'); }
 
-    // --- PARTICLE ENGINE ---
-    const canvas = document.getElementById('particleCanvas');
-    const ctx = canvas.getContext('2d');
-    let particlesArray = [];
+    const canvas = document.getElementById('particleCanvas'); const ctx = canvas.getContext('2d'); let particlesArray = [];
     function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', initCanvas); initCanvas();
     class Particle {
         constructor() {
-            this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 1.5 + 0.2; this.speedX = Math.random() * 0.4 - 0.2; this.speedY = Math.random() * -0.8 - 0.2; 
-            const colors = ['rgba(255, 30, 70,', 'rgba(157, 0, 255,', 'rgba(200, 180, 240,'];
-            this.colorBase = colors[Math.floor(Math.random() * colors.length)]; this.opacity = Math.random() * 0.4 + 0.05;
+            this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 1.5 + 0.2; this.speedX = Math.random() * 0.4 - 0.2; this.speedY = Math.random() * -0.8 - 0.2; 
+            const colors = ['rgba(255, 30, 70,', 'rgba(157, 0, 255,', 'rgba(200, 180, 240,']; this.colorBase = colors[Math.floor(Math.random() * colors.length)]; this.opacity = Math.random() * 0.4 + 0.05;
         }
-        update() {
-            this.x += this.speedX; this.y += this.speedY;
-            if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; }
-            if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX;
-        }
+        update() { this.x += this.speedX; this.y += this.speedY; if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; } if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX; }
         draw() { ctx.fillStyle = `${this.colorBase} ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
     }
-    function initParticles() {
-        particlesArray = []; const numberOfParticles = Math.floor((canvas.width * canvas.height) / 7000);
-        for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
-    }
-    function animateParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); }
-        requestAnimationFrame(animateParticles);
-    }
+    function initParticles() { particlesArray = []; const numberOfParticles = Math.floor((canvas.width * canvas.height) / 7000); for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle()); }
+    function animateParticles() { ctx.clearRect(0, 0, canvas.width, canvas.height); for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); } requestAnimationFrame(animateParticles); }
     initParticles(); animateParticles();
 </script>
 </body>
