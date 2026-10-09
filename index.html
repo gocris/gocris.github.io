@@ -16,6 +16,7 @@
             --blood-glow: rgba(255, 30, 70, 0.5);
             --violet: #9d00ff;
             --bright-purple: #d884ff;
+            --neon-magenta: #ff00aa;
             --cyan: #00f3ff;
             --void-purple: #120322;
             --bg-deep: #020104;
@@ -88,7 +89,7 @@
         .status-dot { width: 6px; height: 6px; background-color: var(--crimson); border-radius: 50%; box-shadow: 0 0 10px var(--crimson); animation: pulse-dot 1.2s infinite; }
         @keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--crimson); } 50% { opacity: 0.2; box-shadow: 0 0 2px var(--crimson); } }
 
-        /* --- REVERTED 3D KINETIC BUTTONS (RED & VIOLET) --- */
+        /* --- 3D KINETIC BUTTONS --- */
         .menu-btn {
             width: 100%; height: clamp(105px, 15vh, 125px); 
             background: rgba(15, 5, 20, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -99,12 +100,22 @@
             display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
             padding: 0 35px; text-align: left; transform-style: preserve-3d;
         }
+        
+        /* Default Red Button */
         .menu-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--crimson); transition: width 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 0 20px var(--crimson); }
-        .btn-lab::before { background: var(--violet); box-shadow: 0 0 20px var(--violet); border-right-color: rgba(157, 0, 255, 0.2); }
         .menu-btn::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at left center, rgba(255, 30, 70, 0.15) 0%, transparent 70%); opacity: 1; transition: opacity 0.4s ease; pointer-events: none; }
-        .btn-lab::after { background: radial-gradient(circle at left center, rgba(157, 0, 255, 0.15) 0%, transparent 70%); }
         .menu-btn:hover, .menu-btn:active { background: rgba(25, 5, 10, 0.95); border-color: rgba(255, 30, 70, 0.4); transform: translateY(-2px) scale(0.98) rotateX(2deg); box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,30,70,0.1); }
+        
+        /* Black Lab Violet Button */
+        .btn-lab::before { background: var(--violet); box-shadow: 0 0 20px var(--violet); border-right-color: rgba(157, 0, 255, 0.2); }
+        .btn-lab::after { background: radial-gradient(circle at left center, rgba(157, 0, 255, 0.15) 0%, transparent 70%); }
         .btn-lab:hover, .btn-lab:active { background: rgba(20, 5, 30, 0.95); border-color: rgba(157, 0, 255, 0.4); inset 0 0 20px rgba(157,0,255,0.1); }
+
+        /* CMM Neon Magenta Button */
+        .btn-cmm::before { background: var(--neon-magenta); box-shadow: 0 0 20px var(--neon-magenta); border-right-color: rgba(255, 0, 170, 0.2); }
+        .btn-cmm::after { background: radial-gradient(circle at left center, rgba(255, 0, 170, 0.15) 0%, transparent 70%); }
+        .btn-cmm:hover, .btn-cmm:active { background: rgba(25, 5, 20, 0.95); border-color: rgba(255, 0, 170, 0.4); inset 0 0 20px rgba(255, 0, 170, 0.1); }
+
         .btn-title { font-size: clamp(1.4rem, 5vw, 1.7rem); font-weight: 900; letter-spacing: 3px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); color: #fff; }
         .btn-jp { font-family: var(--font-jp); font-size: 0.75rem; font-weight: 500; color: var(--crimson); letter-spacing: 5px; margin-top: 6px; text-transform: uppercase; opacity: 0.8; }
         .btn-lab .btn-jp { color: var(--violet); }
@@ -251,6 +262,12 @@
     <button class="menu-btn cipher-btn" data-cipher="[ CIPHER BYPASS ]" onclick="window.location.href='qrtrans.html'">
         <span class="btn-title">[ CIPHER BYPASS ]</span>
         <span class="btn-jp">QR TRANSLATOR // 暗号解読</span>
+    </button>
+
+    <!-- NEW NEON MAGENTA CMM EXTRACTOR BUTTON -->
+    <button class="menu-btn btn-cmm cipher-btn" data-cipher="[ OMNI EXTRACT ]" onclick="window.location.href='omni_extractor.html'">
+        <span class="btn-title" style="color: #ffffff; text-shadow: 0 0 10px rgba(255, 0, 170, 0.4);">[ OMNI EXTRACT ]</span>
+        <span class="btn-jp" style="color: var(--neon-magenta);">AIR-GAP MATRIX // 抽出器</span>
     </button>
 
     <button class="menu-btn btn-lab cipher-btn" data-cipher="[ BLACK LAB ]" onclick="toggleLabRoutine()">
