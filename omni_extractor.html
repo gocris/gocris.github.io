@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>VALEO // UNIVERSAL DATA EXTRACTOR</title>
+    
+    <script src="qrious.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Noto+Sans+JP:wght@300;500;700&display=swap');
+
+        :root {
+            --crimson: #ff1e46; --violet: #9d00ff; --bright-purple: #d884ff; 
+            --neon-magenta: #ff00aa; --gold: #ffea00; --bg-deep: #020104; 
+            --cyan: #00f3ff; --text-main: #f0e6fa; --text-muted: #b8a6d4; 
+            --font-en: 'Rajdhani', sans-serif; --font-jp: 'Noto Sans JP', sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+        }
+
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background-color: var(--bg-deep); color: var(--text-main); 
+            display: flex; flex-direction: column; align-items: center; 
+            font-family: var(--font-en); overflow-x: hidden;
+        }
+
+        /* --- THE CMM METROLOGY BOOT SCREEN --- */
+        #bootScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center;
+            padding: 30px; font-family: var(--font-mono); color: var(--cyan);
+            box-sizing: border-box; overflow: hidden; pointer-events: all;
+            transition: opacity 0.5s ease-out, filter 0.5s ease-out;
+        }
+        .boot-line { font-size: 0.95rem; margin-bottom: 10px; text-shadow: 0 0 5px var(--cyan); opacity: 0; letter-spacing: 1px; }
+        .blink-cursor::after { content: '_'; animation: blink 1s step-end infinite; }
+        
+        @keyframes fade-in { 0% { opacity: 0; transform: translateY(5px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Background Effects */
+        #particleCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .corsair-mark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 40vw; color: rgba(255, 30, 70, 0.02); z-index: 2; pointer-events: none; text-shadow: 0 0 60px rgba(157, 0, 255, 0.05); animation: phantom-pulse 6s infinite alternate ease-in-out; font-family: monospace; }
+        @keyframes phantom-pulse { 0% { opacity: 0.2; filter: blur(8px); transform: translate(-50%, -50%) scale(0.98); } 100% { opacity: 1; filter: blur(12px); transform: translate(-50%, -50%) scale(1.02); } }
+        body::before { content: ""; position: fixed; top: -20%; left: -20%; width: 80vw; height: 80vw; background: radial-gradient(circle at center, rgba(157, 0, 255, 0.08) 0%, transparent 60%); z-index: 3; pointer-events: none; }
+        
+        /* Layout */
+        .ui-layer { position: relative; z-index: 10; display: flex; flex-direction: column; width: 100%; max-width: 580px; height: 100vh; padding-bottom: 40px; box-sizing: border-box; }
+        
+        /* Header */
+        .header { background: rgba(12, 5, 18, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 30, 70, 0.3); padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.8); }
+        .btn-sys-back { background: rgba(255, 30, 70, 0.1); border: 1px solid var(--crimson); color: var(--crimson); font-family: var(--font-en); font-weight: 700; font-size: 0.85rem; letter-spacing: 2px; text-decoration: none; padding: 6px 12px; border-radius: 2px; transition: all 0.3s ease; }
+        .btn-sys-back:hover { background: var(--crimson); color: #000; box-shadow: 0 0 15px var(--crimson); }
+        .header-title { font-weight: 900; font-size: 1.2rem; letter-spacing: 3px; color: #fff; text-shadow: 0 0 10px rgba(157, 0, 255, 0.5); margin-left: 10px; }
+        .module-tag { font-family: var(--font-mono); font-size: 0.8rem; color: var(--crimson); letter-spacing: 1px; border: 1px solid var(--crimson); padding: 4px 8px; border-radius: 2px; background: rgba(255, 30, 70, 0.1); }
+
+        /* Content Area */
+        .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        
+        /* Drag & Drop Zone */
+        .drop-zone {
+            width: 100%; max-width: 400px; height: 220px; background: rgba(15, 5, 20, 0.8);
+            border: 2px dashed var(--violet); border-radius: 4px;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            cursor: pointer; transition: all 0.3s ease; box-shadow: inset 0 0 20px rgba(157, 0, 255, 0.1);
+            position: relative; z-index: 20;
+        }
+        .drop-zone:hover { background: rgba(157, 0, 255, 0.15); box-shadow: inset 0 0 30px rgba(157, 0, 255, 0.3); }
+        .drop-zone.dragover { background: rgba(255, 0, 170, 0.1); border-color: var(--neon-magenta); box-shadow: inset 0 0 40px rgba(255, 0, 170, 0.3), 0 0 20px rgba(255, 0, 170, 0.2); }
+        .drop-text { font-size: 1.4rem; font-weight: 900; letter-spacing: 3px; color: #ffffff; pointer-events: none; margin-bottom: 10px; text-align: center; }
+        .drop-sub { font-family: var(--font-mono); font-size: 0.85rem; color: var(--bright-purple); pointer-events: none; opacity: 0.8; text-align: center; line-height: 1.4; }
+        #fileInput { display: none; }
+
+        /* QR Output Area */
+        #qrWrapper { display: none; flex-direction: column; align-items: center; width: 100%; }
+        .status-banner { font-family: var(--font-mono); color: #39ff14; font-size: 0.9rem; font-weight: bold; text-shadow: 0 0 10px rgba(57, 255, 20, 0.5); letter-spacing: 1px; margin-bottom: 15px; text-align: center; border-bottom: 1px dashed #39ff14; padding-bottom: 10px; width: 100%; }
+        
+        /* HAZARD WARNING */
+        .danger-text {
+            font-family: var(--font-mono); color: var(--gold); font-size: 0.9rem; font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 234, 0, 0.8); letter-spacing: 1px; margin-bottom: 15px;
+            text-align: center; border: 2px dashed var(--gold); padding: 10px; width: 100%; max-width: 480px;
+            box-sizing: border-box; animation: danger-pulse 1.5s infinite alternate ease-in-out;
+        }
+        @keyframes danger-pulse {
+            0% { background: rgba(255, 234, 0, 0.05); color: var(--gold); box-shadow: inset 0 0 10px rgba(255, 234, 0, 0.1); }
+            100% { background: rgba(255, 234, 0, 0.2); color: #fff; box-shadow: inset 0 0 20px rgba(255, 234, 0, 0.4); }
+        }
+
+        /* BRIDGE.HTML MATCHING QR CONTAINER & SKULL MORPH */
+        .qr-container { background: white; padding: 15px; border-radius: 2px; box-shadow: 0 0 30px rgba(255, 30, 70, 0.5); margin-bottom: 20px; border: 4px solid var(--crimson); display: flex; justify-content: center; align-items: center; }
+        .qr-morph-wrapper { position: relative; display: flex; justify-content: center; align-items: center; }
+        
+        #cuteSkull { position: absolute; z-index: 2; width: 140px; height: 140px; filter: drop-shadow(0 0 15px var(--crimson)); opacity: 1; transform: scale(1); display: none; }
+        #qrCanvas { position: relative; z-index: 1; opacity: 1; }
+        
+        .morph-active #cuteSkull { display: block; animation: morph-out 0.8s cubic-bezier(0.5, 0, 0.2, 1) forwards; }
+        .morph-active #qrCanvas { opacity: 0; filter: blur(10px); transform: scale(0.8); animation: morph-in 0.8s cubic-bezier(0.5, 0, 0.2, 1) forwards; }
+        
+        @keyframes morph-out { 0% { transform: scale(1) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 15px var(--crimson)) blur(0px); } 50% { transform: scale(1.3) rotate(15deg); opacity: 0.8; filter: drop-shadow(0 0 30px var(--violet)) blur(4px); } 100% { transform: scale(0.1) rotate(45deg); opacity: 0; filter: blur(20px); } }
+        @keyframes morph-in { 0% { opacity: 0; filter: blur(20px) contrast(5); transform: scale(0.8); } 50% { opacity: 0.5; filter: blur(4px) contrast(2); transform: scale(1.05); } 100% { opacity: 1; filter: blur(0) contrast(1); transform: scale(1); } }
+
+        /* Buttons */
+        .btn-action {
+            width: 100%; max-width: 480px; padding: 15px; background: rgba(10, 2, 15, 0.8);
+            border: 1px solid rgba(255,255,255,0.05); color: #fff; font-family: var(--font-en); 
+            font-size: 1.1rem; font-weight: 900; letter-spacing: 2px; cursor: pointer; 
+            transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); margin-bottom: 10px;
+        }
+        .btn-action:hover, .btn-action:active { transform: scale(0.96); color: #000; }
+        
+        .btn-next { border-left: 4px solid var(--cyan); }
+        .btn-next:hover, .btn-next:active { background: var(--cyan); box-shadow: 0 0 20px var(--cyan); }
+        
+        .btn-purge { border-left: 4px solid var(--crimson); }
+        .btn-purge:hover, .btn-purge:active { background: var(--crimson); box-shadow: 0 0 20px var(--crimson); }
+
+        /* Flying Capy */
+        .flying-capy { position: fixed; left: -150px; z-index: 4; width: 110px; height: auto; opacity: 0; pointer-events: none; filter: drop-shadow(0 0 15px rgba(130, 0, 200, 0.8)); mix-blend-mode: screen; }
+        .capy-active { animation: capy-float 12s ease-in-out forwards; }
+        @keyframes capy-float { 0% { transform: translate(-100px, 0) rotate(-5deg); opacity: 0; } 10% { opacity: 0.85; } 25% { transform: translate(25vw, -30px) rotate(5deg); } 50% { transform: translate(50vw, 20px) rotate(-3deg); } 75% { transform: translate(75vw, -20px) rotate(4deg); } 90% { opacity: 0.85; } 100% { transform: translate(120vw, 10px) rotate(0deg); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+<!-- CMM HACKING BOOT SEQUENCE -->
+<div id="bootScreen">
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.1s;">> INITIATING HEXAGON METROLOGY KERNEL...</div>
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.4s; color: var(--neon-magenta);">> CALIBRATING RUBY TACTILE PROBE...</div>
+    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.7s; color: white;">> ESTABLISHING SECURE AIR-GAP TUNNEL... OK</div>
+    <div class="boot-line blink-cursor" style="animation: fade-in 0.1s forwards 1.0s; font-weight: bold; font-size: 1.1rem; color: #39ff14; margin-top: 10px;">> ALIGNMENT ROUTINE ENGAGED. AWAITING PC-DMIS CLOUD...</div>
+</div>
+
+<canvas id="particleCanvas"></canvas>
+<div class="corsair-mark">☠</div>
+<img src="capy.png" id="flyingCapy" class="flying-capy" alt="Rogue Capybara" onerror="this.style.display='none'">
+
+<div class="ui-layer">
+    <div class="header">
+        <a href="index.html" class="btn-sys-back">&lt; SYS</a>
+        <span class="header-title">VALEO</span>
+        <span class="module-tag">EXTRACTOR</span>
+    </div>
+
+    <div class="main-content">
+        <!-- DRAG AND DROP ZONE -->
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <div class="drop-text">[ DROP .CSV ]</div>
+            <div class="drop-sub">AUTO-DETECTS XCEL & POINT CLOUDS<br>SMART MATRIX ENCRYPTION</div>
+        </div>
+        <input type="file" id="fileInput" accept=".csv, .txt" onchange="handleFileSelect(event)">
+
+        <!-- QR CODE RENDER AREA -->
+        <div id="qrWrapper">
+            <div class="status-banner" id="qrStatusText">> MATRIX ENCRYPTED. AWAITING SCAN. <</div>
+            
+            <!-- HAZARD BANNER -->
+            <div class="danger-text" id="hazardText">
+                ⚠️ HANDS OFF KEYBOARD & MOUSE WHILE DATA TRANSFERS ⚠️
+            </div>
+
+            <div class="qr-container" id="qrContainerEl">
+                <div class="qr-morph-wrapper" id="qrMorphWrapper">
+                    <svg id="cuteSkull" viewBox="0 0 100 100">
+                        <line x1="15" y1="15" x2="85" y2="85" stroke="var(--violet)" stroke-width="10" stroke-linecap="round"/>
+                        <line x1="85" y1="15" x2="15" y2="85" stroke="var(--violet)" stroke-width="10" stroke-linecap="round"/>
+                        <rect x="20" y="25" width="60" height="45" rx="20" fill="#fff"/>
+                        <rect x="35" y="60" width="30" height="20" rx="6" fill="#fff"/>
+                        <circle cx="36" cy="45" r="9" fill="var(--bg-deep)"/>
+                        <circle cx="64" cy="45" r="9" fill="var(--bg-deep)"/>
+                        <circle cx="34" cy="42" r="3" fill="#fff"/>
+                        <circle cx="62" cy="42" r="3" fill="#fff"/>
+                        <path d="M 47 55 Q 50 58 53 55" stroke="var(--crimson)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    </svg>
+                    <canvas id="qrCanvas"></canvas>
+                </div>
+            </div>
+
+            <button class="btn-action btn-next" id="btnNextQR" style="display:none;" onclick="triggerNextBatchLoader()">[ LOAD NEXT BATCH ]</button>
+            <button class="btn-action btn-purge" id="btnPurge" onclick="resetTransmitter()">[ PURGE & RESET ]</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Boot Screen Dissolve ---
+    window.onload = () => {
+        setTimeout(() => {
+            const boot = document.getElementById('bootScreen');
+            if(boot) {
+                boot.style.opacity = '0';
+                boot.style.filter = 'blur(10px)';
+                boot.style.pointerEvents = 'none';
+            }
+        }, 2200); 
+    };
+
+    // --- Capybara Animation ---
+    function launchCapy() {
+        const capy = document.getElementById('flyingCapy');
+        if(!capy) return;
+        capy.style.top = Math.floor(Math.random() * 40 + 10) + '%';
+        capy.classList.remove('capy-active');
+        void capy.offsetWidth;
+        capy.classList.add('capy-active');
+    }
+    setTimeout(() => { launchCapy(); setInterval(launchCapy, 120000); }, 15000);
+
+    // --- Drag and Drop Logic ---
+    const dropZone = document.getElementById('dropZone');
+    
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault(); dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) processFile(e.dataTransfer.files[0]);
+    });
+
+    function handleFileSelect(event) {
+        if (event.target.files.length > 0) processFile(event.target.files[0]);
+    }
+
+    // --- SMART AUTO-DETECT LOGIC ---
+    function processFile(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const rawText = e.target.result;
+            
+            // Check if it's a Keyence File
+            if (rawText.includes("[ Main ]") || rawText.includes("Plane measurement results data")) {
+                document.getElementById('qrStatusText').innerText = "> EXCEL T2 MATRIX ENCRYPTED (ALL ZONES) <";
+                formatKeyenceForScanner(rawText);
+            } 
+            // Otherwise treat as Standard CMM Matrix
+            else {
+                document.getElementById('qrStatusText').innerText = "> CMM MATRIX ENCRYPTED. AWAITING SCAN. <";
+                formatForScanner(rawText);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // --- PAGINATION / CHUNKING VARIABLES ---
+    let qrPayloadBatches = [];
+    let currentBatchIndex = 0;
+    let currentQRLevel = 'L'; 
+    let currentQRSize = 500;
+    let useSkullMorph = false;
+
+    // --- KEYENCE EXTRACTION FUNCTION (EXACT BRIDGE.HTML MATCH) ---
+    function formatKeyenceForScanner(rawText) {
+        // Full T2 Bridge Format Mapping exactly as defined in bridge.html
+        const template2 = ['A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','-', 'A','-', 'A','-', 'A','X','-','-', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','X', 'A','B','-', 'A','-', 'A','-', 'A','X','-','-'];
+        
+        const sampleBlocks = rawText.split(/"Title",/i).filter(block => block.trim() !== "");
+        let extractedBlocks = [];
+
+        for (let block of sampleBlocks) {
+            const lines = block.split(/\r?\n/);
+            let blockMeasurements = [];
+            
+            for (let line of lines) {
+                let match = line.match(/^"\d+",".*?",([-\d.]+),/);
+                if (match) {
+                    blockMeasurements.push(parseFloat(match[1])); 
+                }
+            }
+            
+            // Apply THE ORDER RULE
+            if (blockMeasurements.length > 0) {
+                let brazeLength = blockMeasurements[0]; 
+                let porositySum = 0;
+                
+                if (blockMeasurements.length > 1) {
+                    for (let i = 1; i < blockMeasurements.length; i++) {
+                        porositySum += blockMeasurements[i]; 
+                    }
+                }
+                extractedBlocks.push({ braze: brazeLength, porositySum: porositySum });
+            }
+        }
+
+        if (extractedBlocks.length === 0) {
+            alert("No valid Keyence measurements found in this CSV.");
+            resetTransmitter();
+            return;
+        }
+
+        let fullPayload = "";
+        let aCount = 0; 
+        
+        // Map exactly ONE T2 Template Cycle (which covers all 22 measurement blocks)
+        for (let i = 0; i < template2.length; i++) {
+            let char = template2[i];
+            
+            if (char === 'A') {
+                fullPayload += (extractedBlocks[aCount] ? extractedBlocks[aCount].braze.toFixed(3) : "") + "\r\n";
+                aCount++; 
+            } else if (char === 'B') {
+                let prevA = aCount - 1; 
+                fullPayload += (extractedBlocks[prevA] ? extractedBlocks[prevA].porositySum.toFixed(3) : "") + "\r\n";
+            } else if (char === 'X') {
+                fullPayload += "\r\n\r\n\r\n\r\n\r\n\r\n";
+            } else if (char === '-') {
+                fullPayload += "\r\n\r\n";
+            }
+        }
+
+        // Put the ENTIRE formatted structure into ONE single payload array element
+        qrPayloadBatches = [fullPayload];
+        currentBatchIndex = 0;
+        
+        // Exact match to bridge.html specifications
+        currentQRLevel = 'M'; 
+        currentQRSize = 240; 
+        useSkullMorph = true; // Trigger the cute skull animation!
+        
+        renderCurrentBatch(); 
+    }
+
+    // --- CMM EXTRACTION FUNCTION ---
+    const CMM_CHUNK_SIZE = 44;      
+    const CMM_SAMPLES_PER_QR = 8;   
+
+    function formatForScanner(rawText) {
+        const allLines = rawText.split(/\r?\n/).filter(line => line.trim() !== "");
+        const totalSamples = Math.ceil(allLines.length / CMM_CHUNK_SIZE);
+        
+        qrPayloadBatches = [];
+        currentBatchIndex = 0;
+
+        for (let batchStart = 0; batchStart < totalSamples; batchStart += CMM_SAMPLES_PER_QR) {
+            let batchEnd = Math.min(batchStart + CMM_SAMPLES_PER_QR, totalSamples);
+            let scannerPayload = "";
+
+            for (let row = 0; row < CMM_CHUNK_SIZE; row++) {
+                let rowString = "";
+                for (let sample = batchStart; sample < batchEnd; sample++) {
+                    let dataIndex = (sample * CMM_CHUNK_SIZE) + row;
+                    let cellData = allLines[dataIndex] ? allLines[dataIndex].trim() : "";
+                    
+                    rowString += cellData;
+                    if (sample < batchEnd - 1) rowString += "\t"; // TAB between columns
+                }
+                scannerPayload += rowString + "\r\n"; 
+            }
+            
+            qrPayloadBatches.push(scannerPayload);
+        }
+
+        currentQRLevel = 'L';
+        currentQRSize = 500;
+        useSkullMorph = false; // No skull for CMM, just pure 500px data
+        
+        renderCurrentBatch(); 
+    }
+
+    // --- RENDER LOGIC ---
+    function renderCurrentBatch() {
+        try {
+            const qrWrapper = document.getElementById('qrWrapper');
+            const morphWrapper = document.getElementById('qrMorphWrapper');
+            const qrCanvas = document.getElementById('qrCanvas');
+            
+            // Reset animations
+            morphWrapper.classList.remove('morph-active');
+            qrCanvas.style.opacity = 1;
+            qrCanvas.style.filter = "none";
+            qrCanvas.style.transform = "scale(1)";
+            qrCanvas.style.animation = 'none';
+            void qrCanvas.offsetWidth; 
+
+            // Set wrapper size so the white box matches exactly
+            morphWrapper.style.width = currentQRSize + "px";
+            morphWrapper.style.height = currentQRSize + "px";
+
+            new QRious({
+                element: qrCanvas,
+                value: qrPayloadBatches[currentBatchIndex],
+                size: currentQRSize,
+                level: currentQRLevel 
+            });
+
+            document.getElementById('dropZone').style.display = 'none';
+            qrWrapper.style.display = 'flex';
+
+            const btnNext = document.getElementById('btnNextQR');
+            if (btnNext) {
+                if (qrPayloadBatches.length > 1) {
+                    btnNext.style.display = 'block';
+                    if (currentBatchIndex < qrPayloadBatches.length - 1) {
+                        btnNext.innerText = `[ TYPING FINISHED? LOAD NEXT BATCH (${currentBatchIndex + 1}/${qrPayloadBatches.length}) ]`;
+                    } else {
+                        btnNext.innerText = `[ RESTART BATCH 1 ]`;
+                        document.getElementById('qrStatusText').innerText = `> ALL DATA EXTRACTED <`;
+                    }
+                } else {
+                    btnNext.style.display = 'none';
+                }
+            }
+
+            // Trigger the Skull Morph effect if it's Keyence Mode!
+            if (useSkullMorph) {
+                setTimeout(() => { 
+                    morphWrapper.classList.add('morph-active'); 
+                }, 500);
+            } else {
+                // Just do a regular glitch-in for CMM
+                qrCanvas.style.animation = 'glitch-in 0.4s ease-out';
+            }
+
+        } catch(error) {
+            alert("QR Render Error. Is qrious.js in the same folder?");
+            console.error(error);
+        }
+    }
+
+    function triggerNextBatchLoader() {
+        if (currentBatchIndex < qrPayloadBatches.length - 1) {
+            currentBatchIndex++;
+        } else {
+            currentBatchIndex = 0; 
+        }
+
+        // We only show loaders for multi-batch (CMM), Keyence is one shot anyway.
+        renderCurrentBatch();
+    }
+
+    function resetTransmitter() {
+        document.getElementById('fileInput').value = '';
+        document.getElementById('qrWrapper').style.display = 'none';
+        document.getElementById('dropZone').style.display = 'flex';
+        document.getElementById('hazardText').style.display = 'block';
+        document.getElementById('qrMorphWrapper').classList.remove('morph-active');
+        qrPayloadBatches = [];
+        currentBatchIndex = 0;
+    }
+
+    // --- Background Particles ---
+    const canvas = document.getElementById('particleCanvas'); const ctx = canvas.getContext('2d'); let particlesArray = [];
+    function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', initCanvas); initCanvas();
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 1.5 + 0.2; this.speedX = Math.random() * 0.4 - 0.2; this.speedY = Math.random() * -0.8 - 0.2; 
+            const colors = ['rgba(255, 30, 70,', 'rgba(157, 0, 255,', 'rgba(200, 180, 240,']; this.colorBase = colors[Math.floor(Math.random() * colors.length)]; this.opacity = Math.random() * 0.4 + 0.05;
+        }
+        update() { this.x += this.speedX; this.y += this.speedY; if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; } if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX; }
+        draw() { ctx.fillStyle = `${this.colorBase} ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+    }
+    function initParticles() { particlesArray = []; const numberOfParticles = Math.floor((canvas.width * canvas.height) / 7000); for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle()); }
+    function animateParticles() { ctx.clearRect(0, 0, canvas.width, canvas.height); for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); } requestAnimationFrame(animateParticles); }
+    initParticles(); animateParticles();
+</script>
+</body>
+</html>
