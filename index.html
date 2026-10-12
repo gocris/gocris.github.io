@@ -305,6 +305,7 @@
 <div class="threat-stream"><div class="stream-content" id="streamContent">> INTERCEPTING... </div></div>
 
 <script>
+    // --- System Boot & AI Briefing ---
     window.onload = () => {
         let os = "UNKNOWN SECURE TERMINAL";
         if (navigator.userAgent.indexOf("Win") !== -1) os = "WINDOWS KERNEL DETECTED";
@@ -316,8 +317,11 @@
         
         setTimeout(() => {
             const boot = document.getElementById('bootScreen');
-            boot.style.opacity = '0'; boot.style.filter = 'blur(10px)';
-            boot.style.pointerEvents = 'none';
+            if(boot) {
+                boot.style.opacity = '0'; 
+                boot.style.filter = 'blur(10px)';
+                boot.style.pointerEvents = 'none';
+            }
         }, 1500);
 
         setTimeout(() => {
@@ -374,11 +378,16 @@
         setTimeout(() => { document.getElementById('aiEmailOverlay').style.display = 'none'; showMainHub(); }, 500);
     }
 
+    // --- Cipher Effect for Buttons ---
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
     function applyCipherEffect(elements, selector) {
+        const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reducedMotion) return; // Respect OS settings
+
         elements.forEach(btn => {
             btn.addEventListener('mouseenter', event => {
                 let iterations = 0; const targetText = btn.dataset.cipher; const textElement = btn.querySelector(selector);
+                if(!textElement) return;
                 clearInterval(btn.dataset.interval);
                 btn.dataset.interval = setInterval(() => {
                     textElement.innerText = targetText.split("").map((letter, index) => {
@@ -393,40 +402,112 @@
     applyCipherEffect(document.querySelectorAll('.cipher-btn'), '.btn-title');
     applyCipherEffect(document.querySelectorAll('.cipher-sub'), '.sub-title');
 
+    // --- Random Skull Glitch Effect ---
     function triggerRandomGlitch() {
+        const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (document.hidden || reducedMotion) {
+            setTimeout(triggerRandomGlitch, Math.random() * 7000 + 3000);
+            return;
+        }
+
         const mark = document.getElementById('jollyRoger');
-        mark.classList.add('glitch-violent');
-        setTimeout(() => { mark.classList.remove('glitch-violent'); }, 300);
+        if(mark) {
+            mark.classList.add('glitch-violent');
+            setTimeout(() => { mark.classList.remove('glitch-violent'); }, 300);
+        }
         setTimeout(triggerRandomGlitch, Math.random() * 7000 + 3000);
     }
     setTimeout(triggerRandomGlitch, 3000);
 
+    // --- Threat Stream Optimization ---
     const stream = document.getElementById('streamContent');
     function generateHex() {
         let result = ''; const chars = 'ABCDEF0123456789';
         for (let i = 0; i < 8; i++) result += chars.charAt(Math.floor(Math.random() * chars.length)); return `0x${result}`;
     }
     setInterval(() => {
+        // Stop calculating when tab is hidden
+        if (document.hidden || !stream) return; 
+        
         let currentText = stream.innerText;
-        if (currentText.length > 80) currentText = "> EXTRACTING: "; stream.innerText = currentText + " " + generateHex();
-    }, 120);
+        if (currentText.length > 80) currentText = "> EXTRACTING: "; 
+        stream.innerText = currentText + " " + generateHex();
+    }, 400); // Throttled to 400ms 
 
     function toggleLabRoutine() { document.getElementById('labWrapper').classList.toggle('open'); }
 
-    const canvas = document.getElementById('particleCanvas'); const ctx = canvas.getContext('2d'); let particlesArray = [];
-    function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', initCanvas); initCanvas();
+    // --- Performance Optimized Particle System (30 FPS & 90 Particle Max) ---
+    const canvas = document.getElementById('particleCanvas'); 
+    let ctx = null;
+    if (canvas) {
+        ctx = canvas.getContext('2d', { alpha: false }); 
+    }
+    
+    let particlesArray = [];
+    const MAX_PARTICLES = 90; // Strictly capped limit
+    
+    function initCanvas() { 
+        if(!canvas) return;
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight; 
+        initParticles(); 
+    }
+    window.addEventListener('resize', initCanvas); 
+
     class Particle {
         constructor() {
-            this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 1.5 + 0.2; this.speedX = Math.random() * 0.4 - 0.2; this.speedY = Math.random() * -0.8 - 0.2; 
-            const colors = ['rgba(255, 30, 70,', 'rgba(157, 0, 255,', 'rgba(200, 180, 240,']; this.colorBase = colors[Math.floor(Math.random() * colors.length)]; this.opacity = Math.random() * 0.4 + 0.05;
+            this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; 
+            this.size = Math.random() * 1.5 + 0.2; 
+            this.speedX = Math.random() * 0.4 - 0.2; this.speedY = Math.random() * -0.8 - 0.2; 
+            const colors = ['rgba(255, 30, 70,', 'rgba(157, 0, 255,', 'rgba(200, 180, 240,']; 
+            this.colorBase = colors[Math.floor(Math.random() * colors.length)]; 
+            this.opacity = Math.random() * 0.4 + 0.05;
         }
-        update() { this.x += this.speedX; this.y += this.speedY; if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; } if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX; }
-        draw() { ctx.fillStyle = `${this.colorBase} ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        update() { 
+            this.x += this.speedX; this.y += this.speedY; 
+            if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; } 
+            if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX; 
+        }
+        draw() { 
+            ctx.fillStyle = `${this.colorBase} ${this.opacity})`; 
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); 
+        }
     }
-    function initParticles() { particlesArray = []; const numberOfParticles = Math.floor((canvas.width * canvas.height) / 7000); for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle()); }
-    function animateParticles() { ctx.clearRect(0, 0, canvas.width, canvas.height); for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); } requestAnimationFrame(animateParticles); }
-    initParticles(); animateParticles();
+
+    function initParticles() { 
+        particlesArray = []; 
+        if(!canvas) return;
+        const numberOfParticles = Math.min(Math.floor((canvas.width * canvas.height) / 7000), MAX_PARTICLES); 
+        for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle()); 
+    }
+
+    let lastTime = 0;
+    const FPS = 30; // Limit to 30 frames per second
+    const frameTime = 1000 / FPS;
+
+    function animateParticles(time) { 
+        requestAnimationFrame(animateParticles);
+        if(!canvas || !ctx) return;
+
+        const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        // Pause execution to save memory if tab is hidden or user requests reduced motion
+        if (document.hidden || reducedMotion) return;
+
+        // Throttle to 30 FPS
+        if (time - lastTime < frameTime) return;
+        lastTime = time;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        for (let i = 0; i < particlesArray.length; i++) { 
+            particlesArray[i].update(); 
+            particlesArray[i].draw(); 
+        } 
+    }
+    
+    if(canvas) {
+        initCanvas(); 
+        requestAnimationFrame(animateParticles);
+    }
 </script>
 </body>
 </html>
