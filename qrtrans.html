@@ -300,7 +300,7 @@
         
         .log-qr-text { color: var(--text-main); word-break: break-all; font-size: 0.7rem; opacity: 0.9; margin-bottom: 10px; }
         
-        /* NEW RECONSTRUCT BUTTON */
+        /* RECONSTRUCT MATRIX BUTTON */
         .btn-rebuild {
             background: rgba(0, 243, 255, 0.1); border: 1px solid var(--cyan);
             color: var(--cyan); font-family: var(--font-en); font-weight: bold;
@@ -376,8 +376,10 @@
             
             <div class="input-group">
                 <label for="qrInput">Scanner Input // ターミナル入力</label>
-                <form id="scanForm" onsubmit="event.preventDefault();">
-                    <input type="text" id="qrInput" inputmode="none" placeholder="> Scanning..." value="" spellcheck="false" autocomplete="off" autofocus>
+                <!-- Form Submission is much more reliable on Mobile Keyboards than keydown -->
+                <form id="scanForm" onsubmit="event.preventDefault(); processScan();">
+                    <!-- inputmode="text" explicitly allows the mobile keyboard to pop up! -->
+                    <input type="text" id="qrInput" inputmode="text" placeholder="> Scanning..." value="" spellcheck="false" autocomplete="off" autofocus>
                 </form>
             </div>
 
@@ -504,7 +506,6 @@
                 const item = document.createElement('div');
                 item.className = 'log-item';
                 
-                // Build DOM Elements manually for strict HTML entity safety (Performance Audit compliance)
                 const header = document.createElement('div');
                 header.className = 'log-item-header';
                 header.innerHTML = `<span><span style="color: var(--crimson); font-weight: bold;">WK-${log.week}</span></span>
@@ -540,11 +541,10 @@
                 logListEl.appendChild(item);
             });
             
-            // Re-apply cipher to new buttons
             applyCipherEffect(document.querySelectorAll('.btn-rebuild.cipher-btn'));
         }
 
-        // --- NEW MATRIX REGENERATION SYSTEM ---
+        // --- MATRIX REGENERATION SYSTEM ---
         function rebuildQR(event) {
             const btn = event.target.closest('.btn-rebuild');
             if(!btn) return;
@@ -561,7 +561,6 @@
 
             rebuildModal.style.display = 'flex';
             
-            // Glitch effect on appearance
             canvas.style.animation = 'none';
             void canvas.offsetWidth;
             canvas.style.animation = 'glitch-flash 0.4s ease-out';
@@ -587,35 +586,42 @@
             valWeekEl.innerHTML = "WK-" + weekNum;
         }
 
+        // COMBINED INPUT PROCESSING (Mobile Form + Desktop Keydown)
+        function processScan() {
+            let qr = inputField.value.trim();
+            
+            // MOBILE FAILSAFE: Automatically strips out the words "Enter", "Del", or "Backspace" 
+            // if a software keyboard or wedge accidentally types them as literal strings.
+            qr = qr.replace(/(Enter|ENTER|Del|DEL|Backspace)/gi, '').trim();
+            
+            if (qr.length >= 23) {
+                const weekNum = calculateWeek(qr.substring(18, 20), qr.substring(20, 23));
+                
+                if (weekNum !== null) {
+                    const now = new Date();
+                    const dateTimeString = now.toLocaleString('en-US', { 
+                        month: '2-digit', day: '2-digit', year: '2-digit', 
+                        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false 
+                    });
+                    
+                    sessionLogs.unshift({ week: weekNum, time: dateTimeString, qr: qr });
+                    weekTally[weekNum] = (weekTally[weekNum] || 0) + 1;
+
+                    localStorage.setItem('cp_sessionLogs', JSON.stringify(sessionLogs));
+                    localStorage.setItem('cp_weekTally', JSON.stringify(weekTally));
+
+                    updateNeonDisplay(qr, weekNum);
+                    updateLogUI();
+                }
+            }
+            inputField.value = ''; 
+        }
+
+        // Desktop fallback for wedge scanners
         inputField.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.keyCode === 13) {
                 e.preventDefault(); 
-                
-                setTimeout(() => {
-                    const qr = inputField.value.trim();
-                    
-                    if (qr.length >= 23) {
-                        const weekNum = calculateWeek(qr.substring(18, 20), qr.substring(20, 23));
-                        
-                        if (weekNum !== null) {
-                            const now = new Date();
-                            const dateTimeString = now.toLocaleString('en-US', { 
-                                month: '2-digit', day: '2-digit', year: '2-digit', 
-                                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false 
-                            });
-                            
-                            sessionLogs.unshift({ week: weekNum, time: dateTimeString, qr: qr });
-                            weekTally[weekNum] = (weekTally[weekNum] || 0) + 1;
-
-                            localStorage.setItem('cp_sessionLogs', JSON.stringify(sessionLogs));
-                            localStorage.setItem('cp_weekTally', JSON.stringify(weekTally));
-
-                            updateNeonDisplay(qr, weekNum);
-                            updateLogUI();
-                            inputField.value = ''; 
-                        }
-                    }
-                }, 100);
+                setTimeout(processScan, 100);
             }
         });
 
