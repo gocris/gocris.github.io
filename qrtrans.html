@@ -11,6 +11,10 @@
     <title>QR Data Extractor // ROGUE_UPLINK</title>
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="apple-mobile-web-app-title" content="NEURAL_OS">
+    
+    <!-- Required for rebuilding the Matrix -->
+    <script src="qrious.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Noto+Sans+JP:wght@300;500;700&display=swap');
 
@@ -18,6 +22,7 @@
             --crimson: #ff1e46;
             --blood-glow: rgba(255, 30, 70, 0.5);
             --violet: #9d00ff;
+            --cyan: #00f3ff;
             --void-purple: #120322;
             --bg-deep: #020104;
             
@@ -120,6 +125,7 @@
             border-radius: 2px;
             transition: all 0.3s ease;
             box-shadow: 0 0 10px rgba(255, 30, 70, 0.2);
+            cursor: pointer;
         }
         .btn-sys-back:hover {
             background: var(--crimson);
@@ -163,7 +169,7 @@
             flex: 1;
             overflow: hidden;
             box-shadow: 0 15px 35px rgba(0,0,0,0.8);
-            margin-bottom: 40px; /* Clearance for data harvester stream */
+            margin-bottom: 40px;
         }
 
         h2 {
@@ -288,14 +294,28 @@
         .log-time { color: var(--text-muted); font-size: 0.7rem; }
         .log-arrow { display: inline-block; margin-left: 8px; font-size: 0.7rem; color: var(--crimson); transition: transform 0.3s ease; }
         .log-item.expanded .log-arrow { transform: rotate(180deg); }
-        .log-item-detail { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(157, 0, 255, 0.2); color: var(--crimson); word-break: break-all; font-size: 0.7rem; opacity: 0.9; }
-        .log-item.expanded .log-item-detail { display: block; }
+        
+        .log-item-detail { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(157, 0, 255, 0.2); }
+        .log-item.expanded .log-item-detail { display: flex; flex-direction: column; }
+        
+        .log-qr-text { color: var(--text-main); word-break: break-all; font-size: 0.7rem; opacity: 0.9; margin-bottom: 10px; }
+        
+        /* NEW RECONSTRUCT BUTTON */
+        .btn-rebuild {
+            background: rgba(0, 243, 255, 0.1); border: 1px solid var(--cyan);
+            color: var(--cyan); font-family: var(--font-en); font-weight: bold;
+            font-size: 0.75rem; letter-spacing: 2px; padding: 6px 12px; cursor: pointer;
+            transition: all 0.3s ease; text-transform: uppercase; align-self: flex-start;
+        }
+        .btn-rebuild:hover { background: var(--cyan); color: #000; box-shadow: 0 0 15px var(--cyan); }
+        .btn-rebuild .btn-title { display: inline-block; }
 
-        /* PURGE MODAL */
+        /* PURGE & RECONSTRUCT MODALS */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(2, 1, 4, 0.85); backdrop-filter: blur(10px);
             z-index: 100; display: none; justify-content: center; align-items: center;
+            flex-direction: column;
         }
         .modal-box {
             background: rgba(12, 5, 18, 0.95);
@@ -304,6 +324,7 @@
             padding: 1.5rem; width: 80%; max-width: 320px; text-align: center;
         }
         .modal-title { color: var(--crimson); font-weight: bold; margin-bottom: 1rem; letter-spacing: 2px; }
+        
         .modal-buttons { display: flex; justify-content: space-between; gap: 1rem; }
         .modal-btn {
             flex: 1; padding: 8px; background: transparent; font-family: var(--font-en);
@@ -402,6 +423,17 @@
         </div>
     </div>
 
+    <!-- QR RECONSTRUCTION MODAL -->
+    <div class="modal-overlay" id="qrRebuildModal" style="z-index: 200;">
+        <div class="modal-box" style="border-color: var(--cyan); box-shadow: 0 0 30px rgba(0, 243, 255, 0.2); width: auto; max-width: 90vw;">
+            <div class="modal-title" style="color: var(--cyan); border-bottom: 1px dashed var(--cyan); padding-bottom: 10px; margin-bottom: 15px;">>> RECONSTRUCTING PAYLOAD MATRIX</div>
+            <div style="background: #fff; padding: 10px; margin: 0 auto 20px; display: inline-block; border: 3px solid var(--cyan); box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);">
+                <canvas id="rebuiltQrCanvas"></canvas>
+            </div>
+            <button class="btn-sys-back" style="width: 100%; text-align: center; border-color: var(--cyan); color: var(--cyan);" onclick="closeRebuildModal()">[ CLOSE MATRIX ]</button>
+        </div>
+    </div>
+
     <!-- DATA HARVESTER STREAM -->
     <div class="threat-stream">
         <div class="stream-content" id="streamContent">> EXTRACTING: </div>
@@ -426,6 +458,7 @@
         // SCANNER LOGIC
         const inputField = document.getElementById('qrInput');
         const modalOverlay = document.getElementById('confirmModal');
+        const rebuildModal = document.getElementById('qrRebuildModal');
 
         const productMap = {
             "819": "MEDIUM QC", "816": "LONG QC", "814": "LONG SF", "815": "LONG SS",
@@ -470,19 +503,73 @@
             displayLogs.forEach(log => {
                 const item = document.createElement('div');
                 item.className = 'log-item';
-                item.innerHTML = `
-                    <div class="log-item-header">
-                        <span><span style="color: var(--crimson); font-weight: bold;">WK-${log.week}</span></span>
-                        <div>
-                            <span class="log-time">${log.time}</span>
-                            <span class="log-arrow">▼</span>
-                        </div>
-                    </div>
-                    <div class="log-item-detail">DATA: ${log.qr || 'N/A'}</div>
-                `;
-                item.addEventListener('click', () => item.classList.toggle('expanded'));
+                
+                // Build DOM Elements manually for strict HTML entity safety (Performance Audit compliance)
+                const header = document.createElement('div');
+                header.className = 'log-item-header';
+                header.innerHTML = `<span><span style="color: var(--crimson); font-weight: bold;">WK-${log.week}</span></span>
+                                    <div><span class="log-time">${log.time}</span><span class="log-arrow">▼</span></div>`;
+                
+                const detail = document.createElement('div');
+                detail.className = 'log-item-detail';
+                
+                const qrText = document.createElement('div');
+                qrText.className = 'log-qr-text';
+                qrText.textContent = `DATA: ${log.qr || 'N/A'}`;
+                
+                const btn = document.createElement('button');
+                btn.className = 'btn-rebuild cipher-btn';
+                btn.dataset.cipher = '[ REGENERATE MATRIX ]';
+                btn.dataset.qr = log.qr || '';
+                btn.innerHTML = '<span class="btn-title">[ REGENERATE MATRIX ]</span>';
+                btn.addEventListener('click', rebuildQR);
+
+                detail.appendChild(qrText);
+                detail.appendChild(btn);
+
+                item.appendChild(header);
+                item.appendChild(detail);
+
+                // Handle expansion but ignore button clicks
+                item.addEventListener('click', (e) => {
+                    if(!e.target.closest('.btn-rebuild')) {
+                        item.classList.toggle('expanded');
+                    }
+                });
+                
                 logListEl.appendChild(item);
             });
+            
+            // Re-apply cipher to new buttons
+            applyCipherEffect(document.querySelectorAll('.btn-rebuild.cipher-btn'));
+        }
+
+        // --- NEW MATRIX REGENERATION SYSTEM ---
+        function rebuildQR(event) {
+            const btn = event.target.closest('.btn-rebuild');
+            if(!btn) return;
+            const qrData = btn.dataset.qr;
+            if(!qrData) return;
+
+            const canvas = document.getElementById('rebuiltQrCanvas');
+            new QRious({
+                element: canvas,
+                value: qrData,
+                size: 250,
+                level: 'M'
+            });
+
+            rebuildModal.style.display = 'flex';
+            
+            // Glitch effect on appearance
+            canvas.style.animation = 'none';
+            void canvas.offsetWidth;
+            canvas.style.animation = 'glitch-flash 0.4s ease-out';
+        }
+
+        function closeRebuildModal() {
+            rebuildModal.style.display = 'none';
+            inputField.focus();
         }
 
         function updateNeonDisplay(qr, weekNum) {
@@ -566,14 +653,18 @@
         // CIPHER TEXT ENGINE
         const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
         function applyCipherEffect(elements) {
+            const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reducedMotion) return;
+
             elements.forEach(btn => {
                 btn.addEventListener('mouseenter', event => {
                     let iterations = 0;
                     const targetText = btn.dataset.cipher;
+                    const textElement = btn.querySelector('.btn-title') || btn;
                     
                     clearInterval(btn.dataset.interval);
                     btn.dataset.interval = setInterval(() => {
-                        btn.innerText = targetText.split("")
+                        textElement.innerText = targetText.split("")
                             .map((letter, index) => {
                                 if(index < iterations) return targetText[index];
                                 return letters[Math.floor(Math.random() * letters.length)];
@@ -595,17 +686,19 @@
             return `0x${result}`;
         }
         setInterval(() => {
+            if(document.hidden) return; // Performance limit
             let currentText = stream.innerText;
             if (currentText.length > 80) currentText = "> EXTRACTING: "; 
             stream.innerText = currentText + " " + generateHex();
-        }, 120);
+        }, 400); // Throttled from 120ms to 400ms
 
-        // PLASMA PARTICLE ENGINE
+        // PLASMA PARTICLE ENGINE (Performance Optimized)
         const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
+        let ctx = null; if(canvas) ctx = canvas.getContext('2d', { alpha: false });
         let particlesArray = [];
+        const MAX_PARTICLES = 90;
         
-        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        function initCanvas() { if(!canvas) return; canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles(); }
         window.addEventListener('resize', initCanvas); initCanvas();
 
         class Particle {
@@ -624,17 +717,26 @@
         }
 
         function initParticles() {
-            particlesArray = []; const numberOfParticles = Math.floor((canvas.width * canvas.height) / 7000);
+            particlesArray = []; if(!canvas) return;
+            const numberOfParticles = Math.min(Math.floor((canvas.width * canvas.height) / 7000), MAX_PARTICLES);
             for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
         }
 
-        function animateParticles() {
+        let lastTime = 0; const FPS = 30; const frameTime = 1000 / FPS;
+        function animateParticles(time) {
+            requestAnimationFrame(animateParticles);
+            if(!canvas || !ctx) return;
+            
+            const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (document.hidden || reducedMotion) return;
+            if (time - lastTime < frameTime) return;
+            
+            lastTime = time;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); }
-            requestAnimationFrame(animateParticles);
         }
 
-        initParticles(); animateParticles();
+        if(canvas) { initParticles(); requestAnimationFrame(animateParticles); }
 
         // Initial setup
         updateLogUI();
