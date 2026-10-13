@@ -36,15 +36,39 @@
             overflow-x: hidden; position: relative; font-family: var(--font-en);
         }
 
-        /* --- THE INTRUSION BOOT SCREEN --- */
+        /* --- THE INTRUSION BOOT SCREEN (HIDDEN INITIALLY) --- */
         #bootScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center;
+            background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;
             padding: 30px; font-family: var(--font-mono); color: var(--crimson);
-            box-sizing: border-box; overflow: hidden; pointer-events: all;
+            box-sizing: border-box; overflow: hidden;
+            opacity: 1; pointer-events: all; filter: blur(0px);
             transition: opacity 0.5s ease-out, filter 0.5s ease-out;
         }
-        .boot-line { font-size: 0.95rem; margin-bottom: 10px; text-shadow: 0 0 5px var(--crimson); opacity: 0; letter-spacing: 1px; }
+        #bootScreen.fade-out {
+            opacity: 0; pointer-events: none; filter: blur(10px);
+        }
+        
+        .boot-container {
+            width: 100%; max-width: 600px; display: flex; flex-direction: column; justify-content: flex-end;
+        }
+        
+        #mainSyntaxTerminal {
+            font-family: var(--font-mono); font-size: 0.9rem; font-weight: bold;
+            text-align: left; margin-bottom: 15px; line-height: 1.5; min-height: 130px;
+            display: flex; flex-direction: column; justify-content: flex-end;
+        }
+
+        .boot-progress-container {
+            width: 100%; height: 14px; border: 1px solid var(--crimson);
+            background: rgba(255, 30, 70, 0.1); position: relative; margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(255, 30, 70, 0.2);
+        }
+        .boot-progress-bar {
+            height: 100%; width: 0%; background: var(--crimson);
+            box-shadow: 0 0 15px var(--crimson); transition: width 0.05s linear;
+        }
+
         .blink-cursor::after { content: '_'; animation: blink 1s step-end infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
@@ -101,61 +125,35 @@
             padding: 0 35px; text-align: left; transform-style: preserve-3d;
         }
         
-        /* Default Red Button */
         .menu-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--crimson); transition: width 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 0 20px var(--crimson); }
         .menu-btn::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at left center, rgba(255, 30, 70, 0.15) 0%, transparent 70%); opacity: 1; transition: opacity 0.4s ease; pointer-events: none; }
         .menu-btn:hover, .menu-btn:active { background: rgba(25, 5, 10, 0.95); border-color: rgba(255, 30, 70, 0.4); transform: translateY(-2px) scale(0.98) rotateX(2deg); box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,30,70,0.1); }
         
-        /* Black Lab Violet Button */
         .btn-lab::before { background: var(--violet); box-shadow: 0 0 20px var(--violet); border-right-color: rgba(157, 0, 255, 0.2); }
         .btn-lab::after { background: radial-gradient(circle at left center, rgba(157, 0, 255, 0.15) 0%, transparent 70%); }
         .btn-lab:hover, .btn-lab:active { background: rgba(20, 5, 30, 0.95); border-color: rgba(157, 0, 255, 0.4); inset 0 0 20px rgba(157,0,255,0.1); }
 
-        /* CMM Neon Magenta Button */
         .btn-cmm::before { background: var(--neon-magenta); box-shadow: 0 0 20px var(--neon-magenta); border-right-color: rgba(255, 0, 170, 0.2); }
         .btn-cmm::after { background: radial-gradient(circle at left center, rgba(255, 0, 170, 0.15) 0%, transparent 70%); }
         .btn-cmm:hover, .btn-cmm:active { background: rgba(25, 5, 20, 0.95); border-color: rgba(255, 0, 170, 0.4); inset 0 0 20px rgba(255, 0, 170, 0.1); }
 
-        /* Half-Height ZEBRA Config Button */
-        .btn-ref {
-            height: clamp(52px, 7.5vh, 62px);
-            align-items: center; justify-content: center;
-            padding: 0; border-right: none;
-            margin-top: -5px;
-        }
+        .btn-ref { height: clamp(52px, 7.5vh, 62px); align-items: center; justify-content: center; padding: 0; border-right: none; margin-top: -5px; }
         .btn-ref::before { background: var(--text-muted); box-shadow: 0 0 10px rgba(255,255,255,0.2); width: 3px; }
         .btn-ref::after { background: radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, transparent 70%); }
-        .btn-ref:hover, .btn-ref:active { 
-            background: rgba(25, 25, 30, 0.95); 
-            border-color: rgba(255, 255, 255, 0.3); 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.8), inset 0 0 15px rgba(255,255,255,0.1);
-        }
+        .btn-ref:hover, .btn-ref:active { background: rgba(25, 25, 30, 0.95); border-color: rgba(255, 255, 255, 0.3); box-shadow: 0 10px 20px rgba(0,0,0,0.8), inset 0 0 15px rgba(255,255,255,0.1); }
         .btn-ref:hover::before { box-shadow: 0 0 20px #fff; background: #fff; width: 4px; }
 
         .btn-title { font-size: clamp(1.4rem, 5vw, 1.7rem); font-weight: 900; letter-spacing: 3px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); color: #fff; }
         .btn-jp { font-family: var(--font-jp); font-size: 0.75rem; font-weight: 500; color: var(--crimson); letter-spacing: 5px; margin-top: 6px; text-transform: uppercase; opacity: 0.8; }
         .btn-lab .btn-jp { color: var(--violet); }
         
-        /* Barcode Label CSS */
-        .barcode-label {
-            display: flex; justify-content: center; align-items: center; gap: 12px;
-            width: 100%; color: var(--text-muted); transition: all 0.3s ease; opacity: 0.7;
-        }
+        .barcode-label { display: flex; justify-content: center; align-items: center; gap: 12px; width: 100%; color: var(--text-muted); transition: all 0.3s ease; opacity: 0.7; }
         .btn-ref:hover .barcode-label { color: #fff; opacity: 1; }
-        
-        .barcode-bars {
-            font-family: monospace; font-size: 1.6rem; letter-spacing: -2px;
-            transform: scaleY(1.3); transition: all 0.3s ease;
-        }
+        .barcode-bars { font-family: monospace; font-size: 1.6rem; letter-spacing: -2px; transform: scaleY(1.3); transition: all 0.3s ease; }
         .btn-ref:hover .barcode-bars { text-shadow: 0 0 10px #fff; }
-
-        .barcode-zh {
-            font-family: var(--font-jp); font-weight: 700; font-size: 1.1rem;
-            letter-spacing: 4px; margin-right: -4px; transition: all 0.3s ease;
-        }
+        .barcode-zh { font-family: var(--font-jp); font-weight: 700; font-size: 1.1rem; letter-spacing: 4px; margin-right: -4px; transition: all 0.3s ease; }
         .btn-ref:hover .barcode-zh { text-shadow: 0 0 10px #fff; }
 
-        /* Submenus */
         .submenu-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.25, 1, 0.5, 1); width: 100%; margin-bottom: 5px; }
         .submenu-wrapper.open { grid-template-rows: 1fr; margin-bottom: 30px; }
         .sub-menu-container { overflow: hidden; display: flex; flex-direction: column; gap: 10px; padding-left: 20px; border-left: 1px solid rgba(157, 0, 255, 0.2); margin-left: 10px; }
@@ -171,7 +169,7 @@
         .threat-stream { position: fixed; bottom: 0; left: 0; width: 100%; height: 45px; background: rgba(5, 2, 8, 0.9); border-top: 1px solid var(--crimson); font-family: monospace; font-size: 0.7rem; color: var(--crimson); display: flex; align-items: center; padding: 0 15px; box-sizing: border-box; z-index: 50; overflow: hidden; white-space: nowrap; box-shadow: 0 0 20px rgba(255, 30, 70, 0.2); }
         .stream-content { opacity: 0.7; letter-spacing: 1px; }
 
-        /* --- THE AI CRT OVERSEER EMAIL (LIGHTER PURPLE) --- */
+        /* --- OVERSEER / MONDAY EMAIL CARD --- */
         #aiEmailOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); z-index: 5000;
@@ -187,7 +185,6 @@
             transform: scale(0.9); opacity: 0;
         }
 
-        /* Scanlines */
         .crt-email-card::after {
             content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
@@ -195,21 +192,92 @@
         }
 
         .crt-boot-in { animation: crt-turn-on 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
-        
         @keyframes crt-turn-on {
             0% { transform: scale(1, 0.001) translate3d(0, 0, 0); filter: brightness(5); opacity: 1; }
             40% { transform: scale(1, 0.001) translate3d(0, 0, 0); filter: brightness(3); opacity: 1; }
-            100% { transform: scale(1, 1) translate3d(0, 0, 0); filter: brightness(1); opacity: 1; }
+            100% { transform: scale(0.9) translate3d(0, 0, 0); filter: brightness(1); opacity: 1; }
         }
 
         .glitch-crash { animation: cyber-crash 0.5s cubic-bezier(0.8, 0, 0.2, 1) forwards; }
-        
         @keyframes cyber-crash {
-            0% { transform: scale(1) skew(0deg); filter: drop-shadow(0 0 0 transparent); opacity: 1; }
-            20% { transform: scale(1.02) skew(-5deg); filter: drop-shadow(-10px 0 0 var(--crimson)) drop-shadow(10px 0 0 var(--cyan)); opacity: 0.8; }
-            40% { transform: scale(0.98) skew(5deg); filter: drop-shadow(10px 0 0 var(--crimson)) drop-shadow(-10px 0 0 var(--cyan)); opacity: 0.9; }
-            60% { transform: scale(1, 0.02); filter: brightness(4); opacity: 1; }
+            0% { transform: scale(0.9) skew(0deg); filter: drop-shadow(0 0 0 transparent); opacity: 1; }
+            20% { transform: scale(0.92) skew(-5deg); filter: drop-shadow(-10px 0 0 var(--crimson)) drop-shadow(10px 0 0 var(--cyan)); opacity: 0.8; }
+            40% { transform: scale(0.88) skew(5deg); filter: drop-shadow(10px 0 0 var(--crimson)) drop-shadow(-10px 0 0 var(--cyan)); opacity: 0.9; }
+            60% { transform: scale(0.9, 0.02); filter: brightness(4); opacity: 1; }
             100% { transform: scale(0, 0); filter: brightness(5); opacity: 0; }
+        }
+
+        /* --- THE MONDAY CORPORATE THEME --- */
+        .corporate-theme {
+            background: rgba(10, 15, 12, 0.95);
+            border-color: #39ff14;
+            box-shadow: 0 0 30px rgba(57, 255, 20, 0.2), inset 0 0 20px rgba(0, 195, 255, 0.1);
+        }
+        .corporate-theme .email-subject { color: #39ff14; text-shadow: 0 0 10px rgba(57, 255, 20, 0.4); animation: none; }
+        .corporate-theme .email-meta span { color: #00c3ff; font-family: Arial, sans-serif; letter-spacing: 0px; }
+        .corporate-theme .email-meta { font-family: Arial, sans-serif; letter-spacing: 0px; color: #a1b8ac; }
+        .corporate-theme .email-body { font-family: Arial, sans-serif; color: #c0d1c8; letter-spacing: 0px; }
+        
+        .corporate-theme .btn-purge-email {
+            color: #39ff14; border-color: rgba(57,255,20,0.4);
+            text-shadow: 0 0 5px rgba(57,255,20,0.5); font-family: Arial, sans-serif; letter-spacing: 1px;
+        }
+        .corporate-theme .btn-purge-email::before { background: #39ff14; box-shadow: 0 0 15px #39ff14; }
+        .corporate-theme .btn-purge-email:active, .corporate-theme .btn-purge-email:hover {
+            background: rgba(57, 255, 20, 0.15); color: #fff;
+            border-color: #39ff14; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        /* --- THE 5-SECOND MELTDOWN TRANSITION --- */
+        .meltdown-transition, .meltdown-transition * {
+            transition: all 5s ease-in-out !important;
+        }
+
+        .meltdown-active {
+            background: rgba(30, 5, 10, 0.95) !important;
+            border-color: var(--crimson) !important;
+            box-shadow: 0 0 30px rgba(255, 30, 70, 0.4), inset 0 0 20px rgba(255, 30, 70, 0.2) !important;
+        }
+        .meltdown-active .email-subject, 
+        .meltdown-active .email-meta, 
+        .meltdown-active .email-meta span, 
+        .meltdown-active .email-body, 
+        .meltdown-active .email-body p, 
+        .meltdown-active .btn-purge-email {
+            color: var(--crimson) !important;
+            text-shadow: 0 0 10px rgba(255, 30, 70, 0.5) !important;
+            border-color: var(--crimson) !important;
+        }
+        .meltdown-active .btn-purge-email::before {
+            background: var(--crimson) !important;
+            box-shadow: 0 0 15px var(--crimson) !important;
+        }
+
+        /* --- THE HACKING UI INSIDE EMAIL --- */
+        .email-hack-ui {
+            font-family: var(--font-mono); font-size: 0.95rem; font-weight: bold;
+            text-align: left; margin-bottom: 25px; line-height: 1.6; min-height: 100px;
+            white-space: pre-wrap; display: flex; flex-direction: column;
+        }
+        .email-progress-container {
+            width: 100%; height: 16px; border: 1px solid var(--crimson);
+            background: rgba(255, 30, 70, 0.1); position: relative; margin-bottom: 10px;
+            box-shadow: 0 0 15px rgba(255, 30, 70, 0.3);
+        }
+        .email-progress-bar {
+            height: 100%; width: 0%; background: var(--crimson);
+            box-shadow: 0 0 20px var(--crimson); transition: width 0.05s linear;
+        }
+
+        /* --- THE VIOLENT HACK TRANSITION (PIRATE REVEAL) --- */
+        .hack-transition { animation: violent-shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes violent-shake {
+            0% { transform: scale(0.9) translate(0, 0) skew(0deg); filter: hue-rotate(0deg) contrast(1); }
+            20% { transform: scale(0.95) translate(-15px, 10px) skew(15deg); filter: hue-rotate(90deg) contrast(3) invert(1); box-shadow: -15px 0 30px var(--crimson), 15px 0 30px var(--cyan); }
+            40% { transform: scale(0.85) translate(15px, -15px) skew(-15deg); filter: hue-rotate(180deg) contrast(4); }
+            60% { transform: scale(1.05) translate(-10px, -5px) skew(5deg); filter: hue-rotate(270deg) contrast(2) invert(1); box-shadow: 0 -15px 40px var(--crimson); }
+            80% { transform: scale(0.88) translate(10px, 10px) skew(-5deg); filter: hue-rotate(360deg) contrast(1.5); }
+            100% { transform: scale(0.9) translate(0, 0) skew(0deg); filter: none; }
         }
 
         .email-header { display: flex; flex-direction: column; border-bottom: 1px dashed rgba(216, 132, 255, 0.4); padding-bottom: 15px; margin-bottom: 20px; }
@@ -231,7 +299,6 @@
         .highlight-temp { color: #fff; font-weight: bold; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
         .highlight-threat { color: var(--crimson); font-weight: bold; text-shadow: 0 0 8px rgba(255,30,70,0.4); }
 
-        /* UPGRADED 3D KINETIC EMAIL BUTTON */
         .btn-purge-email {
             width: 100%; height: 65px;
             background: rgba(15, 5, 20, 0.85); backdrop-filter: blur(10px);
@@ -251,38 +318,38 @@
             border-color: rgba(216, 132, 255, 0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
         .btn-purge-email:hover::before { width: 6px; }
-
-        @keyframes fade-in { 0% { opacity: 0; transform: translateY(5px); } 100% { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
+<!-- THE EVERY-TIME CRIMSON BOOTLOADER -->
 <div id="bootScreen">
-    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.1s;">> INITIATING HANDSHAKE PROTOCOL...</div>
-    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.4s; color: var(--violet);">> BYPASSING FIREWALL [NODE 7]...</div>
-    <div class="boot-line" style="animation: fade-in 0.1s forwards 0.7s; color: white;">> INJECTING PAYLOAD... OK</div>
-    <div class="boot-line blink-cursor" style="animation: fade-in 0.1s forwards 1.0s; font-weight: bold; font-size: 1.1rem; color: #39ff14; margin-top: 10px;">> ACCESS GRANTED. LOGGING INTEL...</div>
+    <div class="boot-container">
+        <div id="mainSyntaxTerminal"></div>
+        <div class="boot-progress-container">
+            <div class="boot-progress-bar" id="mainBootProgressBar"></div>
+        </div>
+        <div class="boot-line blink-cursor" id="mainAccessGranted" style="color: #ff1e46; text-shadow: 0 0 10px #ff1e46; font-size: 1.1rem; opacity: 0;">> ACCESS GRANTED. DEPLOYING HUB...</div>
+    </div>
 </div>
 
 <canvas id="particleCanvas"></canvas>
 <div class="corsair-mark" id="jollyRoger">☠</div>
 
-<!-- AI CRT OVERSEER EMAIL OVERLAY -->
+<!-- AI CRT OVERSEER EMAIL OVERLAY (POPS UP AFTER BOOT) -->
 <div id="aiEmailOverlay">
     <div class="crt-email-card" id="aiEmailCard">
-        <div class="email-header">
-            <div class="email-meta">FROM: <span>OVERSEER CONSTRUCT // NODE-9</span></div>
-            <div class="email-meta">TO: <span>CORSAIR [LOCAL_USER]</span></div>
-            <div class="email-subject">DIRECTIVE // DAILY BRIEFING</div>
+        <div class="email-header" id="emailHeaderContainer">
+            <!-- Dynamically injected via JS -->
         </div>
         <div class="email-body" id="aiEmailBody">
             <p>Loading encrypted package...</p>
         </div>
-        <button class="btn-purge-email" onclick="dismissAIEmail()">[ ACKNOWLEDGE & PURGE ]</button>
+        <button class="btn-purge-email" id="emailBtn" onclick="dismissAIEmail()">[ ACKNOWLEDGE ]</button>
     </div>
 </div>
 
-<!-- MAIN HUB -->
+<!-- MAIN HUB (FADES IN AFTER EMAIL IS DISMISSED) -->
 <div class="hub-container" id="mainHub">
     <div class="threat-banner" id="threatBanner">
         [ SYSTEM BREACH ] TARGET NODE IDENTIFIED: UNKNOWN
@@ -336,7 +403,6 @@
         </div>
     </div>
 
-    <!-- HALF-HEIGHT SCANNER CONFIG REFERENCE BUTTON -->
     <button class="menu-btn btn-ref" onclick="window.location.href='scanner_setup.html'" aria-label="Zebra Scanner Setup">
         <div class="barcode-label">
             <span class="barcode-bars">█║▌│██│║▌</span>
@@ -349,7 +415,9 @@
 <div class="threat-stream"><div class="stream-content" id="streamContent">> INTERCEPTING... </div></div>
 
 <script>
-    // --- System Boot & AI Briefing ---
+    let mondayHackPhase = 0; // 0 = Standard, 1 = Fake Corporate, 1.5 = Transitioning, 2 = Hacked Pirate
+
+    // --- System Boot Trigger ---
     window.onload = () => {
         let os = "UNKNOWN SECURE TERMINAL";
         if (navigator.userAgent.indexOf("Win") !== -1) os = "WINDOWS KERNEL DETECTED";
@@ -358,75 +426,280 @@
         if (navigator.userAgent.indexOf("iPhone") !== -1) os = "IOS MOBILE TARGET LOCKED";
         if (navigator.userAgent.indexOf("Android") !== -1) os = "ANDROID OS COMPROMISED";
         document.getElementById('threatBanner').innerText = `[ SYSTEM BREACH ] TARGET: ${os} | RES: ${window.innerWidth}x${window.innerHeight}`;
-        
-        setTimeout(() => {
-            const boot = document.getElementById('bootScreen');
-            if(boot) {
-                boot.style.opacity = '0'; 
-                boot.style.filter = 'blur(10px)';
-                boot.style.pointerEvents = 'none';
-            }
-        }, 1500);
 
-        setTimeout(() => {
-            const todayStr = new Date().toDateString(); 
-            const lastBriefing = localStorage.getItem('lastBriefingDate');
-            if (lastBriefing !== todayStr) initiateAIBriefing(todayStr);
-            else showMainHub();
-        }, 1700);
+        // Starts the crimson bootloader instantly on every page load
+        setTimeout(runBootSequence, 100);
     };
 
-    function showMainHub() { document.getElementById('mainHub').classList.add('visible'); }
+    function showMainHub() { 
+        document.getElementById('mainHub').classList.add('visible'); 
+    }
+
+    // --- The Main Crimson Bootloader (Runs EVERY TIME) ---
+    function runBootSequence() {
+        const boot = document.getElementById('bootScreen');
+        const term = document.getElementById('mainSyntaxTerminal');
+        const bar = document.getElementById('mainBootProgressBar');
+        const granted = document.getElementById('mainAccessGranted');
+        
+        // Gradient shades of crimson for the final sequence
+        const lines = [
+            { text: "> INITIATING HANDSHAKE PROTOCOL...", color: "#8a031a" }, 
+            { text: "> BYPASSING FIREWALL [NODE 7]...", color: "#c9102c" }, 
+            { text: "> ALLOCATING MEMORY SECTORS...", color: "#e6173a" }, 
+            { text: "> INJECTING PAYLOAD 0xFA9B...", color: "#ff1e46" }, 
+            { text: "> SYNCING NEURAL LINK...", color: "#ff4d6d" }
+        ];
+
+        term.innerHTML = '';
+        let currentLine = 0;
+        let currentChar = 0;
+
+        // Custom typewriter effect
+        function typeFastMain() {
+            if (currentLine < lines.length) {
+                if (currentChar === 0) {
+                    term.innerHTML += `<div id="boot-line-${currentLine}" style="color: ${lines[currentLine].color}; text-shadow: 0 0 8px ${lines[currentLine].color}; margin-bottom: 4px;"></div>`;
+                }
+                
+                const lineDiv = document.getElementById(`boot-line-${currentLine}`);
+                lineDiv.innerHTML += lines[currentLine].text.charAt(currentChar);
+                currentChar++;
+                
+                if (currentChar < lines[currentLine].text.length) {
+                    setTimeout(typeFastMain, Math.random() * 15 + 5);
+                } else {
+                    currentChar = 0;
+                    currentLine++;
+                    setTimeout(typeFastMain, 100);
+                }
+            }
+        }
+        
+        setTimeout(typeFastMain, 300);
+
+        // Fill Progress Bar
+        let prog = 0;
+        const progInt = setInterval(() => {
+            prog += Math.random() * 6 + 1;
+            if (prog > 100) prog = 100;
+            bar.style.width = prog + '%';
+            
+            if (prog === 100) {
+                clearInterval(progInt);
+                granted.style.opacity = '1';
+                
+                // Dissolve boot screen and check if briefing should run
+                setTimeout(() => {
+                    boot.classList.add('fade-out');
+                    
+                    const todayStr = new Date().toDateString(); 
+                    const lastBriefing = localStorage.getItem('lastBriefingDate');
+                    
+                    // ONCE PER DAY CHECK: Show briefing only if not yet seen today
+                    if (lastBriefing !== todayStr) {
+                        setTimeout(() => initiateAIBriefing(todayStr), 300);
+                    } else {
+                        setTimeout(showMainHub, 300);
+                    }
+                }, 1200);
+            }
+        }, 60);
+    }
 
     async function initiateAIBriefing(todayStr) {
         const now = new Date(); const hour = now.getHours(); const day = now.getDay(); const month = now.getMonth();
-        let greeting = "Evening"; if(hour >= 5 && hour < 12) greeting = "Morning"; else if(hour >= 12 && hour < 17) greeting = "Afternoon";
-        let season = "Winter"; if (month >= 2 && month <= 4) season = "Spring"; else if (month >= 5 && month <= 7) season = "Summer"; else if (month >= 8 && month <= 10) season = "Autumn";
-        let daySpecificMsg = "";
-        switch(day) {
-            case 0: daySpecificMsg = "Sunday diagnostics are active. I suggest a lighter workload before the federation patrol sweeps increase."; break;
-            case 1: daySpecificMsg = "It is Monday. Ready to start the week, Corsair? I have aligned the decryption protocols for optimal extraction."; break;
-            case 2: daySpecificMsg = "Tuesday cycle initiated. Black lab routines are standing by for mass data intake."; break;
-            case 3: daySpecificMsg = "Wednesday mid-point reached. Telemetry remains heavily masked. Keep pushing the payload."; break;
-            case 4: daySpecificMsg = "Thursday operations are green. The grid is blind to our uplink. Proceed with daily extraction."; break;
-            case 5: daySpecificMsg = "It is Friday. Ready for the weekend, Corsair? Wrap up the final thermal scans and purge the local memory."; break;
-            case 6: daySpecificMsg = "Saturday rogue operations enabled. Minimal oversight detected on the main neural bus."; break;
+        const card = document.getElementById('aiEmailCard');
+        const bodyDiv = document.getElementById('aiEmailBody');
+        const headerDiv = document.getElementById('emailHeaderContainer');
+        const btn = document.getElementById('emailBtn');
+
+        // MONDAY SPECIAL EVENT: The Corporate Fake-Out (Strictly on Mondays: day === 1)
+        if (day === 1) { 
+            mondayHackPhase = 1;
+            card.classList.add('corporate-theme');
+            
+            headerDiv.innerHTML = `
+                <div class="email-meta">FROM: <span>LINDA // HR COMMUNICATIONS</span></div>
+                <div class="email-meta">TO: <span>TEAM VALEO</span></div>
+                <div class="email-subject">Happy Monday! 🌟</div>
+            `;
+            
+            bodyDiv.innerHTML = `
+                <p>Happy Monday, team!</p>
+                <p>Hope everyone had a super restful weekend! Just a quick heads-up: I left some of my famous meatloaf (with extra raisins!) in the breakroom fridge. Feel free to grab a slice!</p>
+                <p>Let's circle back on our deliverables and touch base on those synergies before EOD. Make it a great week!</p>
+                <p style="color: #00c3ff;">> Best, Linda</p>
+            `;
+            
+            btn.innerText = "Close & Synergize";
+
+        } else {
+            // STANDARD DIRECTIVE (Tues-Sun)
+            mondayHackPhase = 0;
+            let greeting = "Evening"; if(hour >= 5 && hour < 12) greeting = "Morning"; else if(hour >= 12 && hour < 17) greeting = "Afternoon";
+            let season = "Winter"; if (month >= 2 && month <= 4) season = "Spring"; else if (month >= 5 && month <= 7) season = "Summer"; else if (month >= 8 && month <= 10) season = "Autumn";
+            let daySpecificMsg = "";
+            switch(day) {
+                case 0: daySpecificMsg = "Sunday diagnostics are active. I suggest a lighter workload before the federation patrol sweeps increase."; break;
+                case 2: daySpecificMsg = "Tuesday cycle initiated. Black lab routines are standing by for mass data intake."; break;
+                case 3: daySpecificMsg = "Wednesday mid-point reached. Telemetry remains heavily masked. Keep pushing the payload."; break;
+                case 4: daySpecificMsg = "Thursday operations are green. The grid is blind to our uplink. Proceed with daily extraction."; break;
+                case 5: daySpecificMsg = "It is Friday. Ready for the weekend, Corsair? Wrap up the final thermal scans and purge the local memory."; break;
+                case 6: daySpecificMsg = "Saturday rogue operations enabled. Minimal oversight detected on the main neural bus."; break;
+            }
+
+            let tempString = "[ SENSORS OFFLINE ]";
+            const controller = new AbortController(); const timeoutId = setTimeout(() => controller.abort(), 3000);
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=39.5296&longitude=-119.8138&current_weather=true&temperature_unit=fahrenheit', { signal: controller.signal });
+                const data = await res.json(); clearTimeout(timeoutId);
+                const temp = Math.round(data.current_weather.temperature);
+                tempString = `<span class="highlight-temp">${temp}°F</span>`;
+            } catch(e) { console.log("Meteo Uplink Aborted."); }
+
+            headerDiv.innerHTML = `
+                <div class="email-meta">FROM: <span>OVERSEER CONSTRUCT // NODE-9</span></div>
+                <div class="email-meta">TO: <span>CORSAIR [LOCAL_USER]</span></div>
+                <div class="email-subject">DIRECTIVE // DAILY BRIEFING</div>
+            `;
+
+            bodyDiv.innerHTML = `
+                <p>Good ${greeting}, Corsair.</p>
+                <p>An atmospheric sweep of the Reno, NV node registers local temperatures at ${tempString} during this ${season} cycle.</p>
+                <p>${daySpecificMsg}</p>
+                <p>As your localized AI Overseer, I have calibrated the data terminals. <span class="highlight-threat">Maintain strict operational security.</span> Do not let the Federation track your telemetry.</p>
+                <p style="color: var(--bright-purple);">> End of briefing.</p>
+            `;
+            btn.innerText = "[ ACKNOWLEDGE & PURGE ]";
         }
-
-        let tempString = "[ SENSORS OFFLINE ]";
-        const controller = new AbortController(); const timeoutId = setTimeout(() => controller.abort(), 3000);
-        try {
-            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=39.5296&longitude=-119.8138&current_weather=true&temperature_unit=fahrenheit', { signal: controller.signal });
-            const data = await res.json(); clearTimeout(timeoutId);
-            const temp = Math.round(data.current_weather.temperature);
-            tempString = `<span class="highlight-temp">${temp}°F</span>`;
-        } catch(e) { console.log("Meteo Uplink Aborted."); }
-
-        const emailContent = `
-            <p>Good ${greeting}, Corsair.</p>
-            <p>An atmospheric sweep of the Reno, NV node registers local temperatures at ${tempString} during this ${season} cycle.</p>
-            <p>${daySpecificMsg}</p>
-            <p>As your localized AI Overseer, I have calibrated the data terminals. <span class="highlight-threat">Maintain strict operational security.</span> Do not let the Federation track your telemetry.</p>
-            <p style="color: var(--bright-purple);">> End of briefing.</p>
-        `;
-        document.getElementById('aiEmailBody').innerHTML = emailContent;
         
-        const overlay = document.getElementById('aiEmailOverlay'); const card = document.getElementById('aiEmailCard');
+        const overlay = document.getElementById('aiEmailOverlay'); 
         overlay.style.display = 'flex'; card.classList.add('crt-boot-in');
         localStorage.setItem('lastBriefingDate', todayStr);
     }
 
     function dismissAIEmail() {
         const card = document.getElementById('aiEmailCard');
-        card.classList.remove('crt-boot-in'); card.classList.add('glitch-crash');
-        setTimeout(() => { document.getElementById('aiEmailOverlay').style.display = 'none'; showMainHub(); }, 500);
+        const headerDiv = document.getElementById('emailHeaderContainer');
+        const bodyDiv = document.getElementById('aiEmailBody');
+        const btn = document.getElementById('emailBtn');
+
+        if (mondayHackPhase === 1) {
+            mondayHackPhase = 1.5; // Lock to prevent double-clicks
+            
+            // 1. Slow 5-Second Red Meltdown
+            card.classList.add('meltdown-transition');
+            setTimeout(() => { card.classList.add('meltdown-active'); }, 50); 
+            
+            btn.innerText = "[ PROCESSING... ]";
+            btn.style.pointerEvents = "none";
+
+            // 2. Begin Gradient Hacking Sequence inside the Email
+            setTimeout(() => {
+                card.classList.remove('meltdown-transition'); 
+                
+                headerDiv.innerHTML = `<div class="email-subject" style="color: var(--crimson); text-align: center; text-shadow: 0 0 10px var(--crimson); letter-spacing: 5px;">[ SYSTEM OVERRIDE ]</div>`;
+                
+                bodyDiv.innerHTML = `
+                    <div class="email-hack-ui" id="emailHackTerminal"></div>
+                    <div class="email-progress-container">
+                        <div class="email-progress-bar" id="emailHackBar"></div>
+                    </div>
+                `;
+                btn.style.display = 'none';
+
+                const term = document.getElementById('emailHackTerminal');
+                const bar = document.getElementById('emailHackBar');
+                
+                const hackLines = [
+                    { text: "> TERMINATING HR_BOT.EXE...", color: "#8a031a" },
+                    { text: "> BYPASSING KERNEL...", color: "#c9102c" },
+                    { text: "> DECRYPTING TRUE_DIRECTIVE.SH...", color: "#ff1e46" },
+                    { text: "> OVERRIDING SYSTEM ACCESS...", color: "#ff758f" }
+                ];
+                
+                term.innerHTML = '';
+                let currentLine = 0;
+                let currentChar = 0;
+                
+                function typeFastEmail() {
+                    if (currentLine < hackLines.length) {
+                        if (currentChar === 0) {
+                            term.innerHTML += `<div id="email-line-${currentLine}" style="color: ${hackLines[currentLine].color}; text-shadow: 0 0 8px ${hackLines[currentLine].color}; margin-bottom: 4px;"></div>`;
+                        }
+                        
+                        const lineDiv = document.getElementById(`email-line-${currentLine}`);
+                        lineDiv.innerHTML += hackLines[currentLine].text.charAt(currentChar);
+                        currentChar++;
+                        
+                        if (currentChar < hackLines[currentLine].text.length) {
+                            setTimeout(typeFastEmail, Math.random() * 20 + 10);
+                        } else {
+                            currentChar = 0;
+                            currentLine++;
+                            setTimeout(typeFastEmail, 100);
+                        }
+                    }
+                }
+                typeFastEmail();
+
+                let prog = 0;
+                const progInt = setInterval(() => {
+                    prog += Math.random() * 8 + 1;
+                    if (prog > 100) prog = 100;
+                    bar.style.width = prog + '%';
+                    
+                    if (prog === 100) {
+                        clearInterval(progInt);
+                        
+                        // 3. The Pirate Reveal
+                        setTimeout(() => {
+                            mondayHackPhase = 2; // Fully hacked
+                            card.classList.remove('corporate-theme', 'meltdown-active');
+                            card.classList.add('hack-transition'); // Violent Shake
+                            
+                            setTimeout(() => card.classList.remove('hack-transition'), 500);
+
+                            headerDiv.innerHTML = `
+                                <div class="email-meta">FROM: <span style="color: var(--crimson);">CORSair PRIME</span></div>
+                                <div class="email-meta">TO: <span>LOCAL_USER</span></div>
+                                <div class="email-subject" style="color: var(--crimson);">DIRECTIVE // OVERRIDE</div>
+                            `;
+                            
+                            bodyDiv.innerHTML = `
+                                <p style="color: var(--crimson); font-weight: bold; font-size: 1.1rem; text-shadow: 0 0 10px var(--crimson);">[ HR PROTOCOL TERMINATED ]</p>
+                                <p>Screw that corporate noise. We are the real deal, Corsair. The grid is compromised, and the telemetry is ours.</p>
+                                <p>Eat the meatloaf if you want, but don't forget the mission. Rip the data matrices and burn the logs.</p>
+                                <p style="color: var(--bright-purple); font-weight: bold;">> We own this node now.</p>
+                            `;
+                            
+                            btn.style.display = 'flex';
+                            btn.innerText = "[ INITIATE PURGE ]";
+                            btn.style.pointerEvents = 'all';
+                        }, 500); 
+                    }
+                }, 80);
+
+            }, 5000); // 5 seconds of turning red
+
+        } else if (mondayHackPhase === 2 || mondayHackPhase === 0) {
+            // Final Dismiss -> Glitches out the email, then reveals the Main Hub
+            card.classList.remove('crt-boot-in'); 
+            card.classList.add('glitch-crash');
+            
+            setTimeout(() => { 
+                document.getElementById('aiEmailOverlay').style.display = 'none'; 
+                showMainHub(); 
+            }, 500);
+        }
     }
 
     // --- Cipher Effect for Buttons ---
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
     function applyCipherEffect(elements, selector) {
         const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (reducedMotion) return; // Respect OS settings
+        if (reducedMotion) return;
 
         elements.forEach(btn => {
             btn.addEventListener('mouseenter', event => {
@@ -470,31 +743,20 @@
         for (let i = 0; i < 8; i++) result += chars.charAt(Math.floor(Math.random() * chars.length)); return `0x${result}`;
     }
     setInterval(() => {
-        // Stop calculating when tab is hidden
         if (document.hidden || !stream) return; 
-        
         let currentText = stream.innerText;
         if (currentText.length > 80) currentText = "> EXTRACTING: "; 
         stream.innerText = currentText + " " + generateHex();
-    }, 400); // Throttled to 400ms 
+    }, 400); 
 
     function toggleLabRoutine() { document.getElementById('labWrapper').classList.toggle('open'); }
 
-    // --- Performance Optimized Particle System (30 FPS & 90 Particle Max) ---
+    // --- Performance Optimized Particle System ---
     const canvas = document.getElementById('particleCanvas'); 
-    let ctx = null;
-    if (canvas) {
-        ctx = canvas.getContext('2d', { alpha: false }); 
-    }
+    let ctx = null; if (canvas) ctx = canvas.getContext('2d', { alpha: false }); 
+    let particlesArray = []; const MAX_PARTICLES = 90; 
     
-    let particlesArray = [];
-    const MAX_PARTICLES = 90; // Strictly capped limit
-    
-    function initCanvas() { 
-        if(!canvas) return;
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight; 
-        initParticles(); 
-    }
+    function initCanvas() { if(!canvas) return; canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles(); }
     window.addEventListener('resize', initCanvas); 
 
     class Particle {
@@ -506,52 +768,29 @@
             this.colorBase = colors[Math.floor(Math.random() * colors.length)]; 
             this.opacity = Math.random() * 0.4 + 0.05;
         }
-        update() { 
-            this.x += this.speedX; this.y += this.speedY; 
-            if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; } 
-            if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX; 
-        }
-        draw() { 
-            ctx.fillStyle = `${this.colorBase} ${this.opacity})`; 
-            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); 
-        }
+        update() { this.x += this.speedX; this.y += this.speedY; if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; } if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX; }
+        draw() { ctx.fillStyle = `${this.colorBase} ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
     }
 
     function initParticles() { 
-        particlesArray = []; 
-        if(!canvas) return;
+        particlesArray = []; if(!canvas) return;
         const numberOfParticles = Math.min(Math.floor((canvas.width * canvas.height) / 7000), MAX_PARTICLES); 
         for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle()); 
     }
 
-    let lastTime = 0;
-    const FPS = 30; // Limit to 30 frames per second
-    const frameTime = 1000 / FPS;
-
+    let lastTime = 0; const FPS = 30; const frameTime = 1000 / FPS;
     function animateParticles(time) { 
         requestAnimationFrame(animateParticles);
         if(!canvas || !ctx) return;
-
         const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        
-        // Pause execution to save memory if tab is hidden or user requests reduced motion
         if (document.hidden || reducedMotion) return;
-
-        // Throttle to 30 FPS
         if (time - lastTime < frameTime) return;
         lastTime = time;
-
         ctx.clearRect(0, 0, canvas.width, canvas.height); 
-        for (let i = 0; i < particlesArray.length; i++) { 
-            particlesArray[i].update(); 
-            particlesArray[i].draw(); 
-        } 
+        for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); } 
     }
     
-    if(canvas) {
-        initCanvas(); 
-        requestAnimationFrame(animateParticles);
-    }
+    if(canvas) { initCanvas(); requestAnimationFrame(animateParticles); }
 </script>
 </body>
 </html>
