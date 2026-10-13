@@ -8,7 +8,8 @@
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="apple-mobile-web-app-title" content="NEURAL_OS">
     <title>VALEO // CORSAIR DATA INPUT</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <!-- Use local library as required by audit -->
+    <script src="qrious.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Noto+Sans+JP:wght@300;500;700&display=swap');
 
@@ -60,8 +61,7 @@
         .flying-capy {
             position: fixed; left: -150px; z-index: 4; width: 110px; height: auto; opacity: 0;
             pointer-events: none; filter: drop-shadow(0 0 15px rgba(130, 0, 200, 0.8));
-            mix-blend-mode: screen; /* Deletes black backgrounds automatically */
-            user-select: none;
+            mix-blend-mode: screen; user-select: none;
         }
         .capy-active { animation: capy-float 12s ease-in-out forwards; }
         @keyframes capy-float {
@@ -93,6 +93,7 @@
         .btn-sys-back { background: rgba(255, 30, 70, 0.1); border: 1px solid var(--crimson); color: var(--crimson); font-family: var(--font-en); font-weight: 700; font-size: 0.85rem; letter-spacing: 2px; text-decoration: none; padding: 6px 12px; border-radius: 2px; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(255, 30, 70, 0.2); }
         .btn-sys-back:hover { background: var(--crimson); color: #000; box-shadow: 0 0 15px var(--crimson); }
         .header-title { font-family: var(--font-en); font-weight: 900; font-size: 1.2rem; letter-spacing: 3px; color: #fff; text-shadow: 0 0 10px rgba(157, 0, 255, 0.5); margin-left: 10px; transition: opacity 0.3s ease; }
+        .header-title { cursor: pointer; }
         select { background: rgba(5, 2, 10, 0.9); color: var(--crimson); border: 1px solid var(--crimson); font-family: var(--font-en); font-weight: 700; font-size: 0.8rem; padding: 6px; outline: none; border-radius: 2px; box-shadow: 0 0 10px rgba(255, 30, 70, 0.2); }
 
         /* --- UNIFIED TACTICAL TELEMETRY BAR --- */
@@ -295,8 +296,12 @@
         #expandedData { width: 100%; max-width: 380px; margin-bottom: 20px; text-align: left; }
         .data-card { background: rgba(12, 5, 18, 0.8); border: 1px solid rgba(255,255,255,0.05); padding: 12px; margin-bottom: 10px; font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.5; position: relative; }
         .data-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+        
+        /* Updated Data Card Borders for Phase 1 Neutral state */
+        .card-neutral { border-color: rgba(157, 0, 255, 0.3); } .card-neutral::before { background: var(--violet); box-shadow: 0 0 10px var(--violet); }
         .card-pass { border-color: rgba(57,255,20,0.3); } .card-pass::before { background: #39ff14; box-shadow: 0 0 10px #39ff14; }
         .card-fail { border-color: rgba(255,30,70,0.3); } .card-fail::before { background: var(--crimson); box-shadow: 0 0 10px var(--crimson); }
+        
         .zone-title { font-weight: bold; color: var(--violet); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; margin-bottom: 6px; }
         .zone-values { color: #ccc; font-size: 0.85rem; line-height: 1.6; }
         .zone-result-pass { color: #39ff14; font-weight: bold; margin-top: 4px; }
@@ -322,6 +327,7 @@
     <div class="header">
         <a href="index.html" class="btn-sys-back">&lt; SYS</a>
         <span class="header-title" id="appTitle">VALEO</span>
+        <span class="header-title" style="margin-right: auto; cursor:pointer;" onclick="toggleDataOverlay()">[ DATA ]</span>
         <select id="modeSelector" onchange="changeMode()">
             <option value="T1">T1 (Tg Match)</option>
             <option value="T2">T2 (Braze Joints)</option>
@@ -378,12 +384,18 @@
 </div>
 
 <!-- PHASE 2 TRANSITION MODAL (GOLD ISOLATED HERE) -->
-<div class="modal-overlay" id="phase2Modal" style="align-items: center; justify-content: center; overflow-y: hidden; perspective: 1000px;">
+<div class="modal-overlay" id="phase2Modal" style="align-items: center; justify-content: flex-start; overflow-y: auto; perspective: 1000px; padding-top: 40px; padding-bottom: 40px;">
     <div style="width: 100%; max-width: 380px; text-align: left;">
-        <div style="font-family: var(--font-mono); color: var(--gold); font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 25px; text-shadow: 0 0 10px rgba(255,234,0,0.4); border-left: 2px solid var(--gold); padding-left: 10px; line-height: 1.5;">
-            > MASS DATA SECURED.<br>> AWAITING THERMAL UPLINK...
+        <div style="font-family: var(--font-mono); color: var(--gold); font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255,234,0,0.4); border-left: 2px solid var(--gold); padding-left: 10px; line-height: 1.5;">
+            > PHASE 1 MASS DATA SECURED.<br>> AWAITING THERMAL UPLINK...
         </div>
-        <button class="menu-btn cipher-btn" data-cipher="[ INITIATE PHASE 2 ]" onclick="startPhase2()">
+        
+        <button class="btn-toggle-data" id="btnTogglePhase1" style="border-left-color: var(--crimson); text-shadow: 0 0 5px var(--crimson); margin-bottom: 15px; display: none;" onclick="togglePhase1Data()">[ EXPAND PHASE 1 DATA ]</button>
+        
+        <!-- ENLARGED PHASE 1 DATA INJECTED HERE -->
+        <div id="phase1DataDisplay" style="margin-bottom: 25px; display: none;"></div>
+
+        <button class="menu-btn cipher-btn" data-cipher="[ INITIATE PHASE 2 ]" onclick="startPhase2()" style="margin-bottom: 30px;">
             <span class="btn-title">[ INITIATE PHASE 2 ]</span>
             <span class="btn-jp">Tg THERMAL INTERCEPT // 熱特性</span>
         </button>
@@ -402,7 +414,7 @@
 
     <div id="qrGenerationWrapper" style="display:none; width: 100%; max-width: 380px; text-align: center;">
         <div id="validationMessage"></div>
-        <div class="qr-container">
+        <div class="qr-container" id="qrContainerUI">
             <div class="qr-morph-wrapper" id="qrMorphWrapper">
                 <svg id="cuteSkull" viewBox="0 0 100 100">
                     <line x1="15" y1="15" x2="85" y2="85" stroke="var(--violet)" stroke-width="10" stroke-linecap="round"/>
@@ -444,6 +456,9 @@
 
     // --- CAPYBARA SPACE PIRATE FLY-BY EASTER EGG ---
     function launchCapy() {
+        const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reducedMotion) return;
+        
         const capy = document.getElementById('flyingCapy');
         if(!capy) return;
         capy.style.top = Math.floor(Math.random() * 40 + 10) + '%';
@@ -451,7 +466,6 @@
         void capy.offsetWidth;
         capy.classList.add('capy-active');
     }
-    // Launch first one at 15 seconds, then strictly every 2 minutes
     setTimeout(() => {
         launchCapy();
         setInterval(launchCapy, 120000);
@@ -624,7 +638,6 @@
         
         let html = "";
         dataList.forEach((item, index) => {
-            // Alternating History Row Colors (Bright Purple vs Pale Neon Lavender)
             let altColor = (index % 2 === 0) ? "var(--bright-purple)" : "#f3ccff";
             let altGlow = (index % 2 === 0) ? "rgba(216, 132, 255, 0.4)" : "rgba(243, 204, 255, 0.4)";
 
@@ -672,11 +685,9 @@
         let canType = true;
         let curIdx = dataList.length;
         
-        // Calculate the Rainbow Cursor Step
         let rColor = rainbowColors[curIdx % rainbowColors.length];
         let rGlow = rainbowGlows[curIdx % rainbowGlows.length];
 
-        // Apply Rainbow to Cursor Only
         curInputEl.style.setProperty('--cursor-color', rColor);
         curInputEl.style.setProperty('--cursor-glow', rGlow);
 
@@ -731,6 +742,7 @@
                 if (expected === 'P') {
                     statusBar.innerText = `[ SYSTEM HALT ] AWAITING PHASE 2...`; statusBar.style.color = "var(--gold)"; 
                     numBtns.forEach(b => b.classList.add('btn-disabled'));
+                    renderPhase1Data();
                     document.getElementById('phase2Modal').style.display = 'flex';
                 } else {
                     statusBar.innerText = `AUTO-JUMPING... [${expected}]`; statusBar.style.color = "var(--crimson)"; 
@@ -763,7 +775,6 @@
 
             statusBar.innerHTML = `[${zoneLabel}] ${prompt}`; statusBar.style.color = "white";
 
-            // TACTICAL S-LEVEL LIGHT UPDATE
             if (mode === 'T1' || mode === 'T3') {
                 const segS1 = document.getElementById('segS1');
                 const segS5 = document.getElementById('segS5');
@@ -795,6 +806,55 @@
 
         if (canType) curInputEl.classList.add('typing-active');
         else curInputEl.classList.remove('typing-active');
+    }
+
+    // Displays purely Phase 1 mass values directly inside the Phase 2 modal
+    function renderPhase1Data() {
+        const displayDiv = document.getElementById('phase1DataDisplay');
+        const toggleBtn = document.getElementById('btnTogglePhase1');
+        if (!displayDiv) return;
+        
+        let html = "";
+        let numbersOnly = dataList.filter(e => e !== 'P').map(Number);
+        let hasData = false;
+        
+        for (let i = 0; i < 6; i++) {
+            let a_val = numbersOnly[i*2]; 
+            let b_val = numbersOnly[i*2 + 1]; 
+            let zoneName = t1Labels[i];
+
+            if (a_val !== undefined || b_val !== undefined) {
+                hasData = true;
+                html += `
+                <div style="background: rgba(10, 5, 0, 0.6); border: 1px solid rgba(255,234,0,0.3); border-left: 4px solid var(--gold); padding: 12px; margin-bottom: 10px; box-shadow: inset 0 0 20px rgba(255,234,0,0.05);">
+                    <div style="color: var(--gold); font-family: var(--font-en); font-weight: 900; font-size: 1.1rem; letter-spacing: 3px; border-bottom: 1px solid rgba(255,234,0,0.2); padding-bottom: 5px; margin-bottom: 8px;">[ ${zoneName} ]</div>
+                    <div style="font-family: var(--font-mono); font-size: 1.3rem; font-weight: bold; color: #fff; line-height: 1.5;">
+                        TOTAL: <span style="color: var(--crimson); text-shadow: 0 0 10px rgba(255, 30, 70, 0.4);">${a_val !== undefined ? a_val : '--'}</span> <span style="font-size: 0.9rem; color: var(--text-muted);">mg</span><br>
+                        SAMP:&nbsp; <span style="color: var(--bright-purple); text-shadow: 0 0 10px rgba(216, 132, 255, 0.4);">${b_val !== undefined ? b_val : '--'}</span> <span style="font-size: 0.9rem; color: var(--text-muted);">mg</span>
+                    </div>
+                </div>`;
+            }
+        }
+        displayDiv.innerHTML = html;
+        if (hasData) {
+            toggleBtn.style.display = 'block';
+            displayDiv.style.display = 'none'; // Ensure it starts collapsed
+            toggleBtn.innerText = "[ EXPAND PHASE 1 DATA ]";
+        } else {
+            toggleBtn.style.display = 'none';
+        }
+    }
+
+    function togglePhase1Data() {
+        const displayDiv = document.getElementById('phase1DataDisplay');
+        const toggleBtn = document.getElementById('btnTogglePhase1');
+        if (displayDiv.style.display === 'none') {
+            displayDiv.style.display = 'block';
+            toggleBtn.innerText = "[ COLLAPSE PHASE 1 DATA ]";
+        } else {
+            displayDiv.style.display = 'none';
+            toggleBtn.innerText = "[ EXPAND PHASE 1 DATA ]";
+        }
     }
 
     function startPhase2() { document.getElementById('phase2Modal').style.display = 'none'; isAutoSkipping = false; triggerShockwave(); addSkip('P'); }
@@ -878,7 +938,7 @@
 
                     let c_val = numbersOnly[c_idx]; let d_val = numbersOnly[d_idx];
                     
-                    if (c_val !== undefined && d_val !== undefined) {
+                    if (c_val !== undefined && d_val !== undefined && !isNaN(c_val) && !isNaN(d_val)) {
                         let diff = Math.abs(d_val - c_val);
                         if (diff > 5) {
                             allPassed = false;
@@ -940,49 +1000,62 @@
         runT1Diagnostic(); 
     }
 
-    function generateFinalQR() {
-        document.getElementById('aiConsoleWrapper').style.display = 'none';
-        document.getElementById('qrGenerationWrapper').style.display = 'block';
-
+    function generateFinalQR(isPhase1Preview = false) {
         let payload = "";
         const mode = document.getElementById('modeSelector').value;
-        const morphWrapper = document.getElementById('qrMorphWrapper');
-        morphWrapper.classList.remove('morph-active');
-
-        document.getElementById('btnToggleData').style.display = 'none';
-        document.getElementById('expandedData').style.display = 'none';
-        document.getElementById('btnToggleData').innerText = "[ ACCESS ZONE DATA ]";
-
-        let validationHTML = "";
+        
         let expandedHTML = "";
+        let validationHTML = "";
 
         if (mode === 'T1') {
             let numbersOnly = dataList.filter(e => e !== 'P').map(Number);
             let errors = [];
+            
             for (let i = 0; i < 6; i++) {
-                let a_val = numbersOnly[i*2]; let b_val = numbersOnly[i*2 + 1]; let c_val = numbersOnly[12 + i*2]; let d_val = numbersOnly[12 + i*2 + 1];
+                let a_val = numbersOnly[i*2]; let b_val = numbersOnly[i*2 + 1]; 
+                let c_val = numbersOnly[12 + i*2]; let d_val = numbersOnly[12 + i*2 + 1];
                 let zoneName = t1Labels[i];
 
-                if (a_val !== undefined || b_val !== undefined) {
-                    let passed = true; let diffText = "AWAITING Tg DATA"; let statusClass = "card-pass"; let resultClass = "zone-values";
-                    if (c_val !== undefined && d_val !== undefined) {
-                        let difference = d_val - c_val; passed = Math.abs(difference) <= 5;
+                if (a_val !== undefined || b_val !== undefined || c_val !== undefined) {
+                    let statusClass = "card-neutral";
+                    let resultClass = "zone-values";
+                    let diffText = "> AWAITING PHASE 2 [Tg DATA]";
+                    
+                    if (c_val !== undefined && !isNaN(c_val) && d_val !== undefined && !isNaN(d_val)) {
+                        let difference = d_val - c_val; 
+                        let passed = Math.abs(difference) <= 5;
                         if (!passed) { errors.push(`[${zoneName}] FAILED`); statusClass = "card-fail"; resultClass = "zone-result-fail"; } 
-                        else { resultClass = "zone-result-pass"; }
+                        else { statusClass = "card-pass"; resultClass = "zone-result-pass"; }
                         diffText = `> Tg (D-C): ${difference.toFixed(2)} [${passed ? 'PASS' : 'FAIL'}]`;
                     }
-                    expandedHTML += `<div class="data-card ${statusClass}"><div class="zone-title">${zoneName}</div><div class="zone-values">Total(mg): ${a_val !== undefined ? a_val : '--'} | Samp(mg): ${b_val !== undefined ? b_val : '--'}<br>2nd Tg: ${c_val !== undefined ? c_val.toFixed(2) : '--'} | 3rd Tg: ${d_val !== undefined ? d_val.toFixed(2) : '--'}</div><div class="${resultClass}">${diffText}</div></div>`;
+                    
+                    if (isPhase1Preview) {
+                        expandedHTML += `
+                        <div class="data-card ${statusClass}" style="padding: 12px; margin-bottom: 10px;">
+                            <div class="zone-title" style="font-size: 1.1rem; color: var(--gold);">${zoneName}</div>
+                            <div style="font-size: 1.3rem; font-weight: bold; line-height: 1.5; margin-top: 5px;">
+                                TOTAL: <span style="color: var(--crimson); text-shadow: 0 0 10px rgba(255, 30, 70, 0.4);">${a_val !== undefined ? a_val : '--'}</span> <span style="font-size: 0.9rem; color: var(--text-muted);">mg</span><br>
+                                SAMP:&nbsp; <span style="color: var(--bright-purple); text-shadow: 0 0 10px rgba(216, 132, 255, 0.4);">${b_val !== undefined ? b_val : '--'}</span> <span style="font-size: 0.9rem; color: var(--text-muted);">mg</span>
+                            </div>
+                        </div>`;
+                    } else {
+                        expandedHTML += `<div class="data-card ${statusClass}"><div class="zone-title">${zoneName}</div><div class="zone-values">Total(mg): ${a_val !== undefined ? a_val : '--'} | Samp(mg): ${b_val !== undefined ? b_val : '--'}<br>2nd Tg: ${c_val !== undefined && !isNaN(c_val) ? c_val.toFixed(2) : '--'} | 3rd Tg: ${d_val !== undefined && !isNaN(d_val) ? d_val.toFixed(2) : '--'}</div><div class="${resultClass}">${diffText}</div></div>`;
+                    }
                 }
 
-                if (a_val !== undefined) payload += a_val + "\r\n"; if (b_val !== undefined) payload += b_val + "\r\n";
-                if (c_val !== undefined) payload += c_val + "\r\n"; if (d_val !== undefined) payload += d_val + "\r\n";
-                if (d_val !== undefined) { payload += "\r\n\r\n\r\n\r\n\r\n\r\n"; if (i === 2) payload += "\r\n\r\n"; }
+                if (!isPhase1Preview) {
+                    if (a_val !== undefined) payload += a_val + "\r\n"; if (b_val !== undefined) payload += b_val + "\r\n";
+                    if (c_val !== undefined && !isNaN(c_val)) payload += c_val + "\r\n"; if (d_val !== undefined && !isNaN(d_val)) payload += d_val + "\r\n";
+                    if (d_val !== undefined && !isNaN(d_val)) { payload += "\r\n\r\n\r\n\r\n\r\n\r\n"; if (i === 2) payload += "\r\n\r\n"; }
+                }
             }
-            if (errors.length === 0) validationHTML = `<div style="color: #39ff14; font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">> ALL ZONES VERIFIED <</div>`;
-            else validationHTML = `<div style="color: var(--crimson); font-size: 1rem; font-weight: bold; margin-bottom: 10px;">> ANOMALIES LOGGED IN PAYLOAD <br>${errors.join(', ')}</div>`;
             
-            document.getElementById('expandedData').innerHTML = expandedHTML;
-            document.getElementById('btnToggleData').style.display = 'block';
+            if (isPhase1Preview) {
+                validationHTML = `<div style="color: var(--gold); font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">> PHASE 1 MASS DATA SECURED <</div>`;
+            } else {
+                if (errors.length === 0) validationHTML = `<div style="color: #39ff14; font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">> ALL ZONES VERIFIED <</div>`;
+                else validationHTML = `<div style="color: var(--crimson); font-size: 1rem; font-weight: bold; margin-bottom: 10px;">> ANOMALIES LOGGED IN PAYLOAD <br>${errors.join(', ')}</div>`;
+            }
         }
         else if (mode === 'T2') {
             let t2Data = []; let aCount = -1;
@@ -997,8 +1070,6 @@
                 let e = dataList[i];
                 if (e === 'X') payload += "\r\n\r\n\r\n\r\n\r\n\r\n"; else if (e === '-') payload += "\r\n\r\n"; else { payload += e + "\r\n"; } 
             }
-            document.getElementById('expandedData').innerHTML = expandedHTML;
-            document.getElementById('btnToggleData').style.display = 'block';
         } 
         else if (mode === 'T3') {
             const mapping = [1, 2, 5, 6, 9, 10, 13, 0, 3, 4, 7, 8, 11, 12];
@@ -1012,8 +1083,48 @@
         }
 
         document.getElementById('validationMessage').innerHTML = validationHTML;
-        new QRious({ element: document.getElementById('qrCanvas'), value: payload, size: 240, level: 'M' });
-        setTimeout(() => { morphWrapper.classList.add('morph-active'); }, 500);
+        document.getElementById('expandedData').innerHTML = expandedHTML;
+
+        if (isPhase1Preview) {
+            document.getElementById('phase2Modal').style.display = 'none';
+            document.getElementById('qrModal').style.display = 'flex';
+            document.getElementById('aiConsoleWrapper').style.display = 'none';
+            document.getElementById('qrGenerationWrapper').style.display = 'block';
+            document.getElementById('qrContainerUI').style.display = 'none'; 
+            
+            document.getElementById('btnToggleData').style.display = 'block';
+            document.getElementById('expandedData').style.display = 'block';
+            document.getElementById('btnToggleData').innerText = "[ HIDE ZONE DATA ]";
+        } else {
+            document.getElementById('aiConsoleWrapper').style.display = 'none';
+            document.getElementById('qrGenerationWrapper').style.display = 'block';
+            document.getElementById('qrContainerUI').style.display = 'flex'; 
+            
+            document.getElementById('btnToggleData').style.display = 'block';
+            document.getElementById('expandedData').style.display = 'none';
+            document.getElementById('btnToggleData').innerText = "[ ACCESS ZONE DATA ]";
+
+            const morphWrapper = document.getElementById('qrMorphWrapper');
+            morphWrapper.classList.remove('morph-active');
+
+            new QRious({ element: document.getElementById('qrCanvas'), value: payload, size: 240, level: 'M' });
+            setTimeout(() => { morphWrapper.classList.add('morph-active'); }, 500);
+        }
+    }
+
+    function closeQR() { 
+        document.getElementById('qrModal').style.display = 'none'; 
+        
+        const step = dataList.length;
+        if (activeBlueprint && activeBlueprint[step] === 'P') {
+            renderPhase1Data(); 
+            document.getElementById('phase2Modal').style.display = 'flex';
+            return;
+        }
+
+        dataList = []; 
+        saveLocalState(); 
+        updateDisplay(); 
     }
 
     function toggleData() {
@@ -1022,18 +1133,20 @@
         else { el.style.display = 'none'; btn.innerText = "[ ACCESS ZONE DATA ]"; }
     }
 
-    function closeQR() { 
-        document.getElementById('qrModal').style.display = 'none'; 
-        dataList = []; 
-        saveLocalState(); 
-        updateDisplay(); 
+    function toggleDataOverlay() {
+        if(dataList.length === 0) return;
+        generateFinalQR(true);
     }
 
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
     function applyCipherEffect(elements) {
+        const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reducedMotion) return;
+
         elements.forEach(btn => {
             btn.addEventListener('mouseenter', event => {
                 let iterations = 0; const targetText = btn.dataset.cipher; const textElement = btn.querySelector('.btn-title');
+                if(!textElement) return;
                 clearInterval(btn.dataset.interval);
                 btn.dataset.interval = setInterval(() => {
                     textElement.innerText = targetText.split("").map((letter, index) => {
@@ -1053,26 +1166,56 @@
         for (let i = 0; i < 8; i++) result += chars.charAt(Math.floor(Math.random() * chars.length)); return `0x${result}`;
     }
     setInterval(() => {
-        if (isEncodeReady) return; 
+        if (document.hidden || isEncodeReady) return; 
         let currentText = stream.innerText;
         if (currentText.length > 80) currentText = "> LOGGING: "; stream.innerText = currentText + " " + generateHex();
-    }, 120);
+    }, 400); 
 
-    const canvas = document.getElementById('particleCanvas'); const ctx = canvas.getContext('2d'); let particlesArray = [];
-    function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', initCanvas); initCanvas();
+    // --- Performance Optimized Particle System (30 FPS & 90 Particle Max) ---
+    const canvas = document.getElementById('particleCanvas'); 
+    let ctx = null;
+    if (canvas) ctx = canvas.getContext('2d', { alpha: false }); 
+    let particlesArray = [];
+    const MAX_PARTICLES = 90; 
+
+    function initCanvas() { 
+        if(!canvas) return;
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight; 
+        initParticles(); 
+    }
+    window.addEventListener('resize', initCanvas); 
+
     class Particle {
         constructor() {
-            this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 1.5 + 0.2; this.speedX = Math.random() * 0.4 - 0.2; this.speedY = Math.random() * -0.8 - 0.2; 
-            const colors = ['rgba(255, 30, 70,', 'rgba(157, 0, 255,', 'rgba(200, 180, 240,']; this.colorBase = colors[Math.floor(Math.random() * colors.length)]; this.opacity = Math.random() * 0.4 + 0.05;
+            this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; 
+            this.size = Math.random() * 1.5 + 0.2; this.speedX = Math.random() * 0.4 - 0.2; this.speedY = Math.random() * -0.8 - 0.2; 
+            const colors = ['rgba(255, 30, 70,', 'rgba(157, 0, 255,', 'rgba(200, 180, 240,']; 
+            this.colorBase = colors[Math.floor(Math.random() * colors.length)]; this.opacity = Math.random() * 0.4 + 0.05;
         }
         update() { this.x += this.speedX; this.y += this.speedY; if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; } if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX; }
         draw() { ctx.fillStyle = `${this.colorBase} ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
     }
-    function initParticles() { particlesArray = []; const numberOfParticles = Math.floor((canvas.width * canvas.height) / 7000); for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle()); }
-    function animateParticles() { ctx.clearRect(0, 0, canvas.width, canvas.height); for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); } requestAnimationFrame(animateParticles); }
-    initParticles(); animateParticles();
 
+    function initParticles() { 
+        particlesArray = []; 
+        if(!canvas) return;
+        const numberOfParticles = Math.min(Math.floor((canvas.width * canvas.height) / 7000), MAX_PARTICLES); 
+        for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle()); 
+    }
+
+    let lastTime = 0; const FPS = 30; const frameTime = 1000 / FPS;
+    function animateParticles(time) { 
+        requestAnimationFrame(animateParticles);
+        if(!canvas || !ctx) return;
+        const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (document.hidden || reducedMotion) return;
+        if (time - lastTime < frameTime) return;
+        lastTime = time;
+        ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); } 
+    }
+    
+    if(canvas) { initCanvas(); requestAnimationFrame(animateParticles); }
 </script>
 </body>
 </html>
