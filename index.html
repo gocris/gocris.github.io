@@ -36,14 +36,14 @@
             overflow-x: hidden; position: relative; font-family: var(--font-en);
         }
 
-        /* --- THE INTRUSION BOOT SCREEN (HIDDEN INITIALLY) --- */
+        /* --- THE INTRUSION BOOT SCREEN --- */
         #bootScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;
             padding: 30px; font-family: var(--font-mono); color: var(--crimson);
             box-sizing: border-box; overflow: hidden;
             opacity: 1; pointer-events: all; filter: blur(0px);
-            transition: opacity 0.5s ease-out, filter 0.5s ease-out;
+            transition: opacity 0.3s ease-out, filter 0.3s ease-out;
         }
         #bootScreen.fade-out {
             opacity: 0; pointer-events: none; filter: blur(10px);
@@ -322,7 +322,7 @@
 </head>
 <body>
 
-<!-- THE EVERY-TIME CRIMSON BOOTLOADER -->
+<!-- THE EXACT 1-SECOND CRIMSON BOOTLOADER -->
 <div id="bootScreen">
     <div class="boot-container">
         <div id="mainSyntaxTerminal"></div>
@@ -415,9 +415,8 @@
 <div class="threat-stream"><div class="stream-content" id="streamContent">> INTERCEPTING... </div></div>
 
 <script>
-    let mondayHackPhase = 0; // 0 = Standard, 1 = Fake Corporate, 1.5 = Transitioning, 2 = Hacked Pirate
+    let mondayHackPhase = 0; 
 
-    // --- System Boot Trigger ---
     window.onload = () => {
         let os = "UNKNOWN SECURE TERMINAL";
         if (navigator.userAgent.indexOf("Win") !== -1) os = "WINDOWS KERNEL DETECTED";
@@ -427,22 +426,20 @@
         if (navigator.userAgent.indexOf("Android") !== -1) os = "ANDROID OS COMPROMISED";
         document.getElementById('threatBanner').innerText = `[ SYSTEM BREACH ] TARGET: ${os} | RES: ${window.innerWidth}x${window.innerHeight}`;
 
-        // Starts the crimson bootloader instantly on every page load
-        setTimeout(runBootSequence, 100);
+        setTimeout(runBootSequence, 50);
     };
 
     function showMainHub() { 
         document.getElementById('mainHub').classList.add('visible'); 
     }
 
-    // --- The Main Crimson Bootloader (Runs EVERY TIME) ---
+    // --- HYPER FAST 1-SECOND CRIMSON BOOTLOADER ---
     function runBootSequence() {
         const boot = document.getElementById('bootScreen');
         const term = document.getElementById('mainSyntaxTerminal');
         const bar = document.getElementById('mainBootProgressBar');
         const granted = document.getElementById('mainAccessGranted');
         
-        // Gradient shades of crimson for the final sequence
         const lines = [
             { text: "> INITIATING HANDSHAKE PROTOCOL...", color: "#8a031a" }, 
             { text: "> BYPASSING FIREWALL [NODE 7]...", color: "#c9102c" }, 
@@ -455,7 +452,6 @@
         let currentLine = 0;
         let currentChar = 0;
 
-        // Custom typewriter effect
         function typeFastMain() {
             if (currentLine < lines.length) {
                 if (currentChar === 0) {
@@ -467,21 +463,21 @@
                 currentChar++;
                 
                 if (currentChar < lines[currentLine].text.length) {
-                    setTimeout(typeFastMain, Math.random() * 15 + 5);
+                    setTimeout(typeFastMain, Math.random() * 4 + 1); // Hyper fast (1-5ms)
                 } else {
                     currentChar = 0;
                     currentLine++;
-                    setTimeout(typeFastMain, 100);
+                    setTimeout(typeFastMain, 10); // Very fast line break (10ms)
                 }
             }
         }
         
-        setTimeout(typeFastMain, 300);
+        setTimeout(typeFastMain, 50); // Start almost immediately
 
-        // Fill Progress Bar
+        // Bar reaches 100% in exactly 800ms (40 ticks * 20ms)
         let prog = 0;
         const progInt = setInterval(() => {
-            prog += Math.random() * 6 + 1;
+            prog += 2.5; // Double speed increment
             if (prog > 100) prog = 100;
             bar.style.width = prog + '%';
             
@@ -489,22 +485,21 @@
                 clearInterval(progInt);
                 granted.style.opacity = '1';
                 
-                // Dissolve boot screen and check if briefing should run
+                // Show "Access Granted" for exactly 200ms. Total sequence = 1000ms.
                 setTimeout(() => {
                     boot.classList.add('fade-out');
                     
                     const todayStr = new Date().toDateString(); 
                     const lastBriefing = localStorage.getItem('lastBriefingDate');
                     
-                    // ONCE PER DAY CHECK: Show briefing only if not yet seen today
                     if (lastBriefing !== todayStr) {
-                        setTimeout(() => initiateAIBriefing(todayStr), 300);
+                        setTimeout(() => initiateAIBriefing(todayStr), 250);
                     } else {
-                        setTimeout(showMainHub, 300);
+                        setTimeout(showMainHub, 250);
                     }
-                }, 1200);
+                }, 200);
             }
-        }, 60);
+        }, 20); 
     }
 
     async function initiateAIBriefing(todayStr) {
@@ -514,7 +509,6 @@
         const headerDiv = document.getElementById('emailHeaderContainer');
         const btn = document.getElementById('emailBtn');
 
-        // MONDAY SPECIAL EVENT: The Corporate Fake-Out (Strictly on Mondays: day === 1)
         if (day === 1) { 
             mondayHackPhase = 1;
             card.classList.add('corporate-theme');
@@ -535,7 +529,6 @@
             btn.innerText = "Close & Synergize";
 
         } else {
-            // STANDARD DIRECTIVE (Tues-Sun)
             mondayHackPhase = 0;
             let greeting = "Evening"; if(hour >= 5 && hour < 12) greeting = "Morning"; else if(hour >= 12 && hour < 17) greeting = "Afternoon";
             let season = "Winter"; if (month >= 2 && month <= 4) season = "Spring"; else if (month >= 5 && month <= 7) season = "Summer"; else if (month >= 8 && month <= 10) season = "Autumn";
@@ -586,16 +579,14 @@
         const btn = document.getElementById('emailBtn');
 
         if (mondayHackPhase === 1) {
-            mondayHackPhase = 1.5; // Lock to prevent double-clicks
+            mondayHackPhase = 1.5; 
             
-            // 1. Slow 5-Second Red Meltdown
             card.classList.add('meltdown-transition');
             setTimeout(() => { card.classList.add('meltdown-active'); }, 50); 
             
             btn.innerText = "[ PROCESSING... ]";
             btn.style.pointerEvents = "none";
 
-            // 2. Begin Gradient Hacking Sequence inside the Email
             setTimeout(() => {
                 card.classList.remove('meltdown-transition'); 
                 
@@ -653,11 +644,10 @@
                     if (prog === 100) {
                         clearInterval(progInt);
                         
-                        // 3. The Pirate Reveal
                         setTimeout(() => {
-                            mondayHackPhase = 2; // Fully hacked
+                            mondayHackPhase = 2; 
                             card.classList.remove('corporate-theme', 'meltdown-active');
-                            card.classList.add('hack-transition'); // Violent Shake
+                            card.classList.add('hack-transition'); 
                             
                             setTimeout(() => card.classList.remove('hack-transition'), 500);
 
@@ -681,10 +671,9 @@
                     }
                 }, 80);
 
-            }, 5000); // 5 seconds of turning red
+            }, 5000); 
 
         } else if (mondayHackPhase === 2 || mondayHackPhase === 0) {
-            // Final Dismiss -> Glitches out the email, then reveals the Main Hub
             card.classList.remove('crt-boot-in'); 
             card.classList.add('glitch-crash');
             
@@ -695,7 +684,6 @@
         }
     }
 
-    // --- Cipher Effect for Buttons ---
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
     function applyCipherEffect(elements, selector) {
         const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -719,7 +707,6 @@
     applyCipherEffect(document.querySelectorAll('.cipher-btn'), '.btn-title');
     applyCipherEffect(document.querySelectorAll('.cipher-sub'), '.sub-title');
 
-    // --- Random Skull Glitch Effect ---
     function triggerRandomGlitch() {
         const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (document.hidden || reducedMotion) {
@@ -736,7 +723,6 @@
     }
     setTimeout(triggerRandomGlitch, 3000);
 
-    // --- Threat Stream Optimization ---
     const stream = document.getElementById('streamContent');
     function generateHex() {
         let result = ''; const chars = 'ABCDEF0123456789';
@@ -751,7 +737,6 @@
 
     function toggleLabRoutine() { document.getElementById('labWrapper').classList.toggle('open'); }
 
-    // --- Performance Optimized Particle System ---
     const canvas = document.getElementById('particleCanvas'); 
     let ctx = null; if (canvas) ctx = canvas.getContext('2d', { alpha: false }); 
     let particlesArray = []; const MAX_PARTICLES = 90; 
