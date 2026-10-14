@@ -442,6 +442,47 @@
     </div>
 
     <script>
+        // GLOBALS
+        let sessionLogs = [];
+        let weekTally = {};
+        
+        const productMap = {
+            "819": "MEDIUM QC", "816": "LONG QC", "814": "LONG SF", "815": "LONG SS",
+            "817": "MEDIUM SF", "818": "MEDIUM SS", "070": "Energy Plate",
+            "852": "SMALL SS", "853": "SMALL QC", "851": "SMALL SF"
+        };
+
+        // --- BULLETPROOF INITIALIZATION ---
+        // Runs on initial load, AND instantly when navigating 'back' to this page
+        window.addEventListener('pageshow', () => {
+            try {
+                let parsedLogs = JSON.parse(localStorage.getItem('cp_sessionLogs'));
+                sessionLogs = Array.isArray(parsedLogs) ? parsedLogs : [];
+                
+                let parsedTally = JSON.parse(localStorage.getItem('cp_weekTally'));
+                weekTally = (parsedTally && typeof parsedTally === 'object') ? parsedTally : {};
+
+                updateLogUI();
+
+                if (sessionLogs.length > 0 && sessionLogs[0] && sessionLogs[0].qr) {
+                    updateNeonDisplay(sessionLogs[0].qr, sessionLogs[0].week);
+                } else {
+                    // Ensures fields clear out if they purged and navigated away
+                    const valModelEl = document.getElementById('valModel');
+                    if (valModelEl) {
+                        valModelEl.innerHTML = '<span class="empty-state">NULL</span>';
+                        document.getElementById('val25').innerHTML = '<span class="empty-state">NULL</span>';
+                        document.getElementById('val26').innerHTML = '<span class="empty-state">NULL</span>';
+                        document.getElementById('valWeek').innerHTML = '<span class="empty-state">NULL</span>';
+                    }
+                }
+            } catch (e) {
+                console.error("Storage Initialization Error:", e);
+                sessionLogs = [];
+                weekTally = {};
+            }
+        });
+
         // MALICIOUS BOOT SCREEN LOGIC
         window.onload = () => {
             let os = "UNKNOWN SECURE TERMINAL";
@@ -449,43 +490,31 @@
             if (navigator.userAgent.indexOf("Mac") !== -1) os = "DARWIN ARCHITECTURE";
             if (navigator.userAgent.indexOf("iPhone") !== -1) os = "IOS TARGET LOCKED";
             if (navigator.userAgent.indexOf("Android") !== -1) os = "ANDROID OS COMPROMISED";
-            document.getElementById('threatBanner').innerText = `[ SCANNER UPLINK ] TARGET: ${os} | STATUS: ACTIVE`;
+            
+            const banner = document.getElementById('threatBanner');
+            if (banner) banner.innerText = `[ SCANNER UPLINK ] TARGET: ${os} | STATUS: ACTIVE`;
 
+            // Dissolve Boot Screen
             setTimeout(() => {
                 const boot = document.getElementById('bootScreen');
-                boot.style.opacity = '0'; boot.style.filter = 'blur(10px)';
+                if(boot) {
+                    boot.style.opacity = '0'; 
+                    boot.style.filter = 'blur(10px)';
+                    boot.style.pointerEvents = 'none';
+                }
+                
+                const inputField = document.getElementById('qrInput');
+                if(inputField) inputField.focus();
             }, 1100);
         };
 
-        // SCANNER LOGIC
-        const inputField = document.getElementById('qrInput');
-        const modalOverlay = document.getElementById('confirmModal');
-        const rebuildModal = document.getElementById('qrRebuildModal');
-
-        const productMap = {
-            "819": "MEDIUM QC", "816": "LONG QC", "814": "LONG SF", "815": "LONG SS",
-            "817": "MEDIUM SF", "818": "MEDIUM SS", "070": "Energy Plate",
-            "852": "SMALL SS", "853": "SMALL QC", "851": "SMALL SF"
-        };
-
-        function calculateWeek(yearStr, dayOfYearStr) {
-            const year = parseInt(yearStr, 10);
-            const dayOfYear = parseInt(dayOfYearStr, 10);
-            if (isNaN(year) || isNaN(dayOfYear)) return null;
-            const fullYear = 1900 + year + 100;
-            const targetDate = new Date(fullYear, 0, dayOfYear);
-            const janFirst = new Date(fullYear, 0, 1);
-            const diffDays = Math.floor((targetDate - janFirst) / 86400000);
-            return Math.floor((diffDays + janFirst.getDay()) / 7) + 1;
-        }
-
-        let sessionLogs = JSON.parse(localStorage.getItem('cp_sessionLogs')) || [];
-        let weekTally = JSON.parse(localStorage.getItem('cp_weekTally')) || {};
-
-        const logListEl = document.getElementById('logList');
-        const tallyContainerEl = document.getElementById('tallyContainer');
-
+        // --- SCANNER UI LOGIC ---
         function updateLogUI() {
+            // Re-fetch DOM elements inside the function to prevent null reference errors on boot
+            const tallyContainerEl = document.getElementById('tallyContainer');
+            const logListEl = document.getElementById('logList');
+            if (!tallyContainerEl || !logListEl) return;
+            
             tallyContainerEl.innerHTML = '';
             const sortedWeeks = Object.keys(weekTally).sort((a, b) => parseInt(a) - parseInt(b));
             
@@ -544,6 +573,35 @@
             applyCipherEffect(document.querySelectorAll('.btn-rebuild.cipher-btn'));
         }
 
+        function updateNeonDisplay(qr, weekNum) {
+            const valModelEl = document.getElementById('valModel');
+            const val25El = document.getElementById('val25');
+            const val26El = document.getElementById('val26');
+            const valWeekEl = document.getElementById('valWeek');
+
+            if (!valModelEl || !val25El || !val26El || !valWeekEl) return;
+            if (!qr) return;
+
+            const codeFragment = qr.substring(5, 8);
+            valModelEl.innerHTML = productMap[codeFragment] || `<span class="empty-state">ERR: ${codeFragment}</span>`;
+            
+            val25El.innerHTML = qr.length >= 25 ? qr.substring(24, 25) : '<span class="empty-state">NULL</span>';
+            val26El.innerHTML = qr.length >= 26 ? qr.substring(25, 26) : '<span class="empty-state">NULL</span>';
+            
+            valWeekEl.innerHTML = "WK-" + weekNum;
+        }
+
+        function calculateWeek(yearStr, dayOfYearStr) {
+            const year = parseInt(yearStr, 10);
+            const dayOfYear = parseInt(dayOfYearStr, 10);
+            if (isNaN(year) || isNaN(dayOfYear)) return null;
+            const fullYear = 1900 + year + 100;
+            const targetDate = new Date(fullYear, 0, dayOfYear);
+            const janFirst = new Date(fullYear, 0, 1);
+            const diffDays = Math.floor((targetDate - janFirst) / 86400000);
+            return Math.floor((diffDays + janFirst.getDay()) / 7) + 1;
+        }
+
         // --- MATRIX REGENERATION SYSTEM ---
         function rebuildQR(event) {
             const btn = event.target.closest('.btn-rebuild');
@@ -559,7 +617,8 @@
                 level: 'M'
             });
 
-            rebuildModal.style.display = 'flex';
+            const rebuildModal = document.getElementById('qrRebuildModal');
+            if (rebuildModal) rebuildModal.style.display = 'flex';
             
             canvas.style.animation = 'none';
             void canvas.offsetWidth;
@@ -567,27 +626,18 @@
         }
 
         function closeRebuildModal() {
-            rebuildModal.style.display = 'none';
-            inputField.focus();
-        }
-
-        function updateNeonDisplay(qr, weekNum) {
-            const valModelEl = document.getElementById('valModel');
-            const val25El = document.getElementById('val25');
-            const val26El = document.getElementById('val26');
-            const valWeekEl = document.getElementById('valWeek');
-
-            const codeFragment = qr.substring(5, 8);
-            valModelEl.innerHTML = productMap[codeFragment] || `<span class="empty-state">ERR: ${codeFragment}</span>`;
+            const rebuildModal = document.getElementById('qrRebuildModal');
+            if (rebuildModal) rebuildModal.style.display = 'none';
             
-            val25El.innerHTML = qr.length >= 25 ? qr.substring(24, 25) : '<span class="empty-state">NULL</span>';
-            val26El.innerHTML = qr.length >= 26 ? qr.substring(25, 26) : '<span class="empty-state">NULL</span>';
-            
-            valWeekEl.innerHTML = "WK-" + weekNum;
+            const inputField = document.getElementById('qrInput');
+            if (inputField) inputField.focus();
         }
 
         // COMBINED INPUT PROCESSING (Mobile Form + Desktop Keydown)
         function processScan() {
+            const inputField = document.getElementById('qrInput');
+            if (!inputField) return;
+
             let qr = inputField.value.trim();
             
             // MOBILE FAILSAFE: Automatically strips out the words "Enter", "Del", or "Backspace" 
@@ -618,35 +668,52 @@
         }
 
         // Desktop fallback for wedge scanners
-        inputField.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.keyCode === 13) {
+        document.addEventListener('keydown', function(e) {
+            const inputField = document.getElementById('qrInput');
+            if (!inputField) return;
+
+            if (e.target === inputField && (e.key === 'Enter' || e.keyCode === 13)) {
                 e.preventDefault(); 
-                setTimeout(processScan, 100);
+                setTimeout(processScan, 10);
             }
         });
 
-        function openClearModal() { modalOverlay.style.display = 'flex'; }
+        // --- PURGE SYSTEM ---
+        function openClearModal() { 
+            const modalOverlay = document.getElementById('confirmModal');
+            if(modalOverlay) modalOverlay.style.display = 'flex'; 
+        }
         
         function closeClearModal() { 
-            modalOverlay.style.display = 'none'; 
-            inputField.focus(); 
+            const modalOverlay = document.getElementById('confirmModal');
+            if(modalOverlay) modalOverlay.style.display = 'none'; 
+            
+            const inputField = document.getElementById('qrInput');
+            if(inputField) inputField.focus(); 
         }
 
         function confirmClearData() {
-            sessionLogs = []; weekTally = {};
+            sessionLogs = []; 
+            weekTally = {};
             localStorage.removeItem('cp_sessionLogs');
             localStorage.removeItem('cp_weekTally');
             
-            document.getElementById('valModel').innerHTML = '<span class="empty-state">NULL</span>';
-            document.getElementById('val25').innerHTML = '<span class="empty-state">NULL</span>';
-            document.getElementById('val26').innerHTML = '<span class="empty-state">NULL</span>';
-            document.getElementById('valWeek').innerHTML = '<span class="empty-state">NULL</span>';
+            const valModelEl = document.getElementById('valModel');
+            if(valModelEl) {
+                valModelEl.innerHTML = '<span class="empty-state">NULL</span>';
+                document.getElementById('val25').innerHTML = '<span class="empty-state">NULL</span>';
+                document.getElementById('val26').innerHTML = '<span class="empty-state">NULL</span>';
+                document.getElementById('valWeek').innerHTML = '<span class="empty-state">NULL</span>';
+            }
             
             updateLogUI(); 
             closeClearModal();
         }
 
         function enforceFocus(e) {
+            const inputField = document.getElementById('qrInput');
+            if (!inputField) return;
+
             const isClickingInteractable = e.target.closest('.clear-btn') || e.target.closest('.modal-overlay') || e.target.closest('.log-item') || e.target.closest('.btn-sys-back');
             if (e.target !== inputField && !isClickingInteractable) {
                 setTimeout(() => inputField.focus(), 100);
@@ -692,11 +759,11 @@
             return `0x${result}`;
         }
         setInterval(() => {
-            if(document.hidden) return; // Performance limit
+            if(document.hidden || !stream) return;
             let currentText = stream.innerText;
             if (currentText.length > 80) currentText = "> EXTRACTING: "; 
             stream.innerText = currentText + " " + generateHex();
-        }, 400); // Throttled from 120ms to 400ms
+        }, 400);
 
         // PLASMA PARTICLE ENGINE (Performance Optimized)
         const canvas = document.getElementById('particleCanvas');
@@ -743,13 +810,6 @@
         }
 
         if(canvas) { initParticles(); requestAnimationFrame(animateParticles); }
-
-        // Initial setup
-        updateLogUI();
-        if (sessionLogs.length > 0) {
-            updateNeonDisplay(sessionLogs[0].qr, sessionLogs[0].week);
-        }
-        inputField.focus();
     </script>
 </body>
 </html>
