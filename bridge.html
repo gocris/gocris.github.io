@@ -92,8 +92,7 @@
         .header { background: rgba(12, 5, 18, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 30, 70, 0.3); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.8); flex-shrink: 0; }
         .btn-sys-back { background: rgba(255, 30, 70, 0.1); border: 1px solid var(--crimson); color: var(--crimson); font-family: var(--font-en); font-weight: 700; font-size: 0.85rem; letter-spacing: 2px; text-decoration: none; padding: 6px 12px; border-radius: 2px; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(255, 30, 70, 0.2); }
         .btn-sys-back:hover { background: var(--crimson); color: #000; box-shadow: 0 0 15px var(--crimson); }
-        .header-title { font-family: var(--font-en); font-weight: 900; font-size: 1.2rem; letter-spacing: 3px; color: #fff; text-shadow: 0 0 10px rgba(157, 0, 255, 0.5); margin-left: 10px; transition: opacity 0.3s ease; }
-        .header-title { cursor: pointer; }
+        .header-title { font-family: var(--font-en); font-weight: 900; font-size: 1.2rem; letter-spacing: 3px; color: #fff; text-shadow: 0 0 10px rgba(157, 0, 255, 0.5); transition: opacity 0.3s ease; }
         select { background: rgba(5, 2, 10, 0.9); color: var(--crimson); border: 1px solid var(--crimson); font-family: var(--font-en); font-weight: 700; font-size: 0.8rem; padding: 6px; outline: none; border-radius: 2px; box-shadow: 0 0 10px rgba(255, 30, 70, 0.2); }
 
         /* --- UNIFIED TACTICAL TELEMETRY BAR --- */
@@ -327,7 +326,6 @@
     <div class="header">
         <a href="index.html" class="btn-sys-back">&lt; SYS</a>
         <span class="header-title" id="appTitle">VALEO</span>
-        <span class="header-title" style="margin-right: auto; cursor:pointer;" onclick="toggleDataOverlay()">[ DATA ]</span>
         <select id="modeSelector" onchange="changeMode()">
             <option value="T1">T1 (Tg Match)</option>
             <option value="T2">T2 (Braze Joints)</option>
@@ -828,9 +826,9 @@
                 html += `
                 <div style="background: rgba(10, 5, 0, 0.6); border: 1px solid rgba(255,234,0,0.3); border-left: 4px solid var(--gold); padding: 12px; margin-bottom: 10px; box-shadow: inset 0 0 20px rgba(255,234,0,0.05);">
                     <div style="color: var(--gold); font-family: var(--font-en); font-weight: 900; font-size: 1.1rem; letter-spacing: 3px; border-bottom: 1px solid rgba(255,234,0,0.2); padding-bottom: 5px; margin-bottom: 8px;">[ ${zoneName} ]</div>
-                    <div style="font-family: var(--font-mono); font-size: 1.3rem; font-weight: bold; color: #fff; line-height: 1.5;">
-                        TOTAL: <span style="color: var(--crimson); text-shadow: 0 0 10px rgba(255, 30, 70, 0.4);">${a_val !== undefined ? a_val : '--'}</span> <span style="font-size: 0.9rem; color: var(--text-muted);">mg</span><br>
-                        SAMP:&nbsp; <span style="color: var(--bright-purple); text-shadow: 0 0 10px rgba(216, 132, 255, 0.4);">${b_val !== undefined ? b_val : '--'}</span> <span style="font-size: 0.9rem; color: var(--text-muted);">mg</span>
+                    <div style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: bold; color: #fff; line-height: 1.5;">
+                        TOTAL: <span style="color: var(--crimson); text-shadow: 0 0 10px rgba(255, 30, 70, 0.4);">${a_val !== undefined ? a_val : '--'}</span> <span style="font-size: 0.8rem; color: var(--text-muted);">mg</span><br>
+                        SAMP:&nbsp; <span style="color: var(--bright-purple); text-shadow: 0 0 10px rgba(216, 132, 255, 0.4);">${b_val !== undefined ? b_val : '--'}</span> <span style="font-size: 0.8rem; color: var(--text-muted);">mg</span>
                     </div>
                 </div>`;
             }
