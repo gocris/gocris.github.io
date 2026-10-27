@@ -593,6 +593,7 @@
         let isSubmitting = false;
         let windowPollingLocked = false;
         window.existingSyncFiles = [];
+        window.isVirtualSync = false; // New iOS Fallback Flag
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'F1' || e.code === 'F1') { e.preventDefault(); e.stopPropagation(); toggleFocusMode(); return false; }
@@ -652,7 +653,7 @@
             }, 6000);
         }
 
-        // --- DIRECTORY SYNC ENGINE ---
+        // --- DIRECTORY SYNC ENGINE & iOS OVERRIDE ---
         let dirHandle = null; 
         let lastSyncStateHash = "";
         let pollTimer = null;
@@ -660,13 +661,27 @@
 
         async function initiateSync() {
             if (!('showDirectoryPicker' in window)) {
-                alert("File System Access API is not supported in this environment. Make sure you are using Chrome/Edge on localhost or HTTPS.");
+                // iOS / Safari Fallback Override
+                window.isVirtualSync = true;
+                dirHandle = "VIRTUAL_NODE";
+                
+                document.getElementById('btnSync').classList.add('synced');
+                document.querySelector('#btnSync .btn-title').innerText = "VIRTUAL DIR";
+                
+                const miniSync = document.getElementById('btnForgeSync');
+                if (miniSync) { miniSync.innerText = 'VIRTUAL'; miniSync.style.color = '#000'; miniSync.style.background = 'var(--mint)'; }
+                
+                showGlobalStatus(`VIRTUAL DIRECTORY SECURED (iOS OVERRIDE)`, 'success');
                 return;
             }
+            
             try {
                 dirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
                 document.getElementById('btnSync').classList.add('synced');
                 document.querySelector('#btnSync .btn-title').innerText = dirHandle.name.toUpperCase();
+                
+                const miniSync = document.getElementById('btnForgeSync');
+                if (miniSync) { miniSync.innerText = 'SYNCED'; miniSync.style.color = '#000'; miniSync.style.background = 'var(--mint)'; }
                 
                 if (pollTimer) clearTimeout(pollTimer);
                 lastSyncStateHash = "__FORCE_INIT__";
@@ -677,7 +692,7 @@
         }
 
         async function pollDirectory() {
-            if (!dirHandle) return;
+            if (!dirHandle || window.isVirtualSync) return;
 
             if (windowPollingLocked) {
                 pollTimer = setTimeout(pollDirectory, 1000);
@@ -695,6 +710,7 @@
                     }
                 }
                 currentFiles.sort((a, b) => a.modified - b.modified); 
+                window.existingSyncFiles = filenames; 
                 
                 let currentStateHash = currentFiles.map(f => f.name + ":" + f.modified + ":" + f.size).join('|');
                 
@@ -709,7 +725,6 @@
                         const text = await f.file.text(); 
                         const parsed = parseCSV(text, f.name);
                         parsedFiles.push(parsed); 
-                        // Store the footprint status and the raw QR internally
                         syncFileState.push({ name: f.name, rawQR: parsed.id, isComplete: parsed.isComplete });
                     }
                     window.existingSyncFiles = syncFileState;
@@ -745,7 +760,6 @@
             "SYSTEM_STATUS" // 44th Hidden Footprint Row
         ];
         
-        // 43 rendering rows for the UI (we do not render the 44th row footprint on screen)
         const rowTemplates = [
             {t: "div", z:"S1", s:"QR_Code_Side"}, 
             {t: "flow", c: "crimson-glow"},
@@ -789,14 +803,12 @@
             let parsed = parseQRCode(rawQR);
             let isComplete = false;
             
-            // Extract exactly 44 rows (43 data + 1 footprint status)
             for(let i=1; i<=44; i++) {
                 if(i < lines.length) { 
                     let cols = lines[i].split(','); 
                     let val = cols.length > 6 ? cols[6].trim() : "---"; 
                     dataCol.push(val); 
                     
-                    // Evaluate Footprint
                     if (i === 44 && val === "COMPLETED") isComplete = true;
                 } else { 
                     dataCol.push("---"); 
@@ -896,7 +908,6 @@
                 document.querySelectorAll(`.col-sample[data-col="${colIdx}"]`).forEach(c => c.classList.add('col-active-qr'));
                 let cvs = el.querySelector('.massive-qr-canvas');
                 if (cvs) {
-                    // Restrict payload back to 43 lines so footprint is omitted
                     let targetCells = Array.from(document.querySelectorAll(`.sample-cell[data-col="${colIdx}"]`));
                     let vals = targetCells.slice(0, 43).map(c => c.dataset.val || c.innerText.trim());
                     let payload = el.getAttribute('data-qr') + "\r\n" + vals.join("\r\n");
@@ -985,7 +996,7 @@
             processScan();
         }
 
-       function processScan() {
+        function processScan() {
             const input = document.getElementById('scanInput');
             const rawQR = input.value.trim();
             if(!rawQR) return;
@@ -998,7 +1009,7 @@
             }
             
             // 1. STRICT ACTIVE BATCH CHECK 
-            if (batchSamples.some(s => s.qrData.raw === rawQR || s.filename === baseName)) {
+            if (batchSamples.some(s => s.qrData.raw === rawQR || s.filename.includes(baseName))) {
                 showGlobalStatus(`REJECTED: ALREADY IN ACTIVE BATCH`, 'error');
                 input.value = "";
                 setTimeout(() => input.focus(), 50);
@@ -1006,8 +1017,7 @@
             }
 
             // 2. FOLDER DUPLICATE / UNFINISHED FILE CHECK
-            if (window.existingSyncFiles) {
-                // Check against rawQR internally to block older/renamed identical files
+            if (!window.isVirtualSync && window.existingSyncFiles) {
                 const existingFile = window.existingSyncFiles.find(f => f.rawQR === rawQR || (f.name && f.name.includes(baseName)));
                 
                 if (existingFile) {
@@ -1017,7 +1027,6 @@
                         setTimeout(() => input.focus(), 50);
                         return;
                     } else {
-                        // Allow Overwriting Unfinished files!
                         showGlobalStatus(`OVERWRITING UNFINISHED FILE`, 'success');
                     }
                 } else {
@@ -1028,9 +1037,7 @@
             }
             
             const sampleSeq = batchSamples.length + 1;
-            
-            // FIX: Locks the filename to the exact Base Name. No random numbers.
-            const uniqueFilename = baseName;
+            const uniqueFilename = `${baseName}_#${sampleSeq}_${Date.now().toString().slice(-4)}`;
 
             batchSamples.push({
                 index: sampleSeq,
@@ -1078,7 +1085,7 @@
             }
 
             document.getElementById('visualOverlay').classList.add('hidden');
-            writeSampleCSV(currentSample, "SCAN_LOGGED"); // Creates the initial IN_PROGRESS footprint file
+            writeSampleCSV(currentSample, "SCAN_LOGGED");
 
             if(batchSamples.length < targetBatchSize) {
                 promptNextScan();
@@ -1144,7 +1151,7 @@
                 }
             });
 
-            // 44th Row Footprint Override
+            // Footprint Row
             col[43] = (stage === "PHASE_2_COMPLETE" || stage === "FINAL") ? "COMPLETED" : "IN_PROGRESS";
 
             return col;
@@ -1152,18 +1159,28 @@
 
         async function writeSampleCSV(sample, stage) {
             if(!dirHandle || !sample) return;
+            
+            let colData = generateColumnData(sample, stage);
+            let output = `#,FEATURE ID,NOMINAL,TOLERANCE,MIN,MAX,${sample.qrData.raw}\n`;
+            for(let i=0; i<44; i++) { output += `${i+1},${items[i]},---,---,---,---,${colData[i]}\n`; }
+            
+            if (window.isVirtualSync) {
+                const blob = new Blob([output], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${sample.filename}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                return;
+            }
+
             try {
                 windowPollingLocked = true;
                 const fileHandle = await dirHandle.getFileHandle(`${sample.filename}.csv`, { create: true });
                 const writable = await fileHandle.createWritable();
-                let colData = generateColumnData(sample, stage);
-                let output = `#,FEATURE ID,NOMINAL,TOLERANCE,MIN,MAX,${sample.qrData.raw}\n`;
-                
-                // Writing exactly 44 rows to local CSV
-                for(let i=0; i<44; i++) { 
-                    output += `${i+1},${items[i]},---,---,---,---,${colData[i]}\n`; 
-                }
-                
                 await writable.write(output);
                 await writable.close();
             } catch(e) { console.error("CSV write error:", e); }
@@ -1274,7 +1291,7 @@
             }
         }
 
-        /* HORIZONTAL TAB-SEPARATED UNIFIED QR CODE (CORSAIR-STYLE) */
+        /* HORIZONTAL TAB-SEPARATED UNIFIED QR CODE */
         function showBatchSummary() {
             try {
                 document.getElementById('statusBar').innerHTML = `<span style="color:#39ff14;">ALL SAMPLES COMPLETE</span>`;
@@ -1290,7 +1307,6 @@
                 
                 const allDataArrays = batchSamples.map(s => generateColumnData(s, "FINAL"));
                 
-                // Limit Extraction strictly to 43 lines (Omits Footprint Row)
                 for(let i = 0; i < 43; i++) {
                     let rowVals = allDataArrays.map(arr => arr[i]);
                     payloadLines.push(rowVals.join("\t"));
