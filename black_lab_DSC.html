@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VALEO_DSC</title>
+    <script src="qrious.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Courier+Prime:wght@400;700&family=Noto+Sans+JP:wght@700&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --crimson: #ff003c; 
+            --blood-glow: rgba(255, 0, 60, 0.7);
+            --ares-white: #ffffff; 
+            --red-gold: #ff3c00; 
+            --gold: #ffea00; 
+            --mint: #1df2ba; 
+            --purple-light: #d8b4fe;
+            --cyan-neon: #00f3ff;
+            --bg-deep: #050102; 
+            --glass-bg: rgba(10, 2, 4, 0.95);
+            --text-main: #f4f4f5; 
+            --text-muted: #887a99; 
+            --font-en: 'Rajdhani', sans-serif;
+            --font-mono: 'Courier Prime', Courier, monospace; 
+            --font-jp: 'Noto Sans JP', sans-serif;
+        }
+
+        body, html { width: 100vw; height: 100vh; background: var(--bg-deep); color: var(--text-main); font-family: var(--font-en); overflow: hidden; position: relative; }
+        body::before { content: ""; position: fixed; inset: -50%; width: 200vw; height: 200vh; background-image: linear-gradient(rgba(255, 0, 60, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 0, 60, 0.08) 1px, transparent 1px); background-size: 40px 40px; z-index: 0; pointer-events: none; opacity: 0.8; }
+        body::after { content: ""; position: fixed; bottom: -20%; right: -20%; width: 80vw; height: 80vw; background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 0%, transparent 60%); z-index: 0; pointer-events: none; }
+        #particleCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 1.0; }
+
+        .os-container { display: flex; width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 10; }
+        .matrix-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; transition: all 0.4s ease; }
+        
+        .forge-panel { width: 450px; flex-shrink: 0; display: flex; flex-direction: column; background: rgba(5, 1, 2, 0.95); box-shadow: -10px 0 50px rgba(255,0,60,0.3); border-left: 2px solid var(--crimson); z-index: 20; transition: all 0.4s cubic-bezier(0.25, 1, 0.3, 1); overflow: visible; opacity: 1; position: relative; }
+        .forge-panel.hidden { width: 0; border-left-width: 0; opacity: 0; box-shadow: none; overflow: hidden; }
+
+        /* MINI MODE (TAB) & RESPONSIVE FORGE */
+        body.mini-mode .matrix-panel { width: 0 !important; flex: none !important; opacity: 0 !important; overflow: hidden !important; border: none !important; display: none !important; }
+        body.mini-mode .forge-panel { width: 100vw !important; max-width: 100vw !important; border-left: none !important; }
+
+        /* SIDE TAB TOGGLE */
+        .side-tab-toggle {
+            position: absolute;
+            top: 50%;
+            left: -28px;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 80px;
+            background: rgba(10, 2, 4, 0.95);
+            border: 1px solid rgba(255, 0, 60, 0.2);
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            color: var(--crimson);
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        .side-tab-toggle::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: -100%;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--crimson), #ff4d6d, var(--crimson), transparent);
+            box-shadow: 0 0 10px var(--crimson);
+            animation: tab-flow 2s linear infinite;
+        }
+
+        @keyframes tab-flow {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+
+        .side-tab-toggle:hover {
+            background: rgba(10, 2, 4, 0.95);
+            color: #ffffff;
+            box-shadow: -5px 0 20px rgba(255, 0, 60, 0.3);
+            width: 36px;
+            left: -36px;
+        }
+        
+        .side-tab-icon {
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            transition: transform 0.3s ease, color 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+        
+        body.mini-mode .side-tab-toggle {
+            left: 0;
+            border-radius: 0 8px 8px 0;
+            border-left: none;
+            border-right: 1px solid rgba(255, 0, 60, 0.2);
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        body.mini-mode .side-tab-toggle::before {
+            left: auto;
+            right: 0;
+        }
+        
+        body.mini-mode .side-tab-toggle:hover {
+            width: 36px;
+            left: 0;
+            background: rgba(10, 2, 4, 0.95);
+            box-shadow: 5px 0 20px rgba(255, 0, 60, 0.3);
+            color: #ffffff;
+        }
+        
+        body.mini-mode .side-tab-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Mobile Uplink Alert for Scan Screen */
+        .mobile-uplink-alert { 
+            display: none; 
+            position: absolute; 
+            top: 25px; 
+            font-family: var(--font-mono); 
+            font-size: 0.75rem; 
+            color: var(--cyan-neon); 
+            letter-spacing: 3px; 
+            text-shadow: 0 0 8px var(--cyan-neon); 
+            animation: tron-blink 2s infinite alternate; 
+            text-align: center;
+            width: 100%;
+        }
+
+        /* LOADING SCREEN */
+        .fullscreen-loader { position: absolute; inset: 0; background: rgba(5, 1, 2, 0.9); z-index: 9998; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; backdrop-filter: blur(5px); transition: opacity 0.3s; }
+        .fullscreen-loader.active { opacity: 1; pointer-events: all; }
+        .loader-ring { width: 150px; height: 150px; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--crimson); border-bottom-color: var(--crimson); animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; position: relative; }
+        .loader-ring::before { content: ""; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border-radius: 50%; border: 2px dashed rgba(255, 0, 60, 0.5); animation: spin 3s linear infinite reverse; }
+        .loader-text { margin-top: 30px; font-family: var(--font-mono); color: var(--crimson); font-weight: bold; font-size: 1.2rem; letter-spacing: 4px; text-shadow: 0 0 15px var(--crimson); text-align: center; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* HEADER & GLOBAL STATUS HUD */
+        .header { background: var(--glass-bg); backdrop-filter: blur(15px); border-bottom: 2px solid var(--crimson); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: inset 0 -5px 25px rgba(255, 0, 60, 0.2); flex-shrink: 0; }
+        .title-block { display: flex; flex-direction: column; align-items: flex-start; }
+        .title-block h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: 4px; color: var(--ares-white); text-shadow: 0 0 15px var(--blood-glow), 0 0 30px var(--crimson); margin:0; }
+        .status-dot { width: 8px; height: 8px; background-color: var(--ares-white); border-radius: 50%; box-shadow: 0 0 10px var(--ares-white), 0 0 20px var(--crimson); animation: pulse-dot 1.2s infinite; display: inline-block; margin-right: 8px; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--ares-white); } 50% { opacity: 0.2; box-shadow: 0 0 2px var(--crimson); } }
+        .title-block span { font-family: var(--font-mono); color: var(--ares-white); letter-spacing: 2px; font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; opacity: 0.9; }
+
+        .global-status-container { flex: 1; display: flex; align-items: center; justify-content: center; margin: 0 30px; height: 42px; background: rgba(10, 2, 4, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-left: 2px solid var(--text-muted); border-right: 2px solid var(--text-muted); box-shadow: inset 0 0 15px rgba(0,0,0,0.8); overflow: hidden; transition: all 0.3s ease; }
+        .global-status-container.error-mode { border-left-color: var(--crimson); border-right-color: var(--crimson); background: rgba(255, 0, 60, 0.08); box-shadow: inset 0 0 20px rgba(255, 0, 60, 0.2); }
+        .global-status-text { font-family: var(--font-mono); font-size: 1rem; font-weight: 900; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; transition: all 0.3s; }
+        .global-status-text.active-success { color: var(--mint); text-shadow: 0 0 10px var(--mint); }
+        .global-status-text.active-error { color: var(--crimson); text-shadow: 0 0 15px var(--crimson); animation: cyber-flash 0.5s infinite alternate; }
+        @keyframes cyber-flash { 0% { opacity: 1; } 100% { opacity: 0.3; } }
+
+        .controls-wrapper { display: flex; gap: 15px; align-items: center; }
+        .f-btn-group { display: flex; flex-direction: column; gap: 6px; }
+        .f-btn { background: rgba(255, 0, 60, 0.1); border: 1px solid rgba(255,0,60,0.3); color: var(--ares-white); width: 30px; height: 22px; display: flex; align-items: center; justify-content: center; font-family: var(--font-jp); font-size: 0.8rem; cursor: pointer; position: relative; overflow: hidden; }
+        .f-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--crimson); transition: 0.2s; }
+        .f-btn:hover { background: rgba(255, 0, 60, 0.3); border-color: var(--crimson); }
+
+        .btn-sync { height: 50px; background: rgba(10, 2, 4, 0.9); border: 1px solid rgba(255,0,60,0.3); color: var(--ares-white); font-family: var(--font-mono); cursor: pointer; position: relative; overflow: hidden; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; padding: 0 25px; font-weight: 900; letter-spacing: 3px; }
+        .btn-sync::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--crimson); box-shadow: 0 0 15px var(--crimson); transition: width 0.2s; }
+        .btn-sync:hover { background: rgba(255, 0, 60, 0.1); border-color: var(--crimson); box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,0,60,0.3); transform: translateY(-2px); }
+        .btn-sync .btn-title { position: relative; z-index: 2; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        .btn-sync.synced { border-color: var(--mint); color: var(--mint); }
+        .btn-sync.synced::before { background: var(--mint); box-shadow: 0 0 20px var(--mint); }
+        
+        .btn-forge-toggle { color: var(--crimson); }
+        .btn-forge-toggle::before { background: var(--crimson); box-shadow: 0 0 15px var(--crimson); }
+
+        /* F1/F2 Focus Modes */
+        body.focus-mode .header { position: absolute; top: 0; left: 0; right: 0; transform: translateY(calc(-100% + 12px)); z-index: 1000; padding-top: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); border-bottom: none; background: rgba(5, 1, 2, 0.98); transition: transform 0.4s; }
+        body.focus-mode .header:hover { transform: translateY(0); }
+        body.focus-mode .header::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 150px; height: 4px; background: var(--ares-white); border-radius: 0 0 4px 4px; box-shadow: 0 0 15px var(--ares-white); transition: 0.3s; }
+        body.focus-mode .header:hover::after { opacity: 0; }
+        body.focus-mode .table-wrapper { border-top: none; }
+        
+        body.compress-mode { --dyn-h: 23px; --dyn-scale: 1; }
+        body.compress-mode .data-row { height: max(24px, var(--dyn-h)); min-height: max(24px, var(--dyn-h)); }
+        body.compress-mode .col-sample { font-size: max(15px, calc(1.6rem * var(--dyn-scale))); padding: 4px 20px; }
+        body.compress-mode .col-item { font-size: max(12px, calc(0.95rem * var(--dyn-scale))); }
+        body.compress-mode .col-metrics { font-size: max(10px, calc(0.75rem * var(--dyn-scale))); }
+        body.compress-mode .col-seq { font-size: max(11px, calc(0.7rem * var(--dyn-scale))); }
+        body.compress-mode .divider-row { height: 20px; min-height: 20px; }
+        body.compress-mode .div-zone { font-size: 1rem; }
+        body.compress-mode .div-side { font-size: 0.8rem; }
+
+        /* MATRIX TABLE (BORDERLESS DATA ROWS) */
+        .table-wrapper { width: 100%; flex: 1; overflow: auto; position: relative; z-index: 5; background: rgba(5, 1, 2, 0.85); padding-bottom: 45px; }
+        .table-wrapper::-webkit-scrollbar { height: 12px; width: 12px; }
+        .table-wrapper::-webkit-scrollbar-track { background: rgba(10,2,4,0.9); }
+        .table-wrapper::-webkit-scrollbar-thumb { background: var(--crimson); border-radius: 2px; border: 2px solid #000; }
+        
+        .table-row { display: flex; align-items: stretch; min-width: max-content; border-bottom: none !important; box-shadow: none !important; transition: background 0.2s, height 0.3s; }
+        .table-header { height: 80px; min-height: 80px; position: sticky; top: 0; z-index: 500 !important; border-bottom: 2px solid var(--crimson) !important; background: #050102; box-shadow: inset 0 0 35px rgba(255, 0, 60, 0.3) !important; overflow: visible !important; }
+        .table-header .scroll-pane { display: flex; z-index: 510 !important; position: relative; overflow: visible !important; }
+
+        .row-stripe-even { background: rgba(255, 0, 60, 0.02); }
+        .row-stripe-odd { background: rgba(255, 0, 60, 0.05); }
+        .data-row { height: 42px; min-height: 42px; }
+        
+        .fixed-pane { position: sticky; left: 0; display: flex; z-index: 20; width: 360px; min-width: 360px; box-shadow: 5px 0 15px rgba(0,0,0,0.9); border-right: none; background: linear-gradient(rgba(255, 0, 60, 0.01), rgba(255, 0, 60, 0.01)), #050102; }
+        .table-header .fixed-pane { z-index: 25; background: #050102; box-shadow: inset 0 0 20px rgba(255, 0, 60, 0.2); }
+        .scroll-pane { display: flex; z-index: 10; position: relative; }
+
+        /* FLOWING LASER BORDERS */
+        .flowing-border-row { height: 3px; min-height: 3px; width: 100%; position: relative; z-index: 40; background: rgba(255, 0, 60, 0.15); border-bottom: none; overflow: hidden; display: flex; min-width: max-content; }
+        .flowing-border-inner { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, var(--ares-white), #fff, var(--ares-white), transparent); box-shadow: 0 0 10px var(--ares-white), 0 0 20px var(--crimson); animation: cyber-flow 2.5s linear infinite; }
+        .flowing-border-inner.crimson-glow { background: linear-gradient(90deg, transparent, var(--crimson), #ff4d6d, var(--crimson), transparent); box-shadow: 0 0 8px var(--crimson), 0 0 15px rgba(255,0,60,0.5); animation: cyber-flow 2.8s linear infinite; opacity: 0.85; }
+        @keyframes cyber-flow { 0% { left: -100%; } 100% { left: 100%; } }
+
+        .divider-row { height: 32px; min-height: 32px; position: relative; z-index: 15; border: none; background: rgba(255,0,60,0.02); }
+        .divider-row .fixed-pane { display: flex; align-items: center; padding-left: 15px; }
+        .divider-content { font-family: var(--font-mono); letter-spacing: 2px; display: flex; gap: 15px; align-items: center; }
+
+        .theme-s1 { --zone-glow: #ff003c; } 
+        .theme-s5 { --zone-glow: var(--gold); }
+        .div-zone { color: var(--zone-glow); font-size: 1.3rem; font-weight: 900; text-shadow: 0 0 10px var(--zone-glow); }
+        .div-side { color: var(--zone-glow); font-style: italic; font-size: 0.95rem; text-shadow: 0 0 5px var(--zone-glow); opacity: 0.9; }
+
+        .cell { display: flex; align-items: center; justify-content: center; padding: 0 10px; height: 100%; font-family: var(--font-mono); font-size: 0.95rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: none !important; background: transparent; }
+        .cell-left { justify-content: flex-start; }
+        .cell-bold { font-weight: bold; }
+        .cell-crimson { color: var(--crimson) !important; text-shadow: 0 0 10px var(--crimson); }
+        .col-seq { width: 34px; min-width: 34px; color: var(--text-muted); font-size: 0.7rem; padding: 0 4px; background: transparent; }
+        .col-item { width: 240px; min-width: 240px; font-size: 0.95rem; background: transparent; }
+        .col-metrics { width: 80px; min-width: 80px; font-size: 0.75rem; color: var(--text-muted); text-align: right; line-height: 1.3; background: transparent; }
+        .col-sample { width: 140px; font-weight: 900; font-size: 1.6rem; font-family: var(--font-en); font-variant-numeric: tabular-nums; justify-content: flex-end; padding-right: 20px; transition: color 0.2s, text-shadow 0.2s, background 0.2s; }
+
+        .data-row:hover { background: rgba(255,255,255,0.05) !important; }
+        .data-row:hover .col-seq, .data-row:hover .col-item, .data-row:hover .col-metrics, .data-row:hover .sample-cell { color: #fff !important; text-shadow: 0 0 12px #fff !important; }
+        .sample-cell.col-hover { background: rgba(255,255,255,0.05) !important; color: #fff !important; text-shadow: 0 0 12px #fff !important; }
+        .sample-cell:hover { color: var(--crimson) !important; text-shadow: 0 0 15px var(--crimson), 0 0 30px var(--crimson) !important; cursor: crosshair; background: rgba(255, 0, 60, 0.1) !important; }
+
+        /* MINI MATRIX QR (STATE 2) - FLUSH BORDER ALIGNMENT */
+        .mini-qr-canvas { width: 64px !important; height: 64px !important; border-radius: 2px; display: block; border: 2px solid var(--crimson); box-shadow: 0 0 10px rgba(255, 0, 60, 0.4); padding: 0 !important; background: #fff; }
+
+        /* HEADER CELL & PHANTOM LINK QR (STATE 3) */
+        .sample-header-cell { width: 140px; height: 100%; display: flex; position: relative !important; overflow: visible !important; flex-direction: column; justify-content: center; align-items: center; font-family: var(--font-mono); line-height: 1.2; cursor: pointer; background: rgba(255, 0, 60, 0.05); transition: background 0.3s ease; border: none !important; }
+        .sample-header-cell:hover { background: rgba(255, 0, 60, 0.15); box-shadow: inset 0 -3px 0 var(--ares-white); }
+        .sample-header-cell[data-state="3"] { z-index: 10000 !important; }
+        .shc-state { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 4px; box-sizing: border-box; }
+        .sample-header-cell[data-state="0"] .shc-state-0, .sample-header-cell[data-state="1"] .shc-state-1, .sample-header-cell[data-state="2"] .shc-state-2, .sample-header-cell[data-state="3"] .shc-state-3 { display: flex; }
+        .shc-top { color: var(--ares-white); text-shadow: 0 0 8px var(--crimson); font-size: 1rem; font-weight: 900; margin-bottom: 4px; letter-spacing: 2px; text-transform: uppercase; }
+        .shc-bot { color: #fff; font-size: 0.75rem; text-align: center; line-height: 1.25; }
+        .shc-state-1-text { font-size: 0.65rem; color: var(--ares-white); text-shadow: 0 0 5px var(--crimson); word-break: break-all; text-align: center; }
+
+        .phantom-qr-box { position: absolute !important; top: 86px !important; left: 50% !important; transform: translateX(-50%) !important; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10001 !important; pointer-events: none; animation: twin-ghost 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards, twin-idle 2.5s ease-in-out infinite 0.35s; }
+        .massive-qr-canvas { display: block; border-radius: 4px; box-shadow: 0 0 30px rgba(255, 0, 60, 0.75), 0 10px 25px rgba(0, 0, 0, 0.95); max-width: 250px; background: #ffffff; padding: 0 !important; border: none !important; }
+        @keyframes twin-ghost { 0% { opacity: 0; filter: blur(10px); transform: translateX(-50%) scale(0.9); } 100% { opacity: 1; filter: blur(0); transform: translateX(-50%) scale(1); } }
+        @keyframes twin-idle { 0%, 100% { filter: drop-shadow(0 0 12px rgba(255,0,60,0.5)); transform: translateX(-50%) scale(1); } 50% { filter: drop-shadow(0 0 25px rgba(255,0,60,0.85)); transform: translateX(-50%) translateY(-3px) scale(1.01); } }
+        
+        .sample-header-cell.col-active-qr { background: rgba(255, 60, 0, 0.2) !important; box-shadow: inset 0 0 15px rgba(255,60,0,0.5) !important; }
+        .shc-state-3 .shc-top { color: var(--red-gold) !important; text-shadow: 0 0 10px var(--red-gold); }
+
+        .sample-cell.matrix-hijack { font-family: var(--font-jp); font-weight: 900; color: var(--gold) !important; text-shadow: 0 0 15px var(--gold), 0 0 30px var(--crimson) !important; transition: none; }
+
+        /* RIGHT PANEL: DSC FORGE */
+        .forge-header { background: rgba(255, 0, 60, 0.05); border-bottom: 2px solid var(--crimson); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .forge-title { font-family: var(--font-en); font-weight: 900; font-size: 1.4rem; letter-spacing: 4px; color: var(--ares-white); text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px var(--crimson); }
+        .forge-badge { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 900; padding: 4px 10px; border: 1px solid var(--crimson); color: var(--crimson); letter-spacing: 2px; }
+
+        /* ANIMATED MOVING LASER PROGRESS BAR */
+        .payload-container { width: 100%; height: 32px; background: rgba(5, 1, 2, 0.9); border-bottom: 1px solid var(--crimson); flex-shrink: 0; position: relative; overflow: hidden; display: flex; align-items: center; }
+        .payload-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, #990024, var(--crimson)); box-shadow: 0 0 15px var(--crimson); transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1); z-index: 1; overflow: hidden; }
+        .payload-fill::after { content: ""; position: absolute; top: 0; left: -100%; width: 70%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent); animation: payload-sweep 1.2s infinite linear; }
+        @keyframes payload-sweep { 0% { left: -100%; } 100% { left: 200%; } }
+        .payload-text { position: absolute; right: 15px; z-index: 5; font-family: var(--font-mono); font-size: 1.1rem; font-weight: 900; color: #fff; text-shadow: 0px 0px 4px #000, 0 0 10px var(--crimson); letter-spacing: 2px; }
+
+        .status-bar { background: rgba(20, 5, 8, 0.95); color: #fff; text-align: center; padding: 14px 15px; font-family: var(--font-mono); font-weight: 900; font-size: 1.15rem; border-bottom: 2px solid rgba(255,0,60,0.6); text-transform: uppercase; letter-spacing: 2px; flex-shrink: 0; box-shadow: inset 0 -5px 15px rgba(255,0,60,0.2); }
+        
+        .display-area { flex: 1; display: flex; flex-direction: column; padding: 15px; background: rgba(5, 1, 2, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,0,60,0.3); overflow-y: auto; }
+        .history-log { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; font-family: var(--font-mono); color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; margin-bottom: 10px; }
+        .history-item { margin-bottom: 6px; padding-left: 8px; border-left: 2px solid; }
+
+        .forge-overlay { position: absolute; inset: 0; background: rgba(5, 1, 2, 0.98); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); transition: opacity 0.3s; padding: 20px; text-align: center; }
+        .forge-overlay.hidden { opacity: 0; pointer-events: none; }
+        .overlay-title { font-size: 1.5rem; font-weight: 900; color: var(--ares-white); margin-bottom: 20px; text-shadow: 0 0 15px var(--ares-white), 0 0 30px var(--crimson); letter-spacing: 3px; line-height: 1.4; }
+        .scan-input { background: rgba(255,255,255,0.05); border: 2px solid var(--ares-white); color: #fff; font-family: var(--font-mono); font-size: 1.2rem; padding: 10px; text-align: center; width: 85%; outline: none; box-shadow: 0 0 15px rgba(255,0,60,0.3); }
+        
+        .btn-proceed { background: rgba(10, 2, 4, 0.9); border: 1px solid rgba(255,0,60,0.3); color: var(--ares-white); font-family: var(--font-mono); cursor: pointer; position: relative; overflow: hidden; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; padding: 14px 20px; font-weight: 900; letter-spacing: 3px; font-size: 1rem; margin: 8px auto; width: 90%; text-transform: uppercase; }
+        .btn-proceed::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--crimson); box-shadow: 0 0 15px var(--crimson); transition: width 0.2s; }
+        .btn-proceed:hover { background: rgba(255, 0, 60, 0.15); border-color: var(--crimson); box-shadow: 0 5px 15px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,0,60,0.3); transform: translateY(-2px); }
+        .btn-proceed:hover::before { width: 6px; }
+        .btn-secondary { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: var(--ares-white); }
+        .btn-secondary::before { background: var(--ares-white); box-shadow: 0 0 15px var(--ares-white); }
+
+        .btn-choice { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px; margin: 10px 0; width: 100%; border: 1px solid var(--crimson); background: rgba(255,0,60,0.05); cursor: pointer; color: #fff; font-family: var(--font-en); font-weight: 900; font-size: 1.3rem; letter-spacing: 3px; transition: all 0.2s; }
+        .btn-choice span.sub { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); font-weight: 400; letter-spacing: 1px; margin-top: 4px; }
+        .btn-choice:hover { background: rgba(255,0,60,0.2); border-color: var(--ares-white); box-shadow: 0 0 20px rgba(255,0,60,0.4); transform: translateY(-2px); }
+
+        .qty-row { display: flex; gap: 10px; width: 90%; margin: 15px 0; }
+        .qty-btn { flex: 1; padding: 15px 0; border: 1px solid var(--crimson); background: rgba(255,0,60,0.05); color: #fff; font-family: var(--font-mono); font-size: 1.4rem; font-weight: 900; cursor: pointer; transition: all 0.2s; }
+        .qty-btn:hover { background: var(--crimson); color: #000; box-shadow: 0 0 15px var(--crimson); }
+
+        .visual-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-height: 240px; overflow-y: auto; text-align: left; }
+        .visual-item { background: rgba(255,255,255,0.05); padding: 8px; border-left: 2px solid var(--mint); display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.8rem; }
+        .visual-item select { background: transparent; color: var(--mint); border: none; font-weight: bold; outline: none; cursor: pointer; }
+        .visual-item select.fail { color: var(--crimson); }
+
+        /* CURRENT INPUT & MATCHING BLINKING CURSOR */
+        .current-input { font-family: var(--font-mono); font-size: 2.8rem; color: var(--cursor-color, var(--ares-white)); text-shadow: 0 0 15px var(--cursor-color, var(--ares-white)); text-align: right; min-height: 55px; border-bottom: 2px solid var(--cursor-color, var(--ares-white)); margin-bottom: 5px; font-weight: bold; letter-spacing: 2px; position: relative; transition: color 0.2s, border-color 0.2s, text-shadow 0.2s; }
+        @keyframes cyber-cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .current-input.typing-active::after { content: '█'; color: var(--cursor-color, var(--red-gold)); text-shadow: 0 0 15px var(--cursor-color, var(--red-gold)); animation: cyber-cursor-blink 1s step-end infinite; margin-left: 8px; font-size: 2.4rem; }
+
+        /* DSC FORGE ALL-RED GLOWING KEYPAD */
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: rgba(5, 1, 2, 0.95); padding: 10px; flex-shrink: 0; }
+        .btn { background: rgba(18, 2, 5, 0.92); border: 1px solid rgba(255, 0, 60, 0.45); border-left: 2px solid var(--crimson); box-shadow: inset 0 0 8px rgba(255, 0, 60, 0.15), 0 0 5px rgba(255, 0, 60, 0.1); color: #ffffff; font-size: 1.8rem; padding: 16px 0; font-family: var(--font-en); font-weight: 700; cursor: pointer; outline: none; transition: all 0.12s ease; position: relative; }
+        .num-btn { animation: keypad-red-idle 2.4s infinite alternate ease-in-out; }
+        @keyframes keypad-red-idle { 0% { box-shadow: inset 0 0 6px rgba(255, 0, 60, 0.1), 0 0 4px rgba(255, 0, 60, 0.1); border-color: rgba(255, 0, 60, 0.35); } 100% { box-shadow: inset 0 0 16px rgba(255, 0, 60, 0.35), 0 0 10px rgba(255, 0, 60, 0.3); border-color: var(--crimson); } }
+        .btn:hover { background: rgba(255, 0, 60, 0.22); border-color: var(--crimson); border-left-color: var(--crimson); box-shadow: 0 0 20px var(--crimson), inset 0 0 15px rgba(255, 0, 60, 0.45); color: #ffffff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.7); transform: scale(1.04); z-index: 2; animation: none; }
+        .btn:active { background: var(--crimson) !important; color: #ffffff !important; box-shadow: 0 0 25px var(--crimson), inset 0 0 12px rgba(0, 0, 0, 0.5) !important; border-color: var(--crimson) !important; transform: scale(0.94); }
+        .btn-action { font-size: 1.2rem; }
+        .btn-undo { border-left-color: var(--crimson); } 
+        .btn-enter { border-left-color: var(--crimson); }
+
+        /* FINAL PAYLOAD QR CONTAINER (CORSAIR EXTRACTOR STYLE) */
+        .qr-container { 
+            position: relative; padding: 14px; border: 2px solid var(--mint); border-radius: 0; 
+            background: #fff; clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px)); 
+            box-shadow: 0 0 0 4px rgba(29,242,186,.18), 0 0 30px rgba(29,242,186,.25); 
+            margin-bottom: 20px; display: flex; justify-content: center; align-items: center; 
+            box-sizing: border-box; width: auto; max-width: 100%; transition: all 0.3s ease; 
+        }
+        .qr-container::before { content: 'SECURE MATRIX PAYLOAD'; position: absolute; top: -20px; left: 0; right: 0; color: var(--mint); text-align: center; font: 9px var(--font-mono); letter-spacing: 2px; text-shadow: 0 0 5px var(--mint); }
+        .qr-morph-wrapper { position: relative; display: flex; justify-content: center; align-items: center; isolation: isolate; aspect-ratio: 1 / 1; width: 280px; height: 280px; background: #fff; transition: all 0.3s ease; }
+        .qr-morph-wrapper::before { content: ''; position: absolute; z-index: 4; inset: -9px; border: 1px solid rgba(29,242,186,.55); pointer-events: none; }
+        #deckCanvas { position: absolute; inset: 0; z-index: 1; width: 100% !important; height: 100% !important; object-fit: contain; }
+        
+        .deck-card-title { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 900; color: #fff; margin-bottom: 12px; letter-spacing: 2px; text-align: center; }
+        .deck-sample-list { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; text-align: center; line-height: 1.4; }
+
+        /* ========================================= */
+        /* iPHONE / MOBILE EXCLUSIVE MODE            */
+        /* ========================================= */
+@media (max-width: 1000px) {
+            .matrix-panel { width: 0 !important; flex: none !important; opacity: 0 !important; overflow: hidden !important; border: none !important; display: none !important; }
+            
+            /* Forces DSC Forge to always be fully visible on mobile/narrow screens, ignoring the "hidden" toggle */
+            .forge-panel { width: 100vw !important; max-width: 100vw !important; border-left: none !important; opacity: 1 !important; visibility: visible !important; }
+            
+            .side-tab-toggle { display: none !important; }
+        }
+
+        @media (max-width: 600px) {
+            .mobile-uplink-alert { display: block; }
+
+            .forge-title { font-size: 1.1rem; letter-spacing: 2px; }
+            .forge-badge { font-size: 0.7rem; padding: 3px 6px; }
+            
+            .current-input { font-size: 2.2rem; min-height: 45px; }
+            .current-input.typing-active::after { font-size: 2rem; margin-left: 4px; }
+            
+            .keypad { gap: 4px; padding: 8px; }
+            .btn { padding: 12px 0; font-size: 1.5rem; }
+            .btn-action { font-size: 0.95rem; }
+            
+            .overlay-title { font-size: 1.2rem; margin-bottom: 15px; }
+            .btn-choice { font-size: 1.1rem; padding: 14px; }
+            .btn-proceed { font-size: 0.9rem; padding: 12px 15px; width: 95%; }
+            .scan-input { width: 95%; font-size: 1rem; }
+            
+            .history-item { font-size: 0.75rem; }
+            .status-bar { font-size: 0.9rem; padding: 10px; }
+            
+            .massive-qr-canvas { max-width: 200px; }
+            .deck-canvas { max-width: 220px; }
+
+            /* TRON-STYLE MOBILE HEADER OVERRIDE */
+            .forge-header {
+                background: linear-gradient(180deg, rgba(0, 243, 255, 0.15) 0%, rgba(5, 1, 2, 0.95) 100%) !important;
+                border-bottom: 2px solid var(--cyan-neon) !important;
+                box-shadow: 0 5px 20px rgba(0, 243, 255, 0.2), inset 0 2px 10px rgba(0, 243, 255, 0.1) !important;
+                position: relative;
+                overflow: hidden;
+                padding-top: 30px !important; 
+            }
+            
+            .forge-header::before {
+                content: "[ iOS / MOBILE UPLINK DETECTED ]";
+                position: absolute;
+                top: 8px;
+                left: 20px;
+                font-family: var(--font-mono);
+                font-size: 0.65rem;
+                color: var(--cyan-neon);
+                letter-spacing: 3px;
+                text-shadow: 0 0 8px var(--cyan-neon);
+                animation: tron-blink 2s infinite alternate;
+            }
+
+            .forge-header::after {
+                content: "";
+                position: absolute;
+                bottom: -1px;
+                left: -100%;
+                width: 120px;
+                height: 3px;
+                background: #ffffff;
+                box-shadow: 0 0 15px #ffffff, 0 0 30px var(--cyan-neon);
+                animation: tron-lightcycle 2.5s infinite cubic-bezier(0.25, 1, 0.5, 1);
+            }
+
+            .forge-title {
+                color: var(--cyan-neon) !important;
+                text-shadow: 0 0 15px var(--cyan-neon), 0 0 30px rgba(0, 243, 255, 0.8) !important;
+            }
+            .forge-badge {
+                border-color: var(--cyan-neon) !important;
+                color: var(--cyan-neon) !important;
+                box-shadow: 0 0 10px rgba(0, 243, 255, 0.3), inset 0 0 8px rgba(0, 243, 255, 0.2) !important;
+            }
+        }
+        
+        @keyframes tron-lightcycle { 
+            0% { left: -100%; opacity: 0; } 
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 150%; opacity: 0; } 
+        }
+        @keyframes tron-blink { 
+            0% { opacity: 0.5; } 
+            100% { opacity: 1; text-shadow: 0 0 12px var(--cyan-neon); } 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bootScreen" class="fullscreen-loader active" style="z-index: 9999; background: #000; opacity: 1;">
+        <div class="boot-container" style="width:100%; max-width:600px; padding:30px;">
+            <div id="mainSyntaxTerminal" style="font-family: var(--font-mono); color: var(--crimson); margin-bottom: 15px; font-weight: bold; min-height: 130px;"></div>
+            <div style="width: 100%; height: 14px; border: 1px solid var(--crimson); background: rgba(255, 30, 70, 0.1); margin-bottom: 20px;"><div id="mainBootProgressBar" style="height: 100%; width: 0%; background: var(--crimson); transition: width 0.05s;"></div></div>
+            <div id="mainAccessGranted" style="color: #ff1e46; opacity: 0; font-family: var(--font-mono); font-weight: bold;">> ACCESS GRANTED. DEPLOYING MATRIX...</div>
+        </div>
+    </div>
+
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="os-container">
+        <!-- LEFT PANEL: MATRIX -->
+        <div class="matrix-panel" id="matrixPanel">
+            <div id="syncLoader" class="fullscreen-loader">
+                <div class="loader-ring"></div>
+                <div class="loader-text" id="loaderText">INCOMING DATA STREAM DETECTED</div>
+            </div>
+
+            <div class="header">
+                <div class="title-block">
+                    <h1 id="mainTitle">VALEO // NEURAL OS</h1>
+                    <span><span class="status-dot"></span>ADHESION & THERMAL MATRIX</span>
+                </div>
+                
+                <!-- GLOBAL STATUS HUD -->
+                <div class="global-status-container" id="globalStatusContainer">
+                    <div class="global-status-text" id="globalStatusText">SYSTEM OPTIMAL</div>
+                </div>
+
+                <div class="controls-wrapper">
+                    <!-- FIXED F1/F2 BUTTON TRIGGERS -->
+                    <div class="f-btn-group">
+                        <button class="f-btn" title="F1 FOCUS" onclick="toggleFocusMode()">焦</button>
+                        <button class="f-btn" title="F2 COMPRESS" onclick="toggleCompressMode()">圧</button>
+                    </div>
+                    <button class="btn-sync btn-forge-toggle" id="btnForgeToggle" onclick="toggleForge()">
+                        <span class="btn-title">DSC FORGE</span>
+                    </button>
+                    <button class="btn-sync" id="btnSync" onclick="initiateSync()">
+                        <span class="btn-title">SYNC DIR</span>
+                    </button>
+                </div>
+            </div>
+            <div class="table-wrapper" id="tableWrapper"><div id="tableBody"></div></div>
+        </div>
+
+        <!-- RIGHT PANEL: DSC FORGE -->
+        <div class="forge-panel" id="forgePanel">
+            
+            <!-- SIDE PULL-TAB FOR MINI MODE -->
+            <div class="side-tab-toggle" onclick="document.body.classList.toggle('mini-mode')">
+                <div class="side-tab-icon">▶</div>
+            </div>
+            
+            <div class="forge-header">
+                <span class="forge-title">DSC FORGE</span>
+                <span class="forge-badge" id="forgeModeBadge">IDLE</span>
+            </div>
+
+            <!-- 1. MODE SELECT OVERLAY -->
+            <div class="forge-overlay" id="modeSelectOverlay">
+                <div class="overlay-title">SELECT OPERATION MODE</div>
+                <div style="width: 85%;">
+                    <div class="btn-choice" onclick="startDailyRoutine()">
+                        DAILY ROUTINE
+                        <span class="sub">1 SAMPLE STANDARD WORKFLOW</span>
+                    </div>
+                    <div class="btn-choice" onclick="showTicketQtySelect()">
+                        QUALITY TICKET
+                        <span class="sub">BATCH WORKFLOW (2 TO 4 SAMPLES)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. QUALITY TICKET QUANTITY OVERLAY -->
+            <div class="forge-overlay hidden" id="ticketQtyOverlay">
+                <div class="overlay-title">SELECT BATCH SIZE</div>
+                <div class="qty-row">
+                    <button class="qty-btn" onclick="startQualityTicket(2)">2</button>
+                    <button class="qty-btn" onclick="startQualityTicket(3)">3</button>
+                    <button class="qty-btn" onclick="startQualityTicket(4)">4</button>
+                </div>
+                <button class="btn-proceed btn-secondary" onclick="showModeSelect()">CANCEL</button>
+            </div>
+
+            <!-- 3. SCAN OVERLAY -->
+            <div class="forge-overlay hidden" id="scanOverlay">
+                <div class="mobile-uplink-alert">[ iOS / MOBILE UPLINK DETECTED ]</div>
+                <div class="overlay-title" id="scanPromptTitle">SCAN SAMPLE QR CODE</div>
+                
+                <div style="display: flex; width: 85%; gap: 10px; margin-bottom: 20px; align-items: stretch;">
+                    <input type="text" class="scan-input" style="flex: 1; width: auto; margin: 0;" id="scanInput" autocomplete="off" onkeypress="if(event.key === 'Enter') processScan()">
+                    <button class="btn-proceed" style="margin: 0; width: 65px; padding: 0; font-size: 1.6rem;" onclick="processScan()">➔</button>
+                </div>
+                
+                <!-- MOBILE OVERRIDE BUTTON (PINNED TO BOTTOM) -->
+                <button class="btn-proceed btn-secondary" style="position: absolute; bottom: 30px; width: 85%; border-color: var(--crimson); color: var(--crimson); font-size: 0.85rem;" onclick="generateTempScan()">GENERATE TEMP ID</button>
+            </div>
+            
+            <!-- 4. VISUAL INSPECTION OVERLAY -->
+            <div class="forge-overlay hidden" id="visualOverlay">
+                <div class="overlay-title" id="visualPromptTitle">VISUAL INSPECTIONS</div>
+                <div id="visBtnGroup" style="display:flex; flex-direction: column; width:100%; align-items:center;">
+                    <button class="btn-proceed" style="border-color: var(--mint); color: var(--mint);" onclick="confirmVisuals(true)">YES, ALL PASS</button>
+                    <button class="btn-proceed btn-secondary" onclick="showFailureGrid()">NO, LOG FAILURES</button>
+                </div>
+                <div class="visual-grid" id="visualGrid" style="display:none; margin-top:15px; width: 100%;"></div>
+                <button class="btn-proceed" id="visualSubmitBtn" style="display:none; margin-top:15px;" onclick="confirmVisuals(false)">SUBMIT LOG</button>
+            </div>
+
+            <!-- 5. PHASE TRANSITION INTERMEDIARY -->
+            <div class="forge-overlay hidden" id="phaseNoticeOverlay">
+                <div class="overlay-title" id="noticeTitle" style="color: var(--gold); text-shadow: 0 0 15px var(--gold);">PHASE 1 COMPLETE</div>
+                <div style="font-family: var(--font-mono); font-size: 0.95rem; color: #fff; margin-bottom: 20px; line-height: 1.6;" id="noticeBody"></div>
+                <button class="btn-proceed" onclick="dismissPhaseNotice()">PROCEED</button>
+            </div>
+
+            <!-- 6. BATCH COMPLETE: CORSAIR-STYLE UNIFIED QR CODE -->
+            <div class="forge-overlay hidden" id="batchSummaryOverlay">
+                <div class="overlay-title" id="summaryHeaderTitle" style="color: var(--mint); text-shadow: 0 0 15px var(--mint);">PAYLOAD SECURED</div>
+                
+                <div class="qr-container" id="qrContainerEl">
+                    <div class="qr-morph-wrapper" id="qrMorphWrapper">
+                        <canvas id="deckCanvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="deck-card-title" id="deckCardTitle">QUALITY TICKET PAYLOAD</div>
+                <div class="deck-sample-list" id="deckSampleList"></div>
+                
+                <button class="btn-proceed" onclick="purgeAndResetWorkflow()">PURGE &amp; RESET</button>
+            </div>
+
+            <!-- Sync Warning Overlay -->
+            <div class="forge-overlay hidden" id="syncWarningOverlay" style="z-index: 9999;">
+                <div class="overlay-title" style="color: var(--crimson); text-shadow: 0 0 15px var(--crimson);">NO DIRECTORY SYNCED</div>
+                <div style="color: #fff; margin-bottom: 20px; font-family: var(--font-mono); font-size: 1.1rem; line-height: 1.5;">Connect a local metrology folder<br>before starting data entry.</div>
+                <button class="btn-proceed" onclick="document.getElementById('syncWarningOverlay').classList.add('hidden'); initiateSync();">SYNC DIRECTORY NOW</button>
+                <button class="btn-proceed btn-secondary" onclick="document.getElementById('syncWarningOverlay').classList.add('hidden');">DISMISS</button>
+            </div>
+
+            <div class="payload-container"><div class="payload-fill" id="payloadFill"></div><div class="payload-text" id="payloadText">0%</div></div>
+            <div class="status-bar" id="statusBar">SELECT WORKFLOW MODE</div>
+            <div class="display-area" id="displayArea"><div class="history-log" id="historyLog"></div><div class="current-input typing-active" id="currentInput"></div></div>
+            
+            <div class="keypad">
+                <button class="btn num-btn" onclick="typeNum('1')">1</button><button class="btn num-btn" onclick="typeNum('2')">2</button><button class="btn num-btn" onclick="typeNum('3')">3</button>
+                <button class="btn num-btn" onclick="typeNum('4')">4</button><button class="btn num-btn" onclick="typeNum('5')">5</button><button class="btn num-btn" onclick="typeNum('6')">6</button>
+                <button class="btn num-btn" onclick="typeNum('7')">7</button><button class="btn num-btn" onclick="typeNum('8')">8</button><button class="btn num-btn" onclick="typeNum('9')">9</button>
+                <button class="btn btn-action btn-undo" onclick="clearLast()">UNDO</button><button class="btn num-btn" onclick="typeNum('0')">0</button><button class="btn btn-action btn-enter" onclick="submitNumber()">ENTER</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+        let isSubmitting = false;
+        let windowPollingLocked = false;
+        window.existingSyncFiles = [];
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F1' || e.code === 'F1') { e.preventDefault(); e.stopPropagation(); toggleFocusMode(); return false; }
+            if (e.key === 'F2' || e.code === 'F2') { e.preventDefault(); e.stopPropagation(); toggleCompressMode(); return false; }
+            
+            const overlays = ['modeSelectOverlay', 'ticketQtyOverlay', 'scanOverlay', 'visualOverlay', 'phaseNoticeOverlay', 'batchSummaryOverlay', 'syncWarningOverlay'];
+            for(let id of overlays) {
+                const el = document.getElementById(id);
+                if(el && !el.classList.contains('hidden')) return;
+            }
+            
+            if (e.key >= '0' && e.key <= '9') { typeNum(e.key); }
+            else if (e.key === '.') { typeNum('.'); }
+            else if (e.key === 'Backspace') { clearLast(); }
+            else if (e.key === 'Enter') { submitNumber(); }
+        }, { capture: true });
+
+        window.onload = () => { setTimeout(runBootSequence, 50); renderMatrix([]); buildVisualGrid(); };
+
+        function runBootSequence() {
+            const boot = document.getElementById('bootScreen'); const term = document.getElementById('mainSyntaxTerminal'); const bar = document.getElementById('mainBootProgressBar');
+            const lines = ["> INITIATING NEURAL OS...", "> BYPASSING FIREWALL [NODE 7]...", "> SYNCING METROLOGY UPLINK..."];
+            let cLine = 0; let cChar = 0;
+            function typeFast() {
+                if (cLine < lines.length) {
+                    if (cChar === 0) term.innerHTML += `<div id="bl-${cLine}" style="color:var(--crimson); text-shadow:0 0 8px var(--crimson);"></div>`;
+                    document.getElementById(`bl-${cLine}`).innerHTML += lines[cLine].charAt(cChar); cChar++;
+                    if (cChar < lines[cLine].length) setTimeout(typeFast, 5); else { cChar = 0; cLine++; setTimeout(typeFast, 10); }
+                }
+            }
+            setTimeout(typeFast, 50);
+            let prog = 0; const pInt = setInterval(() => { prog += 5; bar.style.width = prog + '%'; if (prog >= 100) { clearInterval(pInt); document.getElementById('mainAccessGranted').style.opacity = '1'; setTimeout(() => { boot.classList.remove('active'); boot.style.display='none'; }, 300); } }, 20); 
+        }
+
+        // --- GLOBAL STATUS HUD CONTROLLER ---
+        let globalStatusTimer = null;
+        function showGlobalStatus(msg, type = 'success') {
+            const container = document.getElementById('globalStatusContainer');
+            const textEl = document.getElementById('globalStatusText');
+            
+            textEl.innerText = msg;
+            textEl.className = "global-status-text"; 
+            container.className = "global-status-container"; 
+            
+            if (type === 'error') {
+                container.classList.add('error-mode');
+                textEl.classList.add('active-error');
+            } else if (type === 'success') {
+                textEl.classList.add('active-success');
+            }
+            
+            if (globalStatusTimer) clearTimeout(globalStatusTimer);
+            globalStatusTimer = setTimeout(() => {
+                textEl.innerText = "SYSTEM OPTIMAL";
+                textEl.className = "global-status-text";
+                container.className = "global-status-container";
+            }, 6000);
+        }
+
+        // --- DIRECTORY SYNC ENGINE ---
+        let dirHandle = null; 
+        let lastSyncStateHash = "";
+        let pollTimer = null;
+        window.headerStates = {}; 
+
+        async function initiateSync() {
+            if (!('showDirectoryPicker' in window)) {
+                alert("File System Access API is not supported in this environment. Make sure you are using Chrome/Edge on localhost or HTTPS.");
+                return;
+            }
+            try {
+                dirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+                document.getElementById('btnSync').classList.add('synced');
+                document.querySelector('#btnSync .btn-title').innerText = dirHandle.name.toUpperCase();
+                
+                if (pollTimer) clearTimeout(pollTimer);
+                lastSyncStateHash = "__FORCE_INIT__";
+                pollDirectory();
+            } catch (err) { 
+                console.warn("Directory sync aborted or cancelled:", err); 
+            }
+        }
+
+        async function pollDirectory() {
+            if (!dirHandle) return;
+
+            if (windowPollingLocked) {
+                pollTimer = setTimeout(pollDirectory, 1000);
+                return;
+            }
+
+            try {
+                let currentFiles = [];
+                let filenames = [];
+                for await (const entry of dirHandle.values()) {
+                    if (entry.kind === 'file' && entry.name.toLowerCase().endsWith('.csv')) {
+                        const file = await entry.getFile();
+                        currentFiles.push({ file, name: entry.name, modified: file.lastModified, size: file.size });
+                        filenames.push(entry.name);
+                    }
+                }
+                currentFiles.sort((a, b) => a.modified - b.modified); 
+                
+                let currentStateHash = currentFiles.map(f => f.name + ":" + f.modified + ":" + f.size).join('|');
+                
+                if (currentStateHash !== lastSyncStateHash) {
+                    let isInitialLoad = (lastSyncStateHash === "__FORCE_INIT__" || lastSyncStateHash === "");
+                    lastSyncStateHash = currentStateHash;
+                    
+                    let parsedFiles = [];
+                    let syncFileState = [];
+                    
+                    for (let f of currentFiles) { 
+                        const text = await f.file.text(); 
+                        const parsed = parseCSV(text, f.name);
+                        parsedFiles.push(parsed); 
+                        // Store the footprint status and the raw QR internally
+                        syncFileState.push({ name: f.name, rawQR: parsed.id, isComplete: parsed.isComplete });
+                    }
+                    window.existingSyncFiles = syncFileState;
+                    
+                    if (!isInitialLoad && parsedFiles.length > 0) {
+                        const loader = document.getElementById('syncLoader');
+                        if (loader) loader.classList.add('active');
+                        
+                        setTimeout(() => { 
+                            try { renderMatrix(parsedFiles); } catch(e) { console.error("renderMatrix error:", e); }
+                            if (loader) loader.classList.remove('active'); 
+                        }, 500);
+                    } else { 
+                        try { renderMatrix(parsedFiles); } catch(e) { console.error("renderMatrix error:", e); }
+                    }
+                }
+            } catch (err) { 
+                console.error("Directory polling read error:", err); 
+            } finally {
+                pollTimer = setTimeout(pollDirectory, 2000);
+            }
+        }
+
+        // --- MATRIX PARSING & RENDERING ---
+        const items = [
+            "Pan + Lid Mass [mg]", "Sample Mass [mg]", "2nd Tg [ºC]", "3rd Tg [ºC]", "Delta Tg (3rd-2nd)", "X SCRIBE", "MEK",
+            "Pan + Lid Mass [mg]", "Sample Mass [mg]", "2nd Tg [ºC]", "3rd Tg [ºC]", "Delta Tg (3rd-2nd)", "X SCRIBE", "MEK",
+            "Pan + Lid Mass [mg]", "Sample Mass [mg]", "2nd Tg [ºC]", "3rd Tg [ºC]", "Delta Tg (3rd-2nd)", "X SCRIBE", "MEK",
+            "BENT",
+            "Pan + Lid Mass [mg]", "Sample Mass [mg]", "2nd Tg [ºC]", "3rd Tg [ºC]", "Delta Tg (3rd-2nd)", "X SCRIBE", "MEK",
+            "Pan + Lid Mass [mg]", "Sample Mass [mg]", "2nd Tg [ºC]", "3rd Tg [ºC]", "Delta Tg (3rd-2nd)", "X SCRIBE", "MEK",
+            "Pan + Lid Mass [mg]", "Sample Mass [mg]", "2nd Tg [ºC]", "3rd Tg [ºC]", "Delta Tg (3rd-2nd)", "X SCRIBE", "MEK",
+            "SYSTEM_STATUS" // 44th Hidden Footprint Row
+        ];
+        
+        // 43 rendering rows for the UI (we do not render the 44th row footprint on screen)
+        const rowTemplates = [
+            {t: "div", z:"S1", s:"QR_Code_Side"}, 
+            {t: "flow", c: "crimson-glow"},
+            {t:"d", n:1}, {t:"d", n:2}, {t:"d", n:3}, {t:"d", n:4}, {t:"d", n:5, b:true}, {t:"d", n:6}, {t:"d", n:7},
+            {t: "div", z:"S1", s:"NO_QR_Code_Side"}, 
+            {t: "flow", c: "crimson-glow"},
+            {t:"d", n:8}, {t:"d", n:9}, {t:"d", n:10}, {t:"d", n:11}, {t:"d", n:12, b:true}, {t:"d", n:13}, {t:"d", n:14},
+            {t: "div", z:"S5", s:"QR_Code_Side"}, 
+            {t: "flow"},
+            {t:"d", n:15}, {t:"d", n:16}, {t:"d", n:17}, {t:"d", n:18}, {t:"d", n:19, b:true}, {t:"d", n:20}, {t:"d", n:21},
+            {t: "div", z:"S5", s:"BENT"}, 
+            {t:"d", n:22},
+            {t: "div", z:"S5", s:"NO_QR_Code_Side"}, 
+            {t: "flow"},
+            {t:"d", n:23}, {t:"d", n:24}, {t:"d", n:25}, {t:"d", n:26}, {t:"d", n:27, b:true}, {t:"d", n:28}, {t:"d", n:29},
+            {t: "div", z:"S7/8", s:"QR_Code_Side"}, 
+            {t: "flow", c: "crimson-glow"},
+            {t:"d", n:30}, {t:"d", n:31}, {t:"d", n:32}, {t:"d", n:33}, {t:"d", n:34, b:true}, {t:"d", n:35}, {t:"d", n:36},
+            {t: "div", z:"S7/8", s:"NO_QR_Code_Side"}, 
+            {t: "flow", c: "crimson-glow"},
+            {t:"d", n:37}, {t:"d", n:38}, {t:"d", n:39}, {t:"d", n:40}, {t:"d", n:41, b:true}, {t:"d", n:42}, {t:"d", n:43}
+        ];
+
+        function parseQRCode(qrStr) {
+            if (!qrStr || qrStr.length < 26) return { tube: "UPLINK", ose: "N/A", cav: "N/A", week: "N/A", raw: qrStr };
+            const tubeMap = { "819": "MED QC", "816": "LONG QC", "814": "LONG SF", "815": "LONG SS", "817": "MED SF", "818": "MED SS", "070": "Energy", "852": "SML SS", "853": "SML QC", "851": "SML SF" };
+            const tubeCode = qrStr.substring(5, 8); const tube = tubeMap[tubeCode] || "UNKNOWN";
+            const ose = qrStr.substring(24, 25); const cav = qrStr.substring(25, 26);
+            const yearStr = qrStr.substring(18, 20); const doyStr = qrStr.substring(20, 23);
+            let week = "N/A";
+            if (!isNaN(parseInt(yearStr)) && !isNaN(parseInt(doyStr))) {
+                const year = 2000 + parseInt(yearStr); const doy = parseInt(doyStr);
+                const firstDay = new Date(year, 0, 1).getDay(); week = Math.ceil((doy + firstDay) / 7);
+            }
+            return { tube, ose, cav, week, raw: qrStr };
+        }
+
+        function parseCSV(text, filename) {
+            const lines = text.replace(/\r/g, '').split('\n'); let dataCol = []; let rawQR = filename.replace('.csv','');
+            if(lines.length > 0) { let header = lines[0].split(','); if(header.length > 6) rawQR = header[6].trim(); }
+            let parsed = parseQRCode(rawQR);
+            let isComplete = false;
+            
+            // Extract exactly 44 rows (43 data + 1 footprint status)
+            for(let i=1; i<=44; i++) {
+                if(i < lines.length) { 
+                    let cols = lines[i].split(','); 
+                    let val = cols.length > 6 ? cols[6].trim() : "---"; 
+                    dataCol.push(val); 
+                    
+                    // Evaluate Footprint
+                    if (i === 44 && val === "COMPLETED") isComplete = true;
+                } else { 
+                    dataCol.push("---"); 
+                }
+            }
+            
+            return { id: rawQR, tube: parsed.tube, ose: parsed.ose, cav: parsed.cav, week: parsed.week, data: dataCol, isComplete: isComplete };
+        }
+
+        function renderMatrix(filesData = []) {
+            const container = document.getElementById('tableBody'); let html = '';
+            html += `<div class="table-row table-header"><div class="fixed-pane"><div class="cell col-seq">#</div><div class="cell cell-left col-item" style="padding-left:15px;">ITEM METRICS</div><div class="cell col-metrics">NOM/DEV</div></div><div class="scroll-pane">`;
+            
+            if(filesData.length === 0) { html += `<div class="cell col-sample"><span style="color:var(--text-muted); font-size:0.8rem;">NO UPLINK</span></div>`; }
+            else {
+                filesData.forEach((sample, idx) => { 
+                    let savedState = window.headerStates[sample.id] || "0";
+                    html += `<div class="sample-header-cell" data-col="${idx}" data-id="${sample.id}" data-state="${savedState}" data-qr="${sample.id}" onclick="cycleHeaderState(this)">
+                        <div class="shc-state shc-state-0"><div class="shc-top">${sample.tube}</div><div class="shc-bot">O: ${sample.ose} | C: ${sample.cav}<br>WK: ${sample.week}</div></div>
+                        <div class="shc-state shc-state-1"><div class="shc-state-1-text">${sample.id}</div></div>
+                        <div class="shc-state shc-state-2"><canvas class="mini-qr-canvas"></canvas></div>
+                        <div class="shc-state shc-state-3"><div class="shc-top" style="color:var(--red-gold);">PHANTOM</div><div class="shc-bot">LINK</div><div class="phantom-qr-box"><canvas class="massive-qr-canvas"></canvas></div></div>
+                    </div>`; 
+                });
+            }
+            html += `</div></div>`;
+            
+            let currentTheme = ""; let dataRowCount = 0;
+            rowTemplates.forEach(r => {
+                if (r.t === "flow") { 
+                    let flowClass = r.c ? `dim ${r.c}` : "";
+                    html += `<div class="flowing-border-row"><div class="flowing-border-inner ${flowClass}"></div></div>`; 
+                    return; 
+                }
+                if (r.t === "div") {
+                    currentTheme = (r.z === "S5") ? "theme-s5" : "theme-s1";
+                    html += `<div class="table-row divider-row ${currentTheme}"><div class="fixed-pane"><div class="divider-content"><span class="div-zone">${r.z}</span><span class="div-side">// ${r.s}</span></div></div><div class="scroll-pane">`;
+                    if(filesData.length === 0) html += `<div class="cell col-sample divider-pattern"></div>`;
+                    else filesData.forEach((_, i) => html += `<div class="cell col-sample divider-pattern" data-col="${i}"></div>`);
+                    html += `</div></div>`;
+                } else {
+                    dataRowCount++;
+                    let stripeClass = (dataRowCount % 2 === 0) ? "row-stripe-even" : "row-stripe-odd";
+                    let iName = items[r.n - 1]; let bCls = r.b ? "cell-bold" : "cell-left";
+                    if (iName.includes("Delta Tg")) bCls += " cell-crimson";
+                    
+                    html += `<div class="table-row data-row ${currentTheme} ${stripeClass}"><div class="fixed-pane"><div class="cell col-seq">${r.n}</div><div class="cell col-item ${bCls}">${iName}</div><div class="cell col-metrics">N:---</div></div><div class="scroll-pane">`;
+                    
+                    if(filesData.length === 0) html += `<div class="cell col-sample sample-cell">---</div>`;
+                    else {
+                        filesData.forEach((sample, cIdx) => {
+                            let val = sample.data[r.n - 1] || "---";
+                            if (iName === "X SCRIBE" || iName === "MEK" || iName === "BENT") {
+                                let isFail = val.toUpperCase().includes("FAIL");
+                                let color = isFail ? 'var(--crimson)' : 'var(--mint)';
+                                html += `<div class="cell col-sample sample-cell" data-col="${cIdx}" data-val="${val}" style="color:${color}; text-shadow:0 0 10px ${color} !important;">${val}</div>`;
+                            } else if (iName.includes("Delta Tg")) {
+                                let num = parseFloat(val); let color = (!isNaN(num) && num >= -5 && num <= 5) ? 'var(--mint)' : 'var(--crimson)';
+                                html += `<div class="cell col-sample sample-cell" data-col="${cIdx}" data-val="${val}" style="color:${color}; text-shadow:0 0 10px ${color} !important;">${val}</div>`;
+                            } else {
+                                html += `<div class="cell col-sample sample-cell" data-col="${cIdx}" data-val="${val}" style="color:#fff;">${val}</div>`;
+                            }
+                        });
+                    }
+                    html += `</div></div>`;
+                }
+            });
+            container.innerHTML = html;
+
+            document.querySelectorAll('.sample-header-cell').forEach(el => {
+                let st = parseInt(el.getAttribute('data-state'));
+                if (st === 2 || st === 3) drawHeaderCanvas(el, st);
+            });
+        }
+
+        function cycleHeaderState(el) {
+            let state = parseInt(el.getAttribute('data-state') || '0'); const colIdx = el.dataset.col; const sId = el.getAttribute('data-id');
+            if (state === 3) document.querySelectorAll(`.col-sample[data-col="${colIdx}"]`).forEach(c => c.classList.remove('col-active-qr'));
+            state = (state + 1) % 4; el.setAttribute('data-state', state); window.headerStates[sId] = state; drawHeaderCanvas(el, state);
+        }
+
+        function drawHeaderCanvas(el, state) {
+            const colIdx = el.dataset.col;
+            if (state === 2) {
+                let cvs = el.querySelector('.mini-qr-canvas');
+                if (cvs) { 
+                    new QRious({ 
+                        element: cvs, 
+                        value: el.getAttribute('data-qr'), 
+                        size: 64, 
+                        padding: 4, 
+                        background: '#fff', 
+                        foreground: '#000' 
+                    }); 
+                }
+            } else if (state === 3) {
+                document.querySelectorAll(`.col-sample[data-col="${colIdx}"]`).forEach(c => c.classList.add('col-active-qr'));
+                let cvs = el.querySelector('.massive-qr-canvas');
+                if (cvs) {
+                    // Restrict payload back to 43 lines so footprint is omitted
+                    let targetCells = Array.from(document.querySelectorAll(`.sample-cell[data-col="${colIdx}"]`));
+                    let vals = targetCells.slice(0, 43).map(c => c.dataset.val || c.innerText.trim());
+                    let payload = el.getAttribute('data-qr') + "\r\n" + vals.join("\r\n");
+                    try {
+                        new QRious({ 
+                            element: cvs, 
+                            value: payload, 
+                            size: 250, 
+                            padding: 8, 
+                            level: 'L',
+                            background: '#fff', 
+                            foreground: '#000' 
+                        });
+                    } catch(e) {}
+                }
+            }
+        }
+
+        // =========================================================================
+        //                 LINEAR WORKFLOW & STACKED DECK SUMMARY
+        // =========================================================================
+        let currentMode = "IDLE";
+        let targetBatchSize = 1;
+        let batchSamples = []; 
+        let activeSampleIndex = 0;
+        let activeWorkflowPhase = 1; 
+        let currentString = "";
+
+        const zLabels = ["S1 QR", "S1 NQR", "S5 QR", "S5 NQR", "S7/8 QR", "S7/8 NQR"];
+        const visualChecklist = [
+            {id: "v_s1q_s", name: "S1 QR - Scribe"}, {id: "v_s1q_m", name: "S1 QR - MEK"},
+            {id: "v_s1nq_s", name: "S1 NQR - Scribe"}, {id: "v_s1nq_m", name: "S1 NQR - MEK"},
+            {id: "v_s5q_s", name: "S5 QR - Scribe"}, {id: "v_s5q_m", name: "S5 QR - MEK"},
+            {id: "v_s5_b", name: "S5 - BENT"},
+            {id: "v_s5nq_s", name: "S5 NQR - Scribe"}, {id: "v_s5nq_m", name: "S5 NQR - MEK"},
+            {id: "v_s7q_s", name: "S7/8 QR - Scribe"}, {id: "v_s7q_m", name: "S7/8 QR - MEK"},
+            {id: "v_s7nq_s", name: "S7/8 NQR - Scribe"}, {id: "v_s7nq_m", name: "S7/8 NQR - MEK"}
+        ];
+
+        function showModeSelect() {
+            document.getElementById('ticketQtyOverlay').classList.add('hidden');
+            document.getElementById('modeSelectOverlay').classList.remove('hidden');
+            document.getElementById('forgeModeBadge').innerText = "IDLE";
+        }
+
+        function showTicketQtySelect() {
+            document.getElementById('modeSelectOverlay').classList.add('hidden');
+            document.getElementById('ticketQtyOverlay').classList.remove('hidden');
+        }
+
+        function startDailyRoutine() {
+            if (!dirHandle) { document.getElementById('syncWarningOverlay').classList.remove('hidden'); return; }
+            currentMode = "DAILY";
+            targetBatchSize = 1;
+            initBatchSession();
+        }
+
+        function startQualityTicket(qty) {
+            if (!dirHandle) { document.getElementById('syncWarningOverlay').classList.remove('hidden'); return; }
+            currentMode = "TICKET";
+            targetBatchSize = qty;
+            initBatchSession();
+        }
+
+        function initBatchSession() {
+            batchSamples = [];
+            activeSampleIndex = 0;
+            activeWorkflowPhase = 1;
+            document.getElementById('modeSelectOverlay').classList.add('hidden');
+            document.getElementById('ticketQtyOverlay').classList.add('hidden');
+            document.getElementById('forgeModeBadge').innerText = `${currentMode} [0/${targetBatchSize}]`;
+            promptNextScan();
+        }
+
+        function promptNextScan() {
+            const scanIndex = batchSamples.length + 1;
+            document.getElementById('scanPromptTitle').innerText = `SCAN SAMPLE ${scanIndex} OF ${targetBatchSize}`;
+            document.getElementById('scanInput').value = "";
+            document.getElementById('scanOverlay').classList.remove('hidden');
+            setTimeout(() => document.getElementById('scanInput').focus(), 100);
+        }
+
+        function generateTempScan() {
+            const tempID = "TEMP_" + Math.floor(10000 + Math.random() * 90000);
+            document.getElementById('scanInput').value = tempID;
+            processScan();
+        }
+
+       function processScan() {
+            const input = document.getElementById('scanInput');
+            const rawQR = input.value.trim();
+            if(!rawQR) return;
+
+            const qrData = parseQRCode(rawQR);
+            let baseName = `${qrData.tube}_${qrData.ose}_${qrData.cav}`;
+            
+            if (rawQR.startsWith("TEMP_")) {
+                baseName = rawQR;
+            }
+            
+            // 1. STRICT ACTIVE BATCH CHECK 
+            if (batchSamples.some(s => s.qrData.raw === rawQR || s.filename === baseName)) {
+                showGlobalStatus(`REJECTED: ALREADY IN ACTIVE BATCH`, 'error');
+                input.value = "";
+                setTimeout(() => input.focus(), 50);
+                return;
+            }
+
+            // 2. FOLDER DUPLICATE / UNFINISHED FILE CHECK
+            if (window.existingSyncFiles) {
+                // Check against rawQR internally to block older/renamed identical files
+                const existingFile = window.existingSyncFiles.find(f => f.rawQR === rawQR || (f.name && f.name.includes(baseName)));
+                
+                if (existingFile) {
+                    if (existingFile.isComplete) {
+                        showGlobalStatus(`REJECTED: ALREADY SECURED IN FOLDER`, 'error');
+                        input.value = "";
+                        setTimeout(() => input.focus(), 50);
+                        return;
+                    } else {
+                        // Allow Overwriting Unfinished files!
+                        showGlobalStatus(`OVERWRITING UNFINISHED FILE`, 'success');
+                    }
+                } else {
+                    showGlobalStatus(`ACCEPTED: REGISTERED TO BATCH`, 'success');
+                }
+            } else {
+                showGlobalStatus(`ACCEPTED: REGISTERED TO BATCH`, 'success');
+            }
+            
+            const sampleSeq = batchSamples.length + 1;
+            
+            // FIX: Locks the filename to the exact Base Name. No random numbers.
+            const uniqueFilename = baseName;
+
+            batchSamples.push({
+                index: sampleSeq,
+                filename: uniqueFilename,
+                qrData: qrData,
+                phase1Data: [], 
+                phase2Data: [], 
+                visualStates: {}
+            });
+
+            document.getElementById('scanOverlay').classList.add('hidden');
+            document.getElementById('forgeModeBadge').innerText = `${currentMode} [${sampleSeq}/${targetBatchSize}]`;
+
+            document.getElementById('visualPromptTitle').innerText = `SAMPLE ${sampleSeq} INSPECTIONS`;
+            buildVisualGrid();
+            document.getElementById('visualOverlay').classList.remove('hidden');
+        }
+
+        function buildVisualGrid() {
+            let html = "";
+            visualChecklist.forEach(v => {
+                html += `<div class="visual-item"><span>${v.name}</span><select id="${v.id}" onchange="this.className = this.value === 'FAIL' ? 'fail' : '';"><option value="PASS">PASS</option><option value="FAIL">FAIL</option></select></div>`;
+            });
+            document.getElementById('visualGrid').innerHTML = html;
+            document.getElementById('visBtnGroup').style.display = 'flex';
+            document.getElementById('visualGrid').style.display = 'none';
+            document.getElementById('visualSubmitBtn').style.display = 'none';
+        }
+
+        function showFailureGrid() {
+            document.getElementById('visBtnGroup').style.display = 'none';
+            document.getElementById('visualGrid').style.display = 'grid';
+            document.getElementById('visualSubmitBtn').style.display = 'block';
+        }
+
+        function confirmVisuals(allPass) {
+            const currentSample = batchSamples[batchSamples.length - 1];
+            if(allPass) {
+                visualChecklist.forEach(v => currentSample.visualStates[v.id] = "PASS");
+            } else {
+                visualChecklist.forEach(v => {
+                    let el = document.getElementById(v.id);
+                    currentSample.visualStates[v.id] = el ? el.value : "PASS";
+                });
+            }
+
+            document.getElementById('visualOverlay').classList.add('hidden');
+            writeSampleCSV(currentSample, "SCAN_LOGGED"); // Creates the initial IN_PROGRESS footprint file
+
+            if(batchSamples.length < targetBatchSize) {
+                promptNextScan();
+            } else {
+                activeSampleIndex = 0;
+                activeWorkflowPhase = 1;
+                showNotice(
+                    "BATCH REGISTRATION COMPLETE",
+                    `All ${targetBatchSize} samples registered.<br>Starting Phase 1 (Pan+Lid &amp; Sample Mass) for Sample 1.`
+                );
+            }
+        }
+
+        function showNotice(title, body) {
+            document.getElementById('noticeTitle').innerText = title;
+            document.getElementById('noticeBody').innerHTML = body;
+            document.getElementById('phaseNoticeOverlay').classList.remove('hidden');
+        }
+
+        function dismissPhaseNotice() {
+            document.getElementById('phaseNoticeOverlay').classList.add('hidden');
+            updateDisplay();
+        }
+
+        function generateColumnData(sample, stage) {
+            let col = new Array(44).fill("---");
+            const getVis = (idx) => sample.visualStates[visualChecklist[idx].id] || "PASS";
+
+            col[5]  = getVis(0);  col[6]  = getVis(1);
+            col[12] = getVis(2);  col[13] = getVis(3);
+            col[19] = getVis(4);  col[20] = getVis(5);
+            col[21] = getVis(6); 
+            col[27] = getVis(7);  col[28] = getVis(8);
+            col[34] = getVis(9);  col[35] = getVis(10);
+            col[41] = getVis(11); col[42] = getVis(12);
+
+            const zones = [
+                { pan: 0,  samp: 1,  tg2: 2,  tg3: 3,  delta: 4  },
+                { pan: 7,  samp: 8,  tg2: 9,  tg3: 10, delta: 11 },
+                { pan: 14, samp: 15, tg2: 16, tg3: 17, delta: 18 },
+                { pan: 22, samp: 23, tg2: 24, tg3: 25, delta: 26 },
+                { pan: 29, samp: 30, tg2: 31, tg3: 32, delta: 33 },
+                { pan: 36, samp: 37, tg2: 38, tg3: 39, delta: 40 }
+            ];
+
+            zones.forEach((z, idx) => {
+                let panIdx = idx * 2;
+                let sampIdx = idx * 2 + 1;
+                if(panIdx < sample.phase1Data.length) col[z.pan] = sample.phase1Data[panIdx];
+                if(sampIdx < sample.phase1Data.length) col[z.samp] = sample.phase1Data[sampIdx];
+            });
+
+            zones.forEach((z, idx) => {
+                let tg2Idx = idx * 2;
+                let tg3Idx = idx * 2 + 1;
+                if(tg2Idx < sample.phase2Data.length) col[z.tg2] = sample.phase2Data[tg2Idx];
+                if(tg3Idx < sample.phase2Data.length) col[z.tg3] = sample.phase2Data[tg3Idx];
+
+                if(col[z.tg2] !== "---" && col[z.tg3] !== "---") {
+                    let c = parseFloat(col[z.tg2]);
+                    let d = parseFloat(col[z.tg3]);
+                    if(!isNaN(c) && !isNaN(d)) col[z.delta] = (d - c).toFixed(2);
+                }
+            });
+
+            // 44th Row Footprint Override
+            col[43] = (stage === "PHASE_2_COMPLETE" || stage === "FINAL") ? "COMPLETED" : "IN_PROGRESS";
+
+            return col;
+        }
+
+        async function writeSampleCSV(sample, stage) {
+            if(!dirHandle || !sample) return;
+            try {
+                windowPollingLocked = true;
+                const fileHandle = await dirHandle.getFileHandle(`${sample.filename}.csv`, { create: true });
+                const writable = await fileHandle.createWritable();
+                let colData = generateColumnData(sample, stage);
+                let output = `#,FEATURE ID,NOMINAL,TOLERANCE,MIN,MAX,${sample.qrData.raw}\n`;
+                
+                // Writing exactly 44 rows to local CSV
+                for(let i=0; i<44; i++) { 
+                    output += `${i+1},${items[i]},---,---,---,---,${colData[i]}\n`; 
+                }
+                
+                await writable.write(output);
+                await writable.close();
+            } catch(e) { console.error("CSV write error:", e); }
+            finally { setTimeout(() => { windowPollingLocked = false; }, 250); }
+        }
+
+        function updateDisplay() {
+            if(batchSamples.length === 0) return;
+            const currentSample = batchSamples[activeSampleIndex];
+            const currentDataArray = (activeWorkflowPhase === 1) ? currentSample.phase1Data : currentSample.phase2Data;
+            const step = currentDataArray.length;
+
+            document.getElementById('currentInput').innerText = currentString;
+
+            let html = "";
+            currentDataArray.forEach((val, idx) => {
+                let alt = (idx % 2 === 0) ? "var(--ares-white)" : "#aaa";
+                let zIdx = Math.floor(idx / 2);
+                let zName = zLabels[zIdx];
+                let label = "";
+                if(activeWorkflowPhase === 1) {
+                    label = (idx % 2 === 0) ? `[${zName}] <span style="color:var(--crimson);">Total</span>` : `[${zName}] <span style="color:var(--gold);">Samp</span>`;
+                } else {
+                    label = (idx % 2 === 0) 
+                        ? `[${zName}] <span style="color:var(--purple-light);">2nd Tg</span>` 
+                        : `[${zName}] <span style="color:var(--cyan-neon);">3rd Tg</span>`;
+                }
+                html += `<div class="history-item" style="border-left-color: ${alt};">> <span>${label}</span> <span style="color:#fff; font-weight:bold;">${val}</span></div>`;
+            });
+            document.getElementById('historyLog').innerHTML = html;
+            const disp = document.getElementById('displayArea'); disp.scrollTop = disp.scrollHeight;
+
+            const totalWorkflowSteps = targetBatchSize * 24;
+            let completedSteps = 0;
+            batchSamples.forEach(s => completedSteps += s.phase1Data.length + s.phase2Data.length);
+            const pct = Math.round((completedSteps / totalWorkflowSteps) * 100);
+            document.getElementById('payloadFill').style.width = pct + "%";
+            document.getElementById('payloadText').innerText = pct + "%";
+
+            if(step < 12) {
+                let zIdx = Math.floor(step / 2);
+                let zName = zLabels[zIdx];
+                let prompt = "";
+                let cursorColor = "var(--ares-white)";
+
+                if(activeWorkflowPhase === 1) {
+                    if(step % 2 === 0) { 
+                        prompt = `<span style="color:var(--crimson);">TOTAL (mg)</span>`; 
+                        cursorColor = "var(--crimson)"; 
+                    } else { 
+                        prompt = `<span style="color:var(--gold);">SAMP (mg)</span>`; 
+                        cursorColor = "var(--gold)"; 
+                    }
+                } else {
+                    if(step % 2 === 0) {
+                        prompt = `<span style="color:var(--purple-light); text-shadow:0 0 10px var(--purple-light);">2ND TG</span>`;
+                        cursorColor = "var(--purple-light)";
+                    } else {
+                        prompt = `<span style="color:var(--cyan-neon); text-shadow:0 0 10px var(--cyan-neon);">3RD TG</span>`;
+                        cursorColor = "var(--cyan-neon)";
+                    }
+                }
+
+                document.getElementById('statusBar').innerHTML = `S${activeSampleIndex + 1}/${targetBatchSize} [${zName}] ${prompt}`;
+                document.getElementById('currentInput').style.setProperty('--cursor-color', cursorColor);
+            }
+        }
+
+        async function submitNumber() {
+            if(currentString === "" || batchSamples.length === 0) return;
+            const currentSample = batchSamples[activeSampleIndex];
+            const currentDataArray = (activeWorkflowPhase === 1) ? currentSample.phase1Data : currentSample.phase2Data;
+            
+            currentDataArray.push(currentString);
+            currentString = "";
+            
+            updateDisplay();
+
+            if(currentDataArray.length === 12) {
+                await writeSampleCSV(currentSample, activeWorkflowPhase === 1 ? "PHASE_1_COMPLETE" : "PHASE_2_COMPLETE");
+
+                if(activeWorkflowPhase === 1) {
+                    if(activeSampleIndex + 1 < targetBatchSize) {
+                        activeSampleIndex++;
+                        showNotice(
+                            `SAMPLE ${activeSampleIndex} PHASE 1 COMPLETE`,
+                            `Sample ${activeSampleIndex} data committed.<br>Starting Phase 1 for Sample ${activeSampleIndex + 1}.`
+                        );
+                    } else {
+                        activeSampleIndex = 0;
+                        activeWorkflowPhase = 2;
+                        showNotice(
+                            "ALL SAMPLES PHASE 1 COMPLETE",
+                            `All ${targetBatchSize} sample masses committed.<br>Cycling back to Sample 1 for Phase 2 (Tg readings).`
+                        );
+                    }
+                } else {
+                    if(activeSampleIndex + 1 < targetBatchSize) {
+                        activeSampleIndex++;
+                        showNotice(
+                            `SAMPLE ${activeSampleIndex} PHASE 2 COMPLETE`,
+                            `Sample ${activeSampleIndex} Tg data committed.<br>Starting Phase 2 for Sample ${activeSampleIndex + 1}.`
+                        );
+                    } else {
+                        showBatchSummary();
+                    }
+                }
+            }
+        }
+
+        /* HORIZONTAL TAB-SEPARATED UNIFIED QR CODE (CORSAIR-STYLE) */
+        function showBatchSummary() {
+            try {
+                document.getElementById('statusBar').innerHTML = `<span style="color:#39ff14;">ALL SAMPLES COMPLETE</span>`;
+                
+                const isTicket = (currentMode === "TICKET" && batchSamples.length > 1);
+                document.getElementById('summaryHeaderTitle').innerText = isTicket ? "QUALITY TICKET SECURED" : "DAILY ROUTINE SECURED";
+                document.getElementById('deckCardTitle').innerText = isTicket 
+                    ? `BATCH TICKET: ${batchSamples.length} SAMPLES ENCODED` 
+                    : `SAMPLE 1: ${batchSamples[0].filename}`;
+
+                let payloadLines = [];
+                payloadLines.push(batchSamples.map(s => s.qrData.raw).join("\t"));
+                
+                const allDataArrays = batchSamples.map(s => generateColumnData(s, "FINAL"));
+                
+                // Limit Extraction strictly to 43 lines (Omits Footprint Row)
+                for(let i = 0; i < 43; i++) {
+                    let rowVals = allDataArrays.map(arr => arr[i]);
+                    payloadLines.push(rowVals.join("\t"));
+                }
+                
+                const combinedPayload = payloadLines.join("\r\n");
+
+                const listEl = document.getElementById('deckSampleList');
+                if (isTicket) {
+                    listEl.innerHTML = "INCLUDED SAMPLES:<br>" + batchSamples.map((s, i) => `S${i+1}: ${s.filename}`).join(" | ");
+                } else {
+                    listEl.innerHTML = "";
+                }
+
+                const canvas = document.getElementById('deckCanvas');
+                const qrSize = isTicket ? 280 : 250;
+                
+                try {
+                    new QRious({
+                        element: canvas,
+                        value: combinedPayload,
+                        size: qrSize,
+                        padding: 0,
+                        level: 'L',
+                        background: '#fff',
+                        foreground: '#000'
+                    });
+                } catch (qrErr) {
+                    console.error("QR Payload exceeded capacity:", qrErr);
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = qrSize; canvas.height = qrSize;
+                    ctx.fillStyle = "#fff"; ctx.fillRect(0,0,qrSize,qrSize);
+                    ctx.fillStyle = "#ff003c"; ctx.font = "bold 14px monospace";
+                    ctx.fillText("PAYLOAD TOO LARGE", 20, qrSize/2);
+                }
+
+                document.getElementById('batchSummaryOverlay').classList.remove('hidden');
+            } catch (err) {
+                console.error("Fatal error displaying summary overlay:", err);
+            }
+        }
+
+        function purgeAndResetWorkflow() {
+            const overlays = ['batchSummaryOverlay', 'scanOverlay', 'visualOverlay', 'phaseNoticeOverlay', 'ticketQtyOverlay'];
+            overlays.forEach(id => document.getElementById(id).classList.add('hidden'));
+
+            document.getElementById('modeSelectOverlay').classList.remove('hidden');
+            document.getElementById('forgeModeBadge').innerText = "IDLE";
+            document.getElementById('statusBar').innerText = "SELECT WORKFLOW MODE";
+            document.getElementById('historyLog').innerHTML = "";
+            document.getElementById('currentInput').innerText = "";
+            document.getElementById('payloadFill').style.width = "0%";
+            document.getElementById('payloadText').innerText = "0%";
+            
+            batchSamples = [];
+            currentMode = "IDLE";
+            currentString = "";
+        }
+
+        function toggleFocusMode() { document.body.classList.toggle('focus-mode'); }
+        function toggleCompressMode() { document.body.classList.toggle('compress-mode'); }
+
+        function typeNum(char) {
+            if(isSubmitting) return;
+            if(char === '.' && currentString.includes('.')) return;
+            currentString += char;
+
+            const currentSample = batchSamples[activeSampleIndex];
+            if(currentSample) {
+                const arr = (activeWorkflowPhase === 1) ? currentSample.phase1Data : currentSample.phase2Data;
+                let step = arr.length;
+                if(!currentString.includes('.')) {
+                    if(activeWorkflowPhase === 1) {
+                        if(step % 2 === 0 && currentString.length === 2) currentString += '.';
+                        else if(step % 2 === 1 && currentString.length === 1) currentString += '.';
+                    } else {
+                        if(currentString.length === 2) currentString += '.';
+                    }
+                }
+            }
+            updateDisplay();
+
+            if (currentString.includes('.') && currentString.split('.')[1].length === 2) { 
+                isSubmitting = true; 
+                setTimeout(() => { submitNumber(); isSubmitting = false; }, 100); 
+            }
+        }
+
+        function clearLast() {
+            if (currentString !== "") currentString = currentString.slice(0, -1);
+            else if (batchSamples.length > 0) {
+                const arr = (activeWorkflowPhase === 1) ? batchSamples[activeSampleIndex].phase1Data : batchSamples[activeSampleIndex].phase2Data;
+                if(arr.length > 0) currentString = arr.pop();
+            }
+            updateDisplay();
+        }
+
+        function toggleForge() {
+            const panel = document.getElementById('forgePanel'); 
+            const btn = document.getElementById('btnForgeToggle'); 
+            panel.classList.toggle('hidden'); 
+            btn.classList.toggle('inactive');
+        }
+
+        // Chinese Decrypt Hologram
+        const chnChars = "數據檢測鎖定系統分析錯誤流合格不合格";
+        setInterval(() => {
+            const cells = Array.from(document.querySelectorAll('.sample-cell')).filter(c => c.innerText.trim() !== "---"); 
+            if(cells.length === 0) return;
+            for(let i=0; i<3; i++) {
+                const target = cells[Math.floor(Math.random() * cells.length)]; 
+                if(target.dataset.isGlitching) continue;
+                const origText = target.dataset.val || target.innerText; 
+                target.dataset.isGlitching = "true"; target.dataset.originalText = origText;
+                target.dataset.origColor = target.style.color; target.dataset.origShadow = target.style.textShadow;
+                target.classList.add('matrix-hijack'); 
+                target.innerText = chnChars[Math.floor(Math.random() * chnChars.length)] + chnChars[Math.floor(Math.random() * chnChars.length)];
+                
+                setTimeout(() => {
+                    target.classList.remove('matrix-hijack'); 
+                    let iterations = 0; const targetStr = target.dataset.originalText;
+                    const interval = setInterval(() => { 
+                        target.innerText = targetStr.split("").map((l, idx) => idx < iterations ? targetStr[idx] : "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>"[Math.floor(Math.random()*44)]).join(""); 
+                        if(iterations >= targetStr.length) { 
+                            clearInterval(interval); target.dataset.isGlitching = ""; 
+                            target.innerText = targetStr;
+                            target.style.color = target.dataset.origColor || '';
+                            target.style.textShadow = target.dataset.origShadow || '';
+                        } 
+                        iterations += 0.5; 
+                    }, 35);
+                }, 1000);
+            }
+        }, 8000);
+    </script>
+</body>
+</html>
