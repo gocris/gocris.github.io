@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VALEO_DSC</title>
+    <title>VALEO // NEURAL OS : DSC FORGE</title>
     <script src="qrious.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Courier+Prime:wght@400;700&family=Noto+Sans+JP:wght@700&display=swap');
@@ -38,107 +38,32 @@
         .forge-panel { width: 450px; flex-shrink: 0; display: flex; flex-direction: column; background: rgba(5, 1, 2, 0.95); box-shadow: -10px 0 50px rgba(255,0,60,0.3); border-left: 2px solid var(--crimson); z-index: 20; transition: all 0.4s cubic-bezier(0.25, 1, 0.3, 1); overflow: visible; opacity: 1; position: relative; }
         .forge-panel.hidden { width: 0; border-left-width: 0; opacity: 0; box-shadow: none; overflow: hidden; }
 
-        /* MINI MODE (TAB) & RESPONSIVE FORGE */
         body.mini-mode .matrix-panel { width: 0 !important; flex: none !important; opacity: 0 !important; overflow: hidden !important; border: none !important; display: none !important; }
         body.mini-mode .forge-panel { width: 100vw !important; max-width: 100vw !important; border-left: none !important; }
 
-        /* SIDE TAB TOGGLE */
         .side-tab-toggle {
-            position: absolute;
-            top: 50%;
-            left: -28px;
-            transform: translateY(-50%);
-            width: 28px;
-            height: 80px;
-            background: rgba(10, 2, 4, 0.95);
-            border: 1px solid rgba(255, 0, 60, 0.2);
-            border-right: none;
-            border-radius: 8px 0 0 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--crimson);
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.3, 1);
+            position: absolute; top: 50%; left: -28px; transform: translateY(-50%); width: 28px; height: 80px;
+            background: rgba(10, 2, 4, 0.95); border: 1px solid rgba(255, 0, 60, 0.2); border-right: none;
+            border-radius: 8px 0 0 8px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+            z-index: 100; color: var(--crimson); box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5); transition: all 0.3s cubic-bezier(0.25, 1, 0.3, 1);
             overflow: hidden;
         }
-
         .side-tab-toggle::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: -100%;
-            width: 2px;
-            height: 100%;
+            content: ""; position: absolute; left: 0; top: -100%; width: 2px; height: 100%;
             background: linear-gradient(to bottom, transparent, var(--crimson), #ff4d6d, var(--crimson), transparent);
-            box-shadow: 0 0 10px var(--crimson);
-            animation: tab-flow 2s linear infinite;
+            box-shadow: 0 0 10px var(--crimson); animation: tab-flow 2s linear infinite;
         }
+        @keyframes tab-flow { 0% { top: -100%; } 100% { top: 100%; } }
+        .side-tab-toggle:hover { background: rgba(10, 2, 4, 0.95); color: #ffffff; box-shadow: -5px 0 20px rgba(255, 0, 60, 0.3); width: 36px; left: -36px; }
+        .side-tab-icon { font-family: var(--font-mono); font-size: 1.2rem; transition: transform 0.3s ease, color 0.3s ease; position: relative; z-index: 2; }
+        
+        body.mini-mode .side-tab-toggle { left: 0; border-radius: 0 8px 8px 0; border-left: none; border-right: 1px solid rgba(255, 0, 60, 0.2); box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5); }
+        body.mini-mode .side-tab-toggle::before { left: auto; right: 0; }
+        body.mini-mode .side-tab-toggle:hover { width: 36px; left: 0; background: rgba(10, 2, 4, 0.95); box-shadow: 5px 0 20px rgba(255, 0, 60, 0.3); color: #ffffff; }
+        body.mini-mode .side-tab-icon { transform: rotate(180deg); }
 
-        @keyframes tab-flow {
-            0% { top: -100%; }
-            100% { top: 100%; }
-        }
+        .mobile-uplink-alert { display: none; position: absolute; top: 25px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyan-neon); letter-spacing: 3px; text-shadow: 0 0 8px var(--cyan-neon); animation: tron-blink 2s infinite alternate; text-align: center; width: 100%; }
 
-        .side-tab-toggle:hover {
-            background: rgba(10, 2, 4, 0.95);
-            color: #ffffff;
-            box-shadow: -5px 0 20px rgba(255, 0, 60, 0.3);
-            width: 36px;
-            left: -36px;
-        }
-        
-        .side-tab-icon {
-            font-family: var(--font-mono);
-            font-size: 1.2rem;
-            transition: transform 0.3s ease, color 0.3s ease;
-            position: relative;
-            z-index: 2;
-        }
-        
-        body.mini-mode .side-tab-toggle {
-            left: 0;
-            border-radius: 0 8px 8px 0;
-            border-left: none;
-            border-right: 1px solid rgba(255, 0, 60, 0.2);
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
-        }
-        
-        body.mini-mode .side-tab-toggle::before {
-            left: auto;
-            right: 0;
-        }
-        
-        body.mini-mode .side-tab-toggle:hover {
-            width: 36px;
-            left: 0;
-            background: rgba(10, 2, 4, 0.95);
-            box-shadow: 5px 0 20px rgba(255, 0, 60, 0.3);
-            color: #ffffff;
-        }
-        
-        body.mini-mode .side-tab-icon {
-            transform: rotate(180deg);
-        }
-
-        /* Mobile Uplink Alert for Scan Screen */
-        .mobile-uplink-alert { 
-            display: none; 
-            position: absolute; 
-            top: 25px; 
-            font-family: var(--font-mono); 
-            font-size: 0.75rem; 
-            color: var(--cyan-neon); 
-            letter-spacing: 3px; 
-            text-shadow: 0 0 8px var(--cyan-neon); 
-            animation: tron-blink 2s infinite alternate; 
-            text-align: center;
-            width: 100%;
-        }
-
-        /* LOADING SCREEN */
         .fullscreen-loader { position: absolute; inset: 0; background: rgba(5, 1, 2, 0.9); z-index: 9998; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; backdrop-filter: blur(5px); transition: opacity 0.3s; }
         .fullscreen-loader.active { opacity: 1; pointer-events: all; }
         .loader-ring { width: 150px; height: 150px; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--crimson); border-bottom-color: var(--crimson); animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; position: relative; }
@@ -146,7 +71,6 @@
         .loader-text { margin-top: 30px; font-family: var(--font-mono); color: var(--crimson); font-weight: bold; font-size: 1.2rem; letter-spacing: 4px; text-shadow: 0 0 15px var(--crimson); text-align: center; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* HEADER & GLOBAL STATUS HUD */
         .header { background: var(--glass-bg); backdrop-filter: blur(15px); border-bottom: 2px solid var(--crimson); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: inset 0 -5px 25px rgba(255, 0, 60, 0.2); flex-shrink: 0; }
         .title-block { display: flex; flex-direction: column; align-items: flex-start; }
         .title-block h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: 4px; color: var(--ares-white); text-shadow: 0 0 15px var(--blood-glow), 0 0 30px var(--crimson); margin:0; }
@@ -177,7 +101,6 @@
         .btn-forge-toggle { color: var(--crimson); }
         .btn-forge-toggle::before { background: var(--crimson); box-shadow: 0 0 15px var(--crimson); }
 
-        /* F1/F2 Focus Modes */
         body.focus-mode .header { position: absolute; top: 0; left: 0; right: 0; transform: translateY(calc(-100% + 12px)); z-index: 1000; padding-top: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); border-bottom: none; background: rgba(5, 1, 2, 0.98); transition: transform 0.4s; }
         body.focus-mode .header:hover { transform: translateY(0); }
         body.focus-mode .header::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 150px; height: 4px; background: var(--ares-white); border-radius: 0 0 4px 4px; box-shadow: 0 0 15px var(--ares-white); transition: 0.3s; }
@@ -194,7 +117,6 @@
         body.compress-mode .div-zone { font-size: 1rem; }
         body.compress-mode .div-side { font-size: 0.8rem; }
 
-        /* MATRIX TABLE (BORDERLESS DATA ROWS) */
         .table-wrapper { width: 100%; flex: 1; overflow: auto; position: relative; z-index: 5; background: rgba(5, 1, 2, 0.85); padding-bottom: 45px; }
         .table-wrapper::-webkit-scrollbar { height: 12px; width: 12px; }
         .table-wrapper::-webkit-scrollbar-track { background: rgba(10,2,4,0.9); }
@@ -212,7 +134,6 @@
         .table-header .fixed-pane { z-index: 25; background: #050102; box-shadow: inset 0 0 20px rgba(255, 0, 60, 0.2); }
         .scroll-pane { display: flex; z-index: 10; position: relative; }
 
-        /* FLOWING LASER BORDERS */
         .flowing-border-row { height: 3px; min-height: 3px; width: 100%; position: relative; z-index: 40; background: rgba(255, 0, 60, 0.15); border-bottom: none; overflow: hidden; display: flex; min-width: max-content; }
         .flowing-border-inner { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, var(--ares-white), #fff, var(--ares-white), transparent); box-shadow: 0 0 10px var(--ares-white), 0 0 20px var(--crimson); animation: cyber-flow 2.5s linear infinite; }
         .flowing-border-inner.crimson-glow { background: linear-gradient(90deg, transparent, var(--crimson), #ff4d6d, var(--crimson), transparent); box-shadow: 0 0 8px var(--crimson), 0 0 15px rgba(255,0,60,0.5); animation: cyber-flow 2.8s linear infinite; opacity: 0.85; }
@@ -222,14 +143,12 @@
         .divider-row .fixed-pane { display: flex; align-items: center; padding-left: 15px; }
         .divider-content { font-family: var(--font-mono); letter-spacing: 2px; display: flex; gap: 15px; align-items: center; }
 
-        .theme-s1 { --zone-glow: #ff003c; } 
-        .theme-s5 { --zone-glow: var(--gold); }
+        .theme-s1 { --zone-glow: #ff003c; } .theme-s5 { --zone-glow: var(--gold); }
         .div-zone { color: var(--zone-glow); font-size: 1.3rem; font-weight: 900; text-shadow: 0 0 10px var(--zone-glow); }
         .div-side { color: var(--zone-glow); font-style: italic; font-size: 0.95rem; text-shadow: 0 0 5px var(--zone-glow); opacity: 0.9; }
 
         .cell { display: flex; align-items: center; justify-content: center; padding: 0 10px; height: 100%; font-family: var(--font-mono); font-size: 0.95rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: none !important; background: transparent; }
-        .cell-left { justify-content: flex-start; }
-        .cell-bold { font-weight: bold; }
+        .cell-left { justify-content: flex-start; } .cell-bold { font-weight: bold; }
         .cell-crimson { color: var(--crimson) !important; text-shadow: 0 0 10px var(--crimson); }
         .col-seq { width: 34px; min-width: 34px; color: var(--text-muted); font-size: 0.7rem; padding: 0 4px; background: transparent; }
         .col-item { width: 240px; min-width: 240px; font-size: 0.95rem; background: transparent; }
@@ -241,10 +160,8 @@
         .sample-cell.col-hover { background: rgba(255,255,255,0.05) !important; color: #fff !important; text-shadow: 0 0 12px #fff !important; }
         .sample-cell:hover { color: var(--crimson) !important; text-shadow: 0 0 15px var(--crimson), 0 0 30px var(--crimson) !important; cursor: crosshair; background: rgba(255, 0, 60, 0.1) !important; }
 
-        /* MINI MATRIX QR (STATE 2) - FLUSH BORDER ALIGNMENT */
         .mini-qr-canvas { width: 64px !important; height: 64px !important; border-radius: 2px; display: block; border: 2px solid var(--crimson); box-shadow: 0 0 10px rgba(255, 0, 60, 0.4); padding: 0 !important; background: #fff; }
 
-        /* HEADER CELL & PHANTOM LINK QR (STATE 3) */
         .sample-header-cell { width: 140px; height: 100%; display: flex; position: relative !important; overflow: visible !important; flex-direction: column; justify-content: center; align-items: center; font-family: var(--font-mono); line-height: 1.2; cursor: pointer; background: rgba(255, 0, 60, 0.05); transition: background 0.3s ease; border: none !important; }
         .sample-header-cell:hover { background: rgba(255, 0, 60, 0.15); box-shadow: inset 0 -3px 0 var(--ares-white); }
         .sample-header-cell[data-state="3"] { z-index: 10000 !important; }
@@ -254,22 +171,43 @@
         .shc-bot { color: #fff; font-size: 0.75rem; text-align: center; line-height: 1.25; }
         .shc-state-1-text { font-size: 0.65rem; color: var(--ares-white); text-shadow: 0 0 5px var(--crimson); word-break: break-all; text-align: center; }
 
-        .phantom-qr-box { position: absolute !important; top: 86px !important; left: 50% !important; transform: translateX(-50%) !important; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10001 !important; pointer-events: none; animation: twin-ghost 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards, twin-idle 2.5s ease-in-out infinite 0.35s; }
-        .massive-qr-canvas { display: block; border-radius: 4px; box-shadow: 0 0 30px rgba(255, 0, 60, 0.75), 0 10px 25px rgba(0, 0, 0, 0.95); max-width: 250px; background: #ffffff; padding: 0 !important; border: none !important; }
-        @keyframes twin-ghost { 0% { opacity: 0; filter: blur(10px); transform: translateX(-50%) scale(0.9); } 100% { opacity: 1; filter: blur(0); transform: translateX(-50%) scale(1); } }
-        @keyframes twin-idle { 0%, 100% { filter: drop-shadow(0 0 12px rgba(255,0,60,0.5)); transform: translateX(-50%) scale(1); } 50% { filter: drop-shadow(0 0 25px rgba(255,0,60,0.85)); transform: translateX(-50%) translateY(-3px) scale(1.01); } }
-        
+        /* THE PHANTOM GHOST PROJECTION (STATE 3) */
+        .phantom-qr-box {
+            position: absolute !important; top: 86px !important; left: 50% !important; transform: translateX(-50%) !important; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10001 !important;
+            pointer-events: auto; /* Allows hovering over the phantom */
+            transition: opacity 0.3s; background: transparent; border-radius: 8px;
+            animation: twin-ghost 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, twin-idle 3s ease-in-out infinite 0.6s;
+        }
+        .phantom-qr-box:hover { opacity: 0.15 !important; }
+
+@keyframes twin-ghost {
+            0% { opacity: 0; filter: blur(15px) contrast(3) grayscale(1) drop-shadow(40px 0 0px rgba(255,255,255,0.8)) drop-shadow(-40px 0 0px rgba(255,255,255,0.8)); transform: translateX(-50%) scale(1.3) skewX(25deg) !important; }
+            25% { opacity: 0.6; filter: blur(8px) contrast(2) drop-shadow(20px 0 10px rgba(255,255,255,0.6)) drop-shadow(-20px 0 10px rgba(0,243,255,0.6)); transform: translateX(-50%) scale(1.1) skewX(-15deg) !important; }
+            50% { opacity: 0.8; filter: blur(3px) contrast(1.5) drop-shadow(10px 0 5px rgba(216,252,255,0.4)); transform: translateX(-50%) scale(1.05) skewX(5deg) !important; }
+            100% { opacity: 1; filter: blur(0) contrast(1); transform: translateX(-50%) scale(1) skewX(0) !important; }
+        }
+
+        /* NEW: VIOLENT WARP-OUT ANIMATION */
+        @keyframes twin-ghost-out {
+            0% { opacity: 1; filter: blur(0) contrast(1); transform: translateX(-50%) scale(1) skewX(0) !important; }
+            40% { opacity: 0.8; filter: blur(5px) contrast(2) drop-shadow(20px 0 10px rgba(0,243,255,0.6)) drop-shadow(-20px 0 10px rgba(255,0,170,0.6)); transform: translateX(-50%) scale(1.1) skewX(15deg) !important; }
+            100% { opacity: 0; filter: blur(15px) contrast(3) grayscale(1) drop-shadow(-40px 0 0px rgba(255,255,255,0.8)); transform: translateX(-50%) scale(0.4) skewX(-35deg) translateY(-30px) !important; }
+        }
+
+@keyframes twin-idle {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(216,252,255,0.5)); transform: translateX(-50%) translateY(0) !important; }
+            50% { filter: drop-shadow(0 0 25px rgba(216,252,255,0.9)) drop-shadow(0 5px 15px rgba(0,243,255,0.6)); transform: translateX(-50%) translateY(-5px) !important; }
+        }
+
         .sample-header-cell.col-active-qr { background: rgba(255, 60, 0, 0.2) !important; box-shadow: inset 0 0 15px rgba(255,60,0,0.5) !important; }
         .shc-state-3 .shc-top { color: var(--red-gold) !important; text-shadow: 0 0 10px var(--red-gold); }
-
         .sample-cell.matrix-hijack { font-family: var(--font-jp); font-weight: 900; color: var(--gold) !important; text-shadow: 0 0 15px var(--gold), 0 0 30px var(--crimson) !important; transition: none; }
 
-        /* RIGHT PANEL: DSC FORGE */
         .forge-header { background: rgba(255, 0, 60, 0.05); border-bottom: 2px solid var(--crimson); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .forge-title { font-family: var(--font-en); font-weight: 900; font-size: 1.4rem; letter-spacing: 4px; color: var(--ares-white); text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px var(--crimson); }
         .forge-badge { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 900; padding: 4px 10px; border: 1px solid var(--crimson); color: var(--crimson); letter-spacing: 2px; }
 
-        /* ANIMATED MOVING LASER PROGRESS BAR */
         .payload-container { width: 100%; height: 32px; background: rgba(5, 1, 2, 0.9); border-bottom: 1px solid var(--crimson); flex-shrink: 0; position: relative; overflow: hidden; display: flex; align-items: center; }
         .payload-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: linear-gradient(90deg, #990024, var(--crimson)); box-shadow: 0 0 15px var(--crimson); transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1); z-index: 1; overflow: hidden; }
         .payload-fill::after { content: ""; position: absolute; top: 0; left: -100%; width: 70%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent); animation: payload-sweep 1.2s infinite linear; }
@@ -281,6 +219,8 @@
         .display-area { flex: 1; display: flex; flex-direction: column; padding: 15px; background: rgba(5, 1, 2, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,0,60,0.3); overflow-y: auto; }
         .history-log { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; font-family: var(--font-mono); color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; margin-bottom: 10px; }
         .history-item { margin-bottom: 6px; padding-left: 8px; border-left: 2px solid; }
+        
+        .phase-boundary { width: 100%; text-align: center; border-top: 1px dashed var(--gold); border-bottom: 1px dashed var(--gold); color: var(--gold); padding: 10px 0; margin: 15px 0; font-weight: 900; letter-spacing: 4px; background: rgba(255, 234, 0, 0.05); text-shadow: 0 0 10px rgba(255, 234, 0, 0.5); font-size: 0.85rem; }
 
         .forge-overlay { position: absolute; inset: 0; background: rgba(5, 1, 2, 0.98); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); transition: opacity 0.3s; padding: 20px; text-align: center; }
         .forge-overlay.hidden { opacity: 0; pointer-events: none; }
@@ -307,130 +247,73 @@
         .visual-item select { background: transparent; color: var(--mint); border: none; font-weight: bold; outline: none; cursor: pointer; }
         .visual-item select.fail { color: var(--crimson); }
 
-        /* CURRENT INPUT & MATCHING BLINKING CURSOR */
         .current-input { font-family: var(--font-mono); font-size: 2.8rem; color: var(--cursor-color, var(--ares-white)); text-shadow: 0 0 15px var(--cursor-color, var(--ares-white)); text-align: right; min-height: 55px; border-bottom: 2px solid var(--cursor-color, var(--ares-white)); margin-bottom: 5px; font-weight: bold; letter-spacing: 2px; position: relative; transition: color 0.2s, border-color 0.2s, text-shadow 0.2s; }
         @keyframes cyber-cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         .current-input.typing-active::after { content: '█'; color: var(--cursor-color, var(--red-gold)); text-shadow: 0 0 15px var(--cursor-color, var(--red-gold)); animation: cyber-cursor-blink 1s step-end infinite; margin-left: 8px; font-size: 2.4rem; }
 
-        /* DSC FORGE ALL-RED GLOWING KEYPAD */
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: rgba(5, 1, 2, 0.95); padding: 10px; flex-shrink: 0; }
         .btn { background: rgba(18, 2, 5, 0.92); border: 1px solid rgba(255, 0, 60, 0.45); border-left: 2px solid var(--crimson); box-shadow: inset 0 0 8px rgba(255, 0, 60, 0.15), 0 0 5px rgba(255, 0, 60, 0.1); color: #ffffff; font-size: 1.8rem; padding: 16px 0; font-family: var(--font-en); font-weight: 700; cursor: pointer; outline: none; transition: all 0.12s ease; position: relative; }
         .num-btn { animation: keypad-red-idle 2.4s infinite alternate ease-in-out; }
         @keyframes keypad-red-idle { 0% { box-shadow: inset 0 0 6px rgba(255, 0, 60, 0.1), 0 0 4px rgba(255, 0, 60, 0.1); border-color: rgba(255, 0, 60, 0.35); } 100% { box-shadow: inset 0 0 16px rgba(255, 0, 60, 0.35), 0 0 10px rgba(255, 0, 60, 0.3); border-color: var(--crimson); } }
         .btn:hover { background: rgba(255, 0, 60, 0.22); border-color: var(--crimson); border-left-color: var(--crimson); box-shadow: 0 0 20px var(--crimson), inset 0 0 15px rgba(255, 0, 60, 0.45); color: #ffffff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.7); transform: scale(1.04); z-index: 2; animation: none; }
         .btn:active { background: var(--crimson) !important; color: #ffffff !important; box-shadow: 0 0 25px var(--crimson), inset 0 0 12px rgba(0, 0, 0, 0.5) !important; border-color: var(--crimson) !important; transform: scale(0.94); }
-        .btn-action { font-size: 1.2rem; }
-        .btn-undo { border-left-color: var(--crimson); } 
-        .btn-enter { border-left-color: var(--crimson); }
+        .btn-action { font-size: 1.2rem; } .btn-undo { border-left-color: var(--crimson); } .btn-enter { border-left-color: var(--crimson); }
 
-        /* FINAL PAYLOAD QR CONTAINER (CORSAIR EXTRACTOR STYLE) */
-        .qr-container { 
-            position: relative; padding: 14px; border: 2px solid var(--mint); border-radius: 0; 
-            background: #fff; clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px)); 
-            box-shadow: 0 0 0 4px rgba(29,242,186,.18), 0 0 30px rgba(29,242,186,.25); 
-            margin-bottom: 20px; display: flex; justify-content: center; align-items: center; 
-            box-sizing: border-box; width: auto; max-width: 100%; transition: all 0.3s ease; 
-        }
+        .qr-container { position: relative; padding: 14px; border: 2px solid var(--mint); border-radius: 0; background: #fff; clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px)); box-shadow: 0 0 0 4px rgba(29,242,186,.18), 0 0 30px rgba(29,242,186,.25); margin-bottom: 20px; display: flex; justify-content: center; align-items: center; box-sizing: border-box; width: auto; max-width: 100%; transition: all 0.3s ease; }
         .qr-container::before { content: 'SECURE MATRIX PAYLOAD'; position: absolute; top: -20px; left: 0; right: 0; color: var(--mint); text-align: center; font: 9px var(--font-mono); letter-spacing: 2px; text-shadow: 0 0 5px var(--mint); }
         .qr-morph-wrapper { position: relative; display: flex; justify-content: center; align-items: center; isolation: isolate; aspect-ratio: 1 / 1; width: 280px; height: 280px; background: #fff; transition: all 0.3s ease; }
         .qr-morph-wrapper::before { content: ''; position: absolute; z-index: 4; inset: -9px; border: 1px solid rgba(29,242,186,.55); pointer-events: none; }
         #deckCanvas { position: absolute; inset: 0; z-index: 1; width: 100% !important; height: 100% !important; object-fit: contain; }
-        
         .deck-card-title { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 900; color: #fff; margin-bottom: 12px; letter-spacing: 2px; text-align: center; }
         .deck-sample-list { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; text-align: center; line-height: 1.4; }
 
-        /* ========================================= */
-        /* iPHONE / MOBILE EXCLUSIVE MODE            */
-        /* ========================================= */
-@media (max-width: 1000px) {
+        /* AI DIAGNOSTIC UI STYLES */
+        @keyframes fade-in { 0% { opacity: 0; transform: translateY(5px); } 100% { opacity: 1; transform: translateY(0); } }
+        .ai-line { margin-bottom: 8px; opacity: 0; animation: fade-in 0.1s forwards; font-family: var(--font-mono); font-size: 0.9rem; }
+        .ai-success { color: #39ff14; font-weight: bold; text-shadow: 0 0 10px rgba(57, 255, 20, 0.4); }
+        .ai-extreme { color: var(--crimson); font-weight: bold; text-shadow: 0 0 10px rgba(255, 30, 70, 0.4); }
+        
+        .typo-box { background: rgba(20, 5, 5, 0.8); border: 1px solid var(--crimson); padding: 15px; margin-top: 15px; }
+        .typo-label { color: var(--crimson); font-weight: bold; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 10px; }
+        .typo-input-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+        .typo-input { background: rgba(0,0,0,0.5); border: 1px solid var(--purple-light); color: var(--purple-light); font-family: var(--font-mono); font-size: 1.1rem; font-weight: bold; width: 75px; text-align: center; padding: 4px; outline: none; transition: 0.2s; }
+        .typo-input:focus { border-color: var(--mint); color: var(--mint); box-shadow: 0 0 15px rgba(29,242,186,0.3); }
+
+        @media (max-width: 1000px) {
             .matrix-panel { width: 0 !important; flex: none !important; opacity: 0 !important; overflow: hidden !important; border: none !important; display: none !important; }
-            
-            /* Forces DSC Forge to always be fully visible on mobile/narrow screens, ignoring the "hidden" toggle */
-            .forge-panel { width: 100vw !important; max-width: 100vw !important; border-left: none !important; opacity: 1 !important; visibility: visible !important; }
-            
+            .forge-panel { width: 100vw !important; max-width: 100vw !important; border-left: none !important; }
             .side-tab-toggle { display: none !important; }
         }
 
         @media (max-width: 600px) {
             .mobile-uplink-alert { display: block; }
-
             .forge-title { font-size: 1.1rem; letter-spacing: 2px; }
             .forge-badge { font-size: 0.7rem; padding: 3px 6px; }
-            
             .current-input { font-size: 2.2rem; min-height: 45px; }
             .current-input.typing-active::after { font-size: 2rem; margin-left: 4px; }
-            
             .keypad { gap: 4px; padding: 8px; }
             .btn { padding: 12px 0; font-size: 1.5rem; }
             .btn-action { font-size: 0.95rem; }
-            
             .overlay-title { font-size: 1.2rem; margin-bottom: 15px; }
             .btn-choice { font-size: 1.1rem; padding: 14px; }
             .btn-proceed { font-size: 0.9rem; padding: 12px 15px; width: 95%; }
             .scan-input { width: 95%; font-size: 1rem; }
-            
             .history-item { font-size: 0.75rem; }
             .status-bar { font-size: 0.9rem; padding: 10px; }
-            
-            .massive-qr-canvas { max-width: 200px; }
+.massive-qr-canvas { 
+            display: block; margin: 0 auto; border-radius: 4px; padding: 0 !important; border: none !important;
+            box-shadow: 0 0 15px rgba(216,252,255,0.8); max-width: 250px; height: auto; background: #ffffff;
+        }
             .deck-canvas { max-width: 220px; }
 
-            /* TRON-STYLE MOBILE HEADER OVERRIDE */
-            .forge-header {
-                background: linear-gradient(180deg, rgba(0, 243, 255, 0.15) 0%, rgba(5, 1, 2, 0.95) 100%) !important;
-                border-bottom: 2px solid var(--cyan-neon) !important;
-                box-shadow: 0 5px 20px rgba(0, 243, 255, 0.2), inset 0 2px 10px rgba(0, 243, 255, 0.1) !important;
-                position: relative;
-                overflow: hidden;
-                padding-top: 30px !important; 
-            }
-            
-            .forge-header::before {
-                content: "[ iOS / MOBILE UPLINK DETECTED ]";
-                position: absolute;
-                top: 8px;
-                left: 20px;
-                font-family: var(--font-mono);
-                font-size: 0.65rem;
-                color: var(--cyan-neon);
-                letter-spacing: 3px;
-                text-shadow: 0 0 8px var(--cyan-neon);
-                animation: tron-blink 2s infinite alternate;
-            }
-
-            .forge-header::after {
-                content: "";
-                position: absolute;
-                bottom: -1px;
-                left: -100%;
-                width: 120px;
-                height: 3px;
-                background: #ffffff;
-                box-shadow: 0 0 15px #ffffff, 0 0 30px var(--cyan-neon);
-                animation: tron-lightcycle 2.5s infinite cubic-bezier(0.25, 1, 0.5, 1);
-            }
-
-            .forge-title {
-                color: var(--cyan-neon) !important;
-                text-shadow: 0 0 15px var(--cyan-neon), 0 0 30px rgba(0, 243, 255, 0.8) !important;
-            }
-            .forge-badge {
-                border-color: var(--cyan-neon) !important;
-                color: var(--cyan-neon) !important;
-                box-shadow: 0 0 10px rgba(0, 243, 255, 0.3), inset 0 0 8px rgba(0, 243, 255, 0.2) !important;
-            }
+            .forge-header { background: linear-gradient(180deg, rgba(0, 243, 255, 0.15) 0%, rgba(5, 1, 2, 0.95) 100%) !important; border-bottom: 2px solid var(--cyan-neon) !important; box-shadow: 0 5px 20px rgba(0, 243, 255, 0.2), inset 0 2px 10px rgba(0, 243, 255, 0.1) !important; position: relative; overflow: hidden; padding-top: 30px !important; }
+            .forge-header::before { content: "[ iOS / MOBILE UPLINK DETECTED ]"; position: absolute; top: 8px; left: 20px; font-family: var(--font-mono); font-size: 0.65rem; color: var(--cyan-neon); letter-spacing: 3px; text-shadow: 0 0 8px var(--cyan-neon); animation: tron-blink 2s infinite alternate; }
+            .forge-header::after { content: ""; position: absolute; bottom: -1px; left: -100%; width: 120px; height: 3px; background: #ffffff; box-shadow: 0 0 15px #ffffff, 0 0 30px var(--cyan-neon); animation: tron-lightcycle 2.5s infinite cubic-bezier(0.25, 1, 0.5, 1); }
+            .forge-title { color: var(--cyan-neon) !important; text-shadow: 0 0 15px var(--cyan-neon), 0 0 30px rgba(0, 243, 255, 0.8) !important; }
+            .forge-badge { border-color: var(--cyan-neon) !important; color: var(--cyan-neon) !important; box-shadow: 0 0 10px rgba(0, 243, 255, 0.3), inset 0 0 8px rgba(0, 243, 255, 0.2) !important; }
         }
-        
-        @keyframes tron-lightcycle { 
-            0% { left: -100%; opacity: 0; } 
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { left: 150%; opacity: 0; } 
-        }
-        @keyframes tron-blink { 
-            0% { opacity: 0.5; } 
-            100% { opacity: 1; text-shadow: 0 0 12px var(--cyan-neon); } 
-        }
+        @keyframes tron-lightcycle { 0% { left: -100%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { left: 150%; opacity: 0; } }
+        @keyframes tron-blink { 0% { opacity: 0.5; } 100% { opacity: 1; text-shadow: 0 0 12px var(--cyan-neon); } }
     </style>
 </head>
 <body>
@@ -448,34 +331,17 @@
     <div class="os-container">
         <!-- LEFT PANEL: MATRIX -->
         <div class="matrix-panel" id="matrixPanel">
-            <div id="syncLoader" class="fullscreen-loader">
-                <div class="loader-ring"></div>
-                <div class="loader-text" id="loaderText">INCOMING DATA STREAM DETECTED</div>
-            </div>
-
+            <div id="syncLoader" class="fullscreen-loader"><div class="loader-ring"></div><div class="loader-text" id="loaderText">INCOMING DATA STREAM DETECTED</div></div>
             <div class="header">
                 <div class="title-block">
                     <h1 id="mainTitle">VALEO // NEURAL OS</h1>
                     <span><span class="status-dot"></span>ADHESION & THERMAL MATRIX</span>
                 </div>
-                
-                <!-- GLOBAL STATUS HUD -->
-                <div class="global-status-container" id="globalStatusContainer">
-                    <div class="global-status-text" id="globalStatusText">SYSTEM OPTIMAL</div>
-                </div>
-
+                <div class="global-status-container" id="globalStatusContainer"><div class="global-status-text" id="globalStatusText">SYSTEM OPTIMAL</div></div>
                 <div class="controls-wrapper">
-                    <!-- FIXED F1/F2 BUTTON TRIGGERS -->
-                    <div class="f-btn-group">
-                        <button class="f-btn" title="F1 FOCUS" onclick="toggleFocusMode()">焦</button>
-                        <button class="f-btn" title="F2 COMPRESS" onclick="toggleCompressMode()">圧</button>
-                    </div>
-                    <button class="btn-sync btn-forge-toggle" id="btnForgeToggle" onclick="toggleForge()">
-                        <span class="btn-title">DSC FORGE</span>
-                    </button>
-                    <button class="btn-sync" id="btnSync" onclick="initiateSync()">
-                        <span class="btn-title">SYNC DIR</span>
-                    </button>
+                    <div class="f-btn-group"><button class="f-btn" title="F1 FOCUS" onclick="toggleFocusMode()">焦</button><button class="f-btn" title="F2 COMPRESS" onclick="toggleCompressMode()">圧</button></div>
+                    <button class="btn-sync btn-forge-toggle" id="btnForgeToggle" onclick="toggleForge()"><span class="btn-title">DSC FORGE</span></button>
+                    <button class="btn-sync" id="btnSync" onclick="initiateSync()"><span class="btn-title">SYNC DIR</span></button>
                 </div>
             </div>
             <div class="table-wrapper" id="tableWrapper"><div id="tableBody"></div></div>
@@ -483,40 +349,29 @@
 
         <!-- RIGHT PANEL: DSC FORGE -->
         <div class="forge-panel" id="forgePanel">
-            
-            <!-- SIDE PULL-TAB FOR MINI MODE -->
-            <div class="side-tab-toggle" onclick="document.body.classList.toggle('mini-mode')">
-                <div class="side-tab-icon">▶</div>
-            </div>
-            
-            <div class="forge-header">
-                <span class="forge-title">DSC FORGE</span>
-                <span class="forge-badge" id="forgeModeBadge">IDLE</span>
-            </div>
+            <div class="side-tab-toggle" onclick="document.body.classList.toggle('mini-mode')"><div class="side-tab-icon">▶</div></div>
+            <div class="forge-header"><span class="forge-title">DSC FORGE</span><span class="forge-badge" id="forgeModeBadge">IDLE</span></div>
 
             <!-- 1. MODE SELECT OVERLAY -->
             <div class="forge-overlay" id="modeSelectOverlay">
                 <div class="overlay-title">SELECT OPERATION MODE</div>
                 <div style="width: 85%;">
-                    <div class="btn-choice" onclick="startDailyRoutine()">
-                        DAILY ROUTINE
-                        <span class="sub">1 SAMPLE STANDARD WORKFLOW</span>
+                    <!-- DYNAMIC RESUME BUTTON FOR iOS CACHE -->
+                    <div id="resumeSessionContainer" style="display: none; width: 100%;">
+                        <div class="btn-choice" style="border-color: var(--gold); color: var(--gold); background: rgba(255, 234, 0, 0.1);" onclick="resumeSession()">
+                            RESUME SESSION
+                            <span class="sub" style="color: var(--gold);">RECOVER UNFINISHED BATCH</span>
+                        </div>
                     </div>
-                    <div class="btn-choice" onclick="showTicketQtySelect()">
-                        QUALITY TICKET
-                        <span class="sub">BATCH WORKFLOW (2 TO 4 SAMPLES)</span>
-                    </div>
+                    <div class="btn-choice" onclick="startDailyRoutine()">DAILY ROUTINE<span class="sub">1 SAMPLE STANDARD WORKFLOW</span></div>
+                    <div class="btn-choice" onclick="showTicketQtySelect()">QUALITY TICKET<span class="sub">BATCH WORKFLOW (2 TO 4 SAMPLES)</span></div>
                 </div>
             </div>
 
             <!-- 2. QUALITY TICKET QUANTITY OVERLAY -->
             <div class="forge-overlay hidden" id="ticketQtyOverlay">
                 <div class="overlay-title">SELECT BATCH SIZE</div>
-                <div class="qty-row">
-                    <button class="qty-btn" onclick="startQualityTicket(2)">2</button>
-                    <button class="qty-btn" onclick="startQualityTicket(3)">3</button>
-                    <button class="qty-btn" onclick="startQualityTicket(4)">4</button>
-                </div>
+                <div class="qty-row"><button class="qty-btn" onclick="startQualityTicket(2)">2</button><button class="qty-btn" onclick="startQualityTicket(3)">3</button><button class="qty-btn" onclick="startQualityTicket(4)">4</button></div>
                 <button class="btn-proceed btn-secondary" onclick="showModeSelect()">CANCEL</button>
             </div>
 
@@ -524,16 +379,23 @@
             <div class="forge-overlay hidden" id="scanOverlay">
                 <div class="mobile-uplink-alert">[ iOS / MOBILE UPLINK DETECTED ]</div>
                 <div class="overlay-title" id="scanPromptTitle">SCAN SAMPLE QR CODE</div>
-                
                 <div style="display: flex; width: 85%; gap: 10px; margin-bottom: 20px; align-items: stretch;">
                     <input type="text" class="scan-input" style="flex: 1; width: auto; margin: 0;" id="scanInput" autocomplete="off" onkeypress="if(event.key === 'Enter') processScan()">
                     <button class="btn-proceed" style="margin: 0; width: 65px; padding: 0; font-size: 1.6rem;" onclick="processScan()">➔</button>
                 </div>
-                
-                <!-- MOBILE OVERRIDE BUTTON (PINNED TO BOTTOM) -->
                 <button class="btn-proceed btn-secondary" style="position: absolute; bottom: 30px; width: 85%; border-color: var(--crimson); color: var(--crimson); font-size: 0.85rem;" onclick="generateTempScan()">GENERATE TEMP ID</button>
             </div>
             
+            <!-- SMART RESUME DETECTED OVERLAY -->
+            <div class="forge-overlay hidden" id="resumeFileOverlay">
+                <div class="overlay-title" style="color: var(--gold); text-shadow: 0 0 15px var(--gold);">UNFINISHED DATA DETECTED</div>
+                <div style="color: #fff; margin-bottom: 20px; font-family: var(--font-mono); font-size: 1rem; line-height: 1.5;" id="resumeFileBody">
+                    Sample is awaiting Phase 2 Tg readings.
+                </div>
+                <button class="btn-proceed" style="border-color: var(--mint); color: var(--mint);" onclick="confirmResumeFile()">RESUME PHASE 2</button>
+                <button class="btn-proceed btn-secondary" onclick="confirmOverwrite()">OVERWRITE (START PHASE 1)</button>
+            </div>
+
             <!-- 4. VISUAL INSPECTION OVERLAY -->
             <div class="forge-overlay hidden" id="visualOverlay">
                 <div class="overlay-title" id="visualPromptTitle">VISUAL INSPECTIONS</div>
@@ -552,26 +414,35 @@
                 <button class="btn-proceed" onclick="dismissPhaseNotice()">PROCEED</button>
             </div>
 
-            <!-- 6. BATCH COMPLETE: CORSAIR-STYLE UNIFIED QR CODE -->
-            <div class="forge-overlay hidden" id="batchSummaryOverlay">
-                <div class="overlay-title" id="summaryHeaderTitle" style="color: var(--mint); text-shadow: 0 0 15px var(--mint);">PAYLOAD SECURED</div>
-                
-                <div class="qr-container" id="qrContainerEl">
-                    <div class="qr-morph-wrapper" id="qrMorphWrapper">
-                        <canvas id="deckCanvas"></canvas>
+            <!-- 6. AI DIAGNOSTIC OVERLAY -->
+            <div class="forge-overlay hidden" id="diagnosticOverlay" style="align-items: center; justify-content: flex-start; overflow-y: auto; padding-top: 40px;">
+                <div style="width: 100%; max-width: 400px; text-align: left;" id="diagnosticContainer">
+                    <div style="background: rgba(5, 1, 10, 0.95); border: 1px solid var(--purple-light); border-left: 4px solid var(--purple-light); padding: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.9); margin-bottom: 30px;">
+                        <div style="font-weight: 900; letter-spacing: 2px; border-bottom: 1px dashed rgba(216, 132, 255, 0.5); padding-bottom: 8px; margin-bottom: 15px; color: var(--purple-light);">>> NEURAL AGENT DIAGNOSTIC</div>
+                        <div id="aiOutputLog" style="font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.6;"></div>
                     </div>
                 </div>
+            </div>
 
+            <!-- 7. BATCH COMPLETE: CORSAIR-STYLE UNIFIED QR CODE -->
+            <div class="forge-overlay hidden" id="batchSummaryOverlay" style="overflow-y: auto;">
+                <div class="overlay-title" id="summaryHeaderTitle" style="color: var(--mint); text-shadow: 0 0 15px var(--mint);">PAYLOAD SECURED</div>
+                <div class="qr-container" id="qrContainerEl"><div class="qr-morph-wrapper" id="qrMorphWrapper"><canvas id="deckCanvas"></canvas></div></div>
                 <div class="deck-card-title" id="deckCardTitle">QUALITY TICKET PAYLOAD</div>
                 <div class="deck-sample-list" id="deckSampleList"></div>
                 
                 <button class="btn-proceed" onclick="purgeAndResetWorkflow()">PURGE &amp; RESET</button>
+                <button class="btn-proceed btn-secondary" id="btnMobileDataToggle" style="margin-top: 10px; display: none;" onclick="toggleMobileData()">VIEW BATCH DATA</button>
+                
+                <div id="mobileDataContainer" style="display: none; width: 100%; max-height: 200px; overflow-y: auto; margin-top: 15px; text-align: left; background: rgba(5,1,10,0.8); padding: 10px; border: 1px solid var(--mint);">
+                    <!-- Mobile data gets injected here -->
+                </div>
             </div>
 
             <!-- Sync Warning Overlay -->
             <div class="forge-overlay hidden" id="syncWarningOverlay" style="z-index: 9999;">
                 <div class="overlay-title" style="color: var(--crimson); text-shadow: 0 0 15px var(--crimson);">NO DIRECTORY SYNCED</div>
-                <div style="color: #fff; margin-bottom: 20px; font-family: var(--font-mono); font-size: 1.1rem; line-height: 1.5;">Connect a local metrology folder<br>before starting data entry.</div>
+                <div style="color: #fff; margin-bottom: 20px; font-family: var(--font-mono); font-size: 1.1rem; line-height: 1.5;">Connect a local metrology folder<br>before processing data.</div>
                 <button class="btn-proceed" onclick="document.getElementById('syncWarningOverlay').classList.add('hidden'); initiateSync();">SYNC DIRECTORY NOW</button>
                 <button class="btn-proceed btn-secondary" onclick="document.getElementById('syncWarningOverlay').classList.add('hidden');">DISMISS</button>
             </div>
@@ -589,21 +460,19 @@
         </div>
     </div>
 
-<script>
+    <script>
         let isSubmitting = false;
         let windowPollingLocked = false;
         window.existingSyncFiles = [];
-        window.isVirtualSync = false; // New iOS Fallback Flag
+        window.isVirtualSync = false; 
+        let diagnosticErrors = [];
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'F1' || e.code === 'F1') { e.preventDefault(); e.stopPropagation(); toggleFocusMode(); return false; }
             if (e.key === 'F2' || e.code === 'F2') { e.preventDefault(); e.stopPropagation(); toggleCompressMode(); return false; }
             
-            const overlays = ['modeSelectOverlay', 'ticketQtyOverlay', 'scanOverlay', 'visualOverlay', 'phaseNoticeOverlay', 'batchSummaryOverlay', 'syncWarningOverlay'];
-            for(let id of overlays) {
-                const el = document.getElementById(id);
-                if(el && !el.classList.contains('hidden')) return;
-            }
+            const overlays = ['modeSelectOverlay', 'ticketQtyOverlay', 'scanOverlay', 'visualOverlay', 'phaseNoticeOverlay', 'batchSummaryOverlay', 'syncWarningOverlay', 'resumeFileOverlay', 'diagnosticOverlay'];
+            for(let id of overlays) { const el = document.getElementById(id); if(el && !el.classList.contains('hidden')) return; }
             
             if (e.key >= '0' && e.key <= '9') { typeNum(e.key); }
             else if (e.key === '.') { typeNum('.'); }
@@ -611,7 +480,15 @@
             else if (e.key === 'Enter') { submitNumber(); }
         }, { capture: true });
 
-        window.onload = () => { setTimeout(runBootSequence, 50); renderMatrix([]); buildVisualGrid(); };
+        window.onload = () => { 
+            setTimeout(runBootSequence, 50); 
+            renderMatrix([]); 
+            buildVisualGrid();
+            
+            if(localStorage.getItem('dscForgeSession')) {
+                document.getElementById('resumeSessionContainer').style.display = 'block';
+            }
+        };
 
         function runBootSequence() {
             const boot = document.getElementById('bootScreen'); const term = document.getElementById('mainSyntaxTerminal'); const bar = document.getElementById('mainBootProgressBar');
@@ -628,32 +505,16 @@
             let prog = 0; const pInt = setInterval(() => { prog += 5; bar.style.width = prog + '%'; if (prog >= 100) { clearInterval(pInt); document.getElementById('mainAccessGranted').style.opacity = '1'; setTimeout(() => { boot.classList.remove('active'); boot.style.display='none'; }, 300); } }, 20); 
         }
 
-        // --- GLOBAL STATUS HUD CONTROLLER ---
         let globalStatusTimer = null;
         function showGlobalStatus(msg, type = 'success') {
-            const container = document.getElementById('globalStatusContainer');
-            const textEl = document.getElementById('globalStatusText');
-            
-            textEl.innerText = msg;
-            textEl.className = "global-status-text"; 
-            container.className = "global-status-container"; 
-            
-            if (type === 'error') {
-                container.classList.add('error-mode');
-                textEl.classList.add('active-error');
-            } else if (type === 'success') {
-                textEl.classList.add('active-success');
-            }
-            
+            const container = document.getElementById('globalStatusContainer'); const textEl = document.getElementById('globalStatusText');
+            textEl.innerText = msg; textEl.className = "global-status-text"; container.className = "global-status-container"; 
+            if (type === 'error') { container.classList.add('error-mode'); textEl.classList.add('active-error'); } 
+            else if (type === 'success') { textEl.classList.add('active-success'); }
             if (globalStatusTimer) clearTimeout(globalStatusTimer);
-            globalStatusTimer = setTimeout(() => {
-                textEl.innerText = "SYSTEM OPTIMAL";
-                textEl.className = "global-status-text";
-                container.className = "global-status-container";
-            }, 6000);
+            globalStatusTimer = setTimeout(() => { textEl.innerText = "SYSTEM OPTIMAL"; textEl.className = "global-status-text"; container.className = "global-status-container"; }, 6000);
         }
 
-        // --- DIRECTORY SYNC ENGINE & iOS OVERRIDE ---
         let dirHandle = null; 
         let lastSyncStateHash = "";
         let pollTimer = null;
@@ -661,47 +522,25 @@
 
         async function initiateSync() {
             if (!('showDirectoryPicker' in window)) {
-                // iOS / Safari Fallback Override
-                window.isVirtualSync = true;
-                dirHandle = "VIRTUAL_NODE";
-                
-                document.getElementById('btnSync').classList.add('synced');
-                document.querySelector('#btnSync .btn-title').innerText = "VIRTUAL DIR";
-                
-                const miniSync = document.getElementById('btnForgeSync');
-                if (miniSync) { miniSync.innerText = 'VIRTUAL'; miniSync.style.color = '#000'; miniSync.style.background = 'var(--mint)'; }
-                
+                window.isVirtualSync = true; dirHandle = "VIRTUAL_NODE";
+                document.getElementById('btnSync').classList.add('synced'); document.querySelector('#btnSync .btn-title').innerText = "VIRTUAL DIR";
+                const miniSync = document.getElementById('btnForgeSync'); if (miniSync) { miniSync.innerText = 'VIRTUAL'; miniSync.style.color = '#000'; miniSync.style.background = 'var(--mint)'; }
                 showGlobalStatus(`VIRTUAL DIRECTORY SECURED (iOS OVERRIDE)`, 'success');
                 return;
             }
-            
             try {
                 dirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
-                document.getElementById('btnSync').classList.add('synced');
-                document.querySelector('#btnSync .btn-title').innerText = dirHandle.name.toUpperCase();
-                
-                const miniSync = document.getElementById('btnForgeSync');
-                if (miniSync) { miniSync.innerText = 'SYNCED'; miniSync.style.color = '#000'; miniSync.style.background = 'var(--mint)'; }
-                
-                if (pollTimer) clearTimeout(pollTimer);
-                lastSyncStateHash = "__FORCE_INIT__";
-                pollDirectory();
-            } catch (err) { 
-                console.warn("Directory sync aborted or cancelled:", err); 
-            }
+                document.getElementById('btnSync').classList.add('synced'); document.querySelector('#btnSync .btn-title').innerText = dirHandle.name.toUpperCase();
+                const miniSync = document.getElementById('btnForgeSync'); if (miniSync) { miniSync.innerText = 'SYNCED'; miniSync.style.color = '#000'; miniSync.style.background = 'var(--mint)'; }
+                if (pollTimer) clearTimeout(pollTimer); lastSyncStateHash = "__FORCE_INIT__"; pollDirectory();
+            } catch (err) { console.warn("Directory sync aborted:", err); }
         }
 
         async function pollDirectory() {
             if (!dirHandle || window.isVirtualSync) return;
-
-            if (windowPollingLocked) {
-                pollTimer = setTimeout(pollDirectory, 1000);
-                return;
-            }
-
+            if (windowPollingLocked) { pollTimer = setTimeout(pollDirectory, 1000); return; }
             try {
-                let currentFiles = [];
-                let filenames = [];
+                let currentFiles = []; let filenames = [];
                 for await (const entry of dirHandle.values()) {
                     if (entry.kind === 'file' && entry.name.toLowerCase().endsWith('.csv')) {
                         const file = await entry.getFile();
@@ -710,45 +549,29 @@
                     }
                 }
                 currentFiles.sort((a, b) => a.modified - b.modified); 
-                window.existingSyncFiles = filenames; 
                 
                 let currentStateHash = currentFiles.map(f => f.name + ":" + f.modified + ":" + f.size).join('|');
                 
                 if (currentStateHash !== lastSyncStateHash) {
                     let isInitialLoad = (lastSyncStateHash === "__FORCE_INIT__" || lastSyncStateHash === "");
                     lastSyncStateHash = currentStateHash;
-                    
-                    let parsedFiles = [];
-                    let syncFileState = [];
-                    
+                    let parsedFiles = []; let syncFileState = [];
                     for (let f of currentFiles) { 
                         const text = await f.file.text(); 
                         const parsed = parseCSV(text, f.name);
                         parsedFiles.push(parsed); 
-                        syncFileState.push({ name: f.name, rawQR: parsed.id, isComplete: parsed.isComplete });
+                        syncFileState.push({ name: f.name, rawQR: parsed.id, isComplete: parsed.isComplete, data: parsed.data });
                     }
                     window.existingSyncFiles = syncFileState;
-                    
                     if (!isInitialLoad && parsedFiles.length > 0) {
-                        const loader = document.getElementById('syncLoader');
-                        if (loader) loader.classList.add('active');
-                        
-                        setTimeout(() => { 
-                            try { renderMatrix(parsedFiles); } catch(e) { console.error("renderMatrix error:", e); }
-                            if (loader) loader.classList.remove('active'); 
-                        }, 500);
-                    } else { 
-                        try { renderMatrix(parsedFiles); } catch(e) { console.error("renderMatrix error:", e); }
-                    }
+                        const loader = document.getElementById('syncLoader'); if (loader) loader.classList.add('active');
+                        setTimeout(() => { try { renderMatrix(parsedFiles); } catch(e){} if (loader) loader.classList.remove('active'); }, 500);
+                    } else { try { renderMatrix(parsedFiles); } catch(e){} }
                 }
-            } catch (err) { 
-                console.error("Directory polling read error:", err); 
-            } finally {
-                pollTimer = setTimeout(pollDirectory, 2000);
-            }
+            } catch (err) { console.error("Directory polling error:", err); } 
+            finally { pollTimer = setTimeout(pollDirectory, 2000); }
         }
 
-        // --- MATRIX PARSING & RENDERING ---
         const items = [
             "Pan + Lid Mass [mg]", "Sample Mass [mg]", "2nd Tg [ºC]", "3rd Tg [ºC]", "Delta Tg (3rd-2nd)", "X SCRIBE", "MEK",
             "Pan + Lid Mass [mg]", "Sample Mass [mg]", "2nd Tg [ºC]", "3rd Tg [ºC]", "Delta Tg (3rd-2nd)", "X SCRIBE", "MEK",
@@ -757,29 +580,22 @@
             "Pan + Lid Mass [mg]", "Sample Mass [mg]", "2nd Tg [ºC]", "3rd Tg [ºC]", "Delta Tg (3rd-2nd)", "X SCRIBE", "MEK",
             "Pan + Lid Mass [mg]", "Sample Mass [mg]", "2nd Tg [ºC]", "3rd Tg [ºC]", "Delta Tg (3rd-2nd)", "X SCRIBE", "MEK",
             "Pan + Lid Mass [mg]", "Sample Mass [mg]", "2nd Tg [ºC]", "3rd Tg [ºC]", "Delta Tg (3rd-2nd)", "X SCRIBE", "MEK",
-            "SYSTEM_STATUS" // 44th Hidden Footprint Row
+            "SYSTEM_STATUS" 
         ];
         
         const rowTemplates = [
-            {t: "div", z:"S1", s:"QR_Code_Side"}, 
-            {t: "flow", c: "crimson-glow"},
+            {t: "div", z:"S1", s:"QR_Code_Side"}, {t: "flow", c: "crimson-glow"},
             {t:"d", n:1}, {t:"d", n:2}, {t:"d", n:3}, {t:"d", n:4}, {t:"d", n:5, b:true}, {t:"d", n:6}, {t:"d", n:7},
-            {t: "div", z:"S1", s:"NO_QR_Code_Side"}, 
-            {t: "flow", c: "crimson-glow"},
+            {t: "div", z:"S1", s:"NO_QR_Code_Side"}, {t: "flow", c: "crimson-glow"},
             {t:"d", n:8}, {t:"d", n:9}, {t:"d", n:10}, {t:"d", n:11}, {t:"d", n:12, b:true}, {t:"d", n:13}, {t:"d", n:14},
-            {t: "div", z:"S5", s:"QR_Code_Side"}, 
-            {t: "flow"},
+            {t: "div", z:"S5", s:"QR_Code_Side"}, {t: "flow"},
             {t:"d", n:15}, {t:"d", n:16}, {t:"d", n:17}, {t:"d", n:18}, {t:"d", n:19, b:true}, {t:"d", n:20}, {t:"d", n:21},
-            {t: "div", z:"S5", s:"BENT"}, 
-            {t:"d", n:22},
-            {t: "div", z:"S5", s:"NO_QR_Code_Side"}, 
-            {t: "flow"},
+            {t: "div", z:"S5", s:"BENT"}, {t:"d", n:22},
+            {t: "div", z:"S5", s:"NO_QR_Code_Side"}, {t: "flow"},
             {t:"d", n:23}, {t:"d", n:24}, {t:"d", n:25}, {t:"d", n:26}, {t:"d", n:27, b:true}, {t:"d", n:28}, {t:"d", n:29},
-            {t: "div", z:"S7/8", s:"QR_Code_Side"}, 
-            {t: "flow", c: "crimson-glow"},
+            {t: "div", z:"S7/8", s:"QR_Code_Side"}, {t: "flow", c: "crimson-glow"},
             {t:"d", n:30}, {t:"d", n:31}, {t:"d", n:32}, {t:"d", n:33}, {t:"d", n:34, b:true}, {t:"d", n:35}, {t:"d", n:36},
-            {t: "div", z:"S7/8", s:"NO_QR_Code_Side"}, 
-            {t: "flow", c: "crimson-glow"},
+            {t: "div", z:"S7/8", s:"NO_QR_Code_Side"}, {t: "flow", c: "crimson-glow"},
             {t:"d", n:37}, {t:"d", n:38}, {t:"d", n:39}, {t:"d", n:40}, {t:"d", n:41, b:true}, {t:"d", n:42}, {t:"d", n:43}
         ];
 
@@ -800,21 +616,14 @@
         function parseCSV(text, filename) {
             const lines = text.replace(/\r/g, '').split('\n'); let dataCol = []; let rawQR = filename.replace('.csv','');
             if(lines.length > 0) { let header = lines[0].split(','); if(header.length > 6) rawQR = header[6].trim(); }
-            let parsed = parseQRCode(rawQR);
-            let isComplete = false;
-            
+            let parsed = parseQRCode(rawQR); let isComplete = false;
             for(let i=1; i<=44; i++) {
                 if(i < lines.length) { 
-                    let cols = lines[i].split(','); 
-                    let val = cols.length > 6 ? cols[6].trim() : "---"; 
+                    let cols = lines[i].split(','); let val = cols.length > 6 ? cols[6].trim() : "---"; 
                     dataCol.push(val); 
-                    
                     if (i === 44 && val === "COMPLETED") isComplete = true;
-                } else { 
-                    dataCol.push("---"); 
-                }
+                } else { dataCol.push("---"); }
             }
-            
             return { id: rawQR, tube: parsed.tube, ose: parsed.ose, cav: parsed.cav, week: parsed.week, data: dataCol, isComplete: isComplete };
         }
 
@@ -884,26 +693,36 @@
             });
         }
 
-        function cycleHeaderState(el) {
-            let state = parseInt(el.getAttribute('data-state') || '0'); const colIdx = el.dataset.col; const sId = el.getAttribute('data-id');
-            if (state === 3) document.querySelectorAll(`.col-sample[data-col="${colIdx}"]`).forEach(c => c.classList.remove('col-active-qr'));
-            state = (state + 1) % 4; el.setAttribute('data-state', state); window.headerStates[sId] = state; drawHeaderCanvas(el, state);
+function cycleHeaderState(el) {
+            let state = parseInt(el.getAttribute('data-state') || '0'); 
+            const colIdx = el.dataset.col; 
+            const sId = el.getAttribute('data-id');
+            
+            if (state === 3) {
+                document.querySelectorAll(`.col-sample[data-col="${colIdx}"]`).forEach(c => c.classList.remove('col-active-qr'));
+                
+                // Holographic Clone Warp-Out Effect
+                let phantom = el.querySelector('.phantom-qr-box');
+                if (phantom) {
+                    let clone = phantom.cloneNode(true);
+                    clone.style.animation = 'twin-ghost-out 0.4s cubic-bezier(0.5, 0, 0.2, 1) forwards';
+                    clone.style.pointerEvents = 'none'; // Prevents hovering while it dies
+                    el.appendChild(clone);
+                    setTimeout(() => clone.remove(), 400); // Erase clone after animation finishes
+                }
+            }
+            
+            state = (state + 1) % 4; 
+            el.setAttribute('data-state', state); 
+            window.headerStates[sId] = state; 
+            drawHeaderCanvas(el, state);
         }
 
         function drawHeaderCanvas(el, state) {
             const colIdx = el.dataset.col;
             if (state === 2) {
                 let cvs = el.querySelector('.mini-qr-canvas');
-                if (cvs) { 
-                    new QRious({ 
-                        element: cvs, 
-                        value: el.getAttribute('data-qr'), 
-                        size: 64, 
-                        padding: 4, 
-                        background: '#fff', 
-                        foreground: '#000' 
-                    }); 
-                }
+                if (cvs) { new QRious({ element: cvs, value: el.getAttribute('data-qr'), size: 64, padding: 4, background: '#fff', foreground: '#000' }); }
             } else if (state === 3) {
                 document.querySelectorAll(`.col-sample[data-col="${colIdx}"]`).forEach(c => c.classList.add('col-active-qr'));
                 let cvs = el.querySelector('.massive-qr-canvas');
@@ -911,23 +730,13 @@
                     let targetCells = Array.from(document.querySelectorAll(`.sample-cell[data-col="${colIdx}"]`));
                     let vals = targetCells.slice(0, 43).map(c => c.dataset.val || c.innerText.trim());
                     let payload = el.getAttribute('data-qr') + "\r\n" + vals.join("\r\n");
-                    try {
-                        new QRious({ 
-                            element: cvs, 
-                            value: payload, 
-                            size: 250, 
-                            padding: 8, 
-                            level: 'L',
-                            background: '#fff', 
-                            foreground: '#000' 
-                        });
-                    } catch(e) {}
+                    try { new QRious({ element: cvs, value: payload, size: 250, padding: 8, level: 'L', background: '#fff', foreground: '#000' }); } catch(e) {}
                 }
             }
         }
 
         // =========================================================================
-        //                 LINEAR WORKFLOW & STACKED DECK SUMMARY
+        //                 LINEAR WORKFLOW & SESSION CACHING
         // =========================================================================
         let currentMode = "IDLE";
         let targetBatchSize = 1;
@@ -935,6 +744,8 @@
         let activeSampleIndex = 0;
         let activeWorkflowPhase = 1; 
         let currentString = "";
+        
+        let pendingResumeFile = null; 
 
         const zLabels = ["S1 QR", "S1 NQR", "S5 QR", "S5 NQR", "S7/8 QR", "S7/8 NQR"];
         const visualChecklist = [
@@ -946,6 +757,42 @@
             {id: "v_s7q_s", name: "S7/8 QR - Scribe"}, {id: "v_s7q_m", name: "S7/8 QR - MEK"},
             {id: "v_s7nq_s", name: "S7/8 NQR - Scribe"}, {id: "v_s7nq_m", name: "S7/8 NQR - MEK"}
         ];
+
+        function saveSession() {
+            if(batchSamples.length === 0) { localStorage.removeItem('dscForgeSession'); return; }
+            const session = { currentMode, targetBatchSize, activeSampleIndex, activeWorkflowPhase, batchSamples };
+            localStorage.setItem('dscForgeSession', JSON.stringify(session));
+        }
+
+        function resumeSession() {
+            if (!('showDirectoryPicker' in window)) {
+                window.isVirtualSync = true;
+                dirHandle = "VIRTUAL_NODE";
+                document.getElementById('btnSync').classList.add('synced');
+                document.querySelector('#btnSync .btn-title').innerText = "VIRTUAL DIR";
+            }
+            if (!dirHandle && !window.isVirtualSync) {
+                document.getElementById('syncWarningOverlay').classList.remove('hidden');
+                return;
+            }
+
+            const data = localStorage.getItem('dscForgeSession');
+            if(!data) return;
+            const session = JSON.parse(data);
+            
+            currentMode = session.currentMode; targetBatchSize = session.targetBatchSize;
+            activeSampleIndex = session.activeSampleIndex; activeWorkflowPhase = session.activeWorkflowPhase;
+            batchSamples = session.batchSamples;
+            
+            document.getElementById('modeSelectOverlay').classList.add('hidden');
+            document.getElementById('forgeModeBadge').innerText = `${currentMode} [${activeSampleIndex+1}/${targetBatchSize}]`;
+            
+            if (activeWorkflowPhase === 2 && activeSampleIndex === 0 && batchSamples[0].phase2Data.length === 0) {
+                showNotice("SESSION RESTORED", `Session recovered successfully.<br>Ready to begin Phase 2 Tg readings.`);
+            } else {
+                updateDisplay();
+            }
+        }
 
         function showModeSelect() {
             document.getElementById('ticketQtyOverlay').classList.add('hidden');
@@ -959,23 +806,17 @@
         }
 
         function startDailyRoutine() {
-            if (!dirHandle) { document.getElementById('syncWarningOverlay').classList.remove('hidden'); return; }
-            currentMode = "DAILY";
-            targetBatchSize = 1;
-            initBatchSession();
+            if (!dirHandle && !window.isVirtualSync) { document.getElementById('syncWarningOverlay').classList.remove('hidden'); return; }
+            currentMode = "DAILY"; targetBatchSize = 1; initBatchSession();
         }
 
         function startQualityTicket(qty) {
-            if (!dirHandle) { document.getElementById('syncWarningOverlay').classList.remove('hidden'); return; }
-            currentMode = "TICKET";
-            targetBatchSize = qty;
-            initBatchSession();
+            if (!dirHandle && !window.isVirtualSync) { document.getElementById('syncWarningOverlay').classList.remove('hidden'); return; }
+            currentMode = "TICKET"; targetBatchSize = qty; initBatchSession();
         }
 
         function initBatchSession() {
-            batchSamples = [];
-            activeSampleIndex = 0;
-            activeWorkflowPhase = 1;
+            batchSamples = []; activeSampleIndex = 0; activeWorkflowPhase = 1;
             document.getElementById('modeSelectOverlay').classList.add('hidden');
             document.getElementById('ticketQtyOverlay').classList.add('hidden');
             document.getElementById('forgeModeBadge').innerText = `${currentMode} [0/${targetBatchSize}]`;
@@ -997,70 +838,86 @@
         }
 
         function processScan() {
-            const input = document.getElementById('scanInput');
-            const rawQR = input.value.trim();
+            const input = document.getElementById('scanInput'); const rawQR = input.value.trim();
             if(!rawQR) return;
 
             const qrData = parseQRCode(rawQR);
             let baseName = `${qrData.tube}_${qrData.ose}_${qrData.cav}`;
+            if (rawQR.startsWith("TEMP_")) baseName = rawQR;
             
-            if (rawQR.startsWith("TEMP_")) {
-                baseName = rawQR;
-            }
-            
-            // 1. STRICT ACTIVE BATCH CHECK 
-            if (batchSamples.some(s => s.qrData.raw === rawQR || s.filename.includes(baseName))) {
-                showGlobalStatus(`REJECTED: ALREADY IN ACTIVE BATCH`, 'error');
-                input.value = "";
-                setTimeout(() => input.focus(), 50);
-                return;
+            if (batchSamples.some(s => s.qrData.raw === rawQR || s.filename === baseName)) {
+                showGlobalStatus(`REJECTED: ALREADY IN ACTIVE BATCH`, 'error'); input.value = ""; setTimeout(() => input.focus(), 50); return;
             }
 
-            // 2. FOLDER DUPLICATE / UNFINISHED FILE CHECK
             if (!window.isVirtualSync && window.existingSyncFiles) {
                 const existingFile = window.existingSyncFiles.find(f => f.rawQR === rawQR || (f.name && f.name.includes(baseName)));
-                
                 if (existingFile) {
                     if (existingFile.isComplete) {
-                        showGlobalStatus(`REJECTED: ALREADY SECURED IN FOLDER`, 'error');
-                        input.value = "";
-                        setTimeout(() => input.focus(), 50);
-                        return;
+                        showGlobalStatus(`REJECTED: ALREADY SECURED IN FOLDER`, 'error'); input.value = ""; setTimeout(() => input.focus(), 50); return;
                     } else {
-                        showGlobalStatus(`OVERWRITING UNFINISHED FILE`, 'success');
+                        pendingResumeFile = existingFile; pendingResumeFile.baseName = baseName; pendingResumeFile.qrData = qrData;
+                        document.getElementById('scanOverlay').classList.add('hidden');
+                        document.getElementById('resumeFileOverlay').classList.remove('hidden');
+                        return;
                     }
-                } else {
-                    showGlobalStatus(`ACCEPTED: REGISTERED TO BATCH`, 'success');
                 }
-            } else {
-                showGlobalStatus(`ACCEPTED: REGISTERED TO BATCH`, 'success');
             }
             
+            showGlobalStatus(`ACCEPTED: REGISTERED TO BATCH`, 'success');
+            proceedWithNewScan(baseName, qrData);
+        }
+
+        function proceedWithNewScan(baseName, qrData) {
             const sampleSeq = batchSamples.length + 1;
-            const uniqueFilename = `${baseName}_#${sampleSeq}_${Date.now().toString().slice(-4)}`;
-
-            batchSamples.push({
-                index: sampleSeq,
-                filename: uniqueFilename,
-                qrData: qrData,
-                phase1Data: [], 
-                phase2Data: [], 
-                visualStates: {}
-            });
-
+            batchSamples.push({ index: sampleSeq, filename: baseName, qrData: qrData, phase1Data: [], phase2Data: [], visualStates: {} });
+            
             document.getElementById('scanOverlay').classList.add('hidden');
+            document.getElementById('resumeFileOverlay').classList.add('hidden');
             document.getElementById('forgeModeBadge').innerText = `${currentMode} [${sampleSeq}/${targetBatchSize}]`;
-
             document.getElementById('visualPromptTitle').innerText = `SAMPLE ${sampleSeq} INSPECTIONS`;
+            
             buildVisualGrid();
             document.getElementById('visualOverlay').classList.remove('hidden');
         }
 
+        function confirmResumeFile() {
+            if(!pendingResumeFile) return;
+            showGlobalStatus(`RESUMING PHASE 2 LOG`, 'success');
+            
+            let p1Data = [];
+            const p1Indices = [0,1, 7,8, 14,15, 22,23, 29,30, 36,37];
+            for(let idx of p1Indices) { if(pendingResumeFile.data[idx] !== "---" && pendingResumeFile.data[idx] !== "") { p1Data.push(pendingResumeFile.data[idx]); } }
+
+            let vStates = {};
+            const vMap = [
+                {i:5, id:"v_s1q_s"}, {i:6, id:"v_s1q_m"}, {i:12, id:"v_s1nq_s"}, {i:13, id:"v_s1nq_m"},
+                {i:19, id:"v_s5q_s"}, {i:20, id:"v_s5q_m"}, {i:21, id:"v_s5_b"}, {i:27, id:"v_s5nq_s"},
+                {i:28, id:"v_s5nq_m"}, {i:34, id:"v_s7q_s"}, {i:35, id:"v_s7q_m"}, {i:41, id:"v_s7nq_s"}, {i:42, id:"v_s7nq_m"}
+            ];
+            vMap.forEach(v => { vStates[v.id] = pendingResumeFile.data[v.i] || "PASS"; });
+
+            const sampleSeq = batchSamples.length + 1;
+            batchSamples.push({
+                index: sampleSeq, filename: pendingResumeFile.baseName, qrData: pendingResumeFile.qrData,
+                phase1Data: p1Data, phase2Data: [], visualStates: vStates
+            });
+
+            document.getElementById('resumeFileOverlay').classList.add('hidden');
+            
+            if(batchSamples.length < targetBatchSize) { promptNextScan(); } 
+            else { activeSampleIndex = 0; activeWorkflowPhase = 2; showNotice("RESUME SUCCESSFUL", `All Phase 1 data retrieved from folder.<br>Ready to begin Phase 2 Tg readings.`); }
+            saveSession();
+        }
+
+        function confirmOverwrite() {
+            if(!pendingResumeFile) return;
+            showGlobalStatus(`OVERWRITING UNFINISHED FILE`, 'success');
+            proceedWithNewScan(pendingResumeFile.baseName, pendingResumeFile.qrData);
+        }
+
         function buildVisualGrid() {
             let html = "";
-            visualChecklist.forEach(v => {
-                html += `<div class="visual-item"><span>${v.name}</span><select id="${v.id}" onchange="this.className = this.value === 'FAIL' ? 'fail' : '';"><option value="PASS">PASS</option><option value="FAIL">FAIL</option></select></div>`;
-            });
+            visualChecklist.forEach(v => { html += `<div class="visual-item"><span>${v.name}</span><select id="${v.id}" onchange="this.className = this.value === 'FAIL' ? 'fail' : '';"><option value="PASS">PASS</option><option value="FAIL">FAIL</option></select></div>`; });
             document.getElementById('visualGrid').innerHTML = html;
             document.getElementById('visBtnGroup').style.display = 'flex';
             document.getElementById('visualGrid').style.display = 'none';
@@ -1075,28 +932,15 @@
 
         function confirmVisuals(allPass) {
             const currentSample = batchSamples[batchSamples.length - 1];
-            if(allPass) {
-                visualChecklist.forEach(v => currentSample.visualStates[v.id] = "PASS");
-            } else {
-                visualChecklist.forEach(v => {
-                    let el = document.getElementById(v.id);
-                    currentSample.visualStates[v.id] = el ? el.value : "PASS";
-                });
-            }
+            if(allPass) { visualChecklist.forEach(v => currentSample.visualStates[v.id] = "PASS"); } 
+            else { visualChecklist.forEach(v => { let el = document.getElementById(v.id); currentSample.visualStates[v.id] = el ? el.value : "PASS"; }); }
 
             document.getElementById('visualOverlay').classList.add('hidden');
             writeSampleCSV(currentSample, "SCAN_LOGGED");
+            saveSession();
 
-            if(batchSamples.length < targetBatchSize) {
-                promptNextScan();
-            } else {
-                activeSampleIndex = 0;
-                activeWorkflowPhase = 1;
-                showNotice(
-                    "BATCH REGISTRATION COMPLETE",
-                    `All ${targetBatchSize} samples registered.<br>Starting Phase 1 (Pan+Lid &amp; Sample Mass) for Sample 1.`
-                );
-            }
+            if(batchSamples.length < targetBatchSize) { promptNextScan(); } 
+            else { activeSampleIndex = 0; activeWorkflowPhase = 1; showNotice("BATCH REGISTRATION COMPLETE", `All ${targetBatchSize} samples registered.<br>Starting Phase 1 (Pan+Lid &amp; Sample Mass) for Sample 1.`); }
         }
 
         function showNotice(title, body) {
@@ -1114,58 +958,39 @@
             let col = new Array(44).fill("---");
             const getVis = (idx) => sample.visualStates[visualChecklist[idx].id] || "PASS";
 
-            col[5]  = getVis(0);  col[6]  = getVis(1);
-            col[12] = getVis(2);  col[13] = getVis(3);
-            col[19] = getVis(4);  col[20] = getVis(5);
-            col[21] = getVis(6); 
-            col[27] = getVis(7);  col[28] = getVis(8);
-            col[34] = getVis(9);  col[35] = getVis(10);
-            col[41] = getVis(11); col[42] = getVis(12);
+            col[5] = getVis(0); col[6] = getVis(1); col[12] = getVis(2); col[13] = getVis(3);
+            col[19] = getVis(4); col[20] = getVis(5); col[21] = getVis(6); col[27] = getVis(7);
+            col[28] = getVis(8); col[34] = getVis(9); col[35] = getVis(10); col[41] = getVis(11); col[42] = getVis(12);
 
             const zones = [
-                { pan: 0,  samp: 1,  tg2: 2,  tg3: 3,  delta: 4  },
-                { pan: 7,  samp: 8,  tg2: 9,  tg3: 10, delta: 11 },
-                { pan: 14, samp: 15, tg2: 16, tg3: 17, delta: 18 },
-                { pan: 22, samp: 23, tg2: 24, tg3: 25, delta: 26 },
-                { pan: 29, samp: 30, tg2: 31, tg3: 32, delta: 33 },
-                { pan: 36, samp: 37, tg2: 38, tg3: 39, delta: 40 }
+                { pan: 0, samp: 1, tg2: 2, tg3: 3, delta: 4 }, { pan: 7, samp: 8, tg2: 9, tg3: 10, delta: 11 },
+                { pan: 14, samp: 15, tg2: 16, tg3: 17, delta: 18 }, { pan: 22, samp: 23, tg2: 24, tg3: 25, delta: 26 },
+                { pan: 29, samp: 30, tg2: 31, tg3: 32, delta: 33 }, { pan: 36, samp: 37, tg2: 38, tg3: 39, delta: 40 }
             ];
 
             zones.forEach((z, idx) => {
-                let panIdx = idx * 2;
-                let sampIdx = idx * 2 + 1;
+                let panIdx = idx * 2; let sampIdx = idx * 2 + 1;
                 if(panIdx < sample.phase1Data.length) col[z.pan] = sample.phase1Data[panIdx];
                 if(sampIdx < sample.phase1Data.length) col[z.samp] = sample.phase1Data[sampIdx];
             });
 
             zones.forEach((z, idx) => {
-                let tg2Idx = idx * 2;
-                let tg3Idx = idx * 2 + 1;
+                let tg2Idx = idx * 2; let tg3Idx = idx * 2 + 1;
                 if(tg2Idx < sample.phase2Data.length) col[z.tg2] = sample.phase2Data[tg2Idx];
                 if(tg3Idx < sample.phase2Data.length) col[z.tg3] = sample.phase2Data[tg3Idx];
-
                 if(col[z.tg2] !== "---" && col[z.tg3] !== "---") {
-                    let c = parseFloat(col[z.tg2]);
-                    let d = parseFloat(col[z.tg3]);
+                    let c = parseFloat(col[z.tg2]); let d = parseFloat(col[z.tg3]);
                     if(!isNaN(c) && !isNaN(d)) col[z.delta] = (d - c).toFixed(2);
                 }
             });
 
-            // Footprint Row
             col[43] = (stage === "PHASE_2_COMPLETE" || stage === "FINAL") ? "COMPLETED" : "IN_PROGRESS";
-
             return col;
         }
 
         async function writeSampleCSV(sample, stage) {
             if(!dirHandle || !sample) return;
-            
-            // If we are on iOS/Safari (Virtual Sync), skip file generation completely.
-            // The data stays securely in memory to build the Final Matrix QR Code at the end.
-            if (window.isVirtualSync) {
-                console.log(`[VIRTUAL SYNC] File save bypassed for ${sample.filename} at ${stage}. Data held in memory.`);
-                return;
-            }
+            if (window.isVirtualSync) { console.log(`[VIRTUAL SYNC] File save bypassed for ${sample.filename}. Data held in memory.`); return; }
 
             let colData = generateColumnData(sample, stage);
             let output = `#,FEATURE ID,NOMINAL,TOLERANCE,MIN,MAX,${sample.qrData.raw}\n`;
@@ -1175,72 +1000,56 @@
                 windowPollingLocked = true;
                 const fileHandle = await dirHandle.getFileHandle(`${sample.filename}.csv`, { create: true });
                 const writable = await fileHandle.createWritable();
-                await writable.write(output);
-                await writable.close();
-            } catch(e) { 
-                console.error("CSV write error:", e); 
-            } finally { 
-                setTimeout(() => { windowPollingLocked = false; }, 250); 
-            }
+                await writable.write(output); await writable.close();
+            } catch(e) { console.error("CSV write error:", e); } 
+            finally { setTimeout(() => { windowPollingLocked = false; }, 250); }
         }
 
         function updateDisplay() {
             if(batchSamples.length === 0) return;
             const currentSample = batchSamples[activeSampleIndex];
+            
             const currentDataArray = (activeWorkflowPhase === 1) ? currentSample.phase1Data : currentSample.phase2Data;
             const step = currentDataArray.length;
-
             document.getElementById('currentInput').innerText = currentString;
 
             let html = "";
-            currentDataArray.forEach((val, idx) => {
+            
+            currentSample.phase1Data.forEach((val, idx) => {
                 let alt = (idx % 2 === 0) ? "var(--ares-white)" : "#aaa";
-                let zIdx = Math.floor(idx / 2);
-                let zName = zLabels[zIdx];
-                let label = "";
-                if(activeWorkflowPhase === 1) {
-                    label = (idx % 2 === 0) ? `[${zName}] <span style="color:var(--crimson);">Total</span>` : `[${zName}] <span style="color:var(--gold);">Samp</span>`;
-                } else {
-                    label = (idx % 2 === 0) 
-                        ? `[${zName}] <span style="color:var(--purple-light);">2nd Tg</span>` 
-                        : `[${zName}] <span style="color:var(--cyan-neon);">3rd Tg</span>`;
-                }
+                let zIdx = Math.floor(idx / 2); let zName = zLabels[zIdx];
+                let label = (idx % 2 === 0) ? `[${zName}] <span style="color:var(--crimson);">Total</span>` : `[${zName}] <span style="color:var(--gold);">Samp</span>`;
                 html += `<div class="history-item" style="border-left-color: ${alt};">> <span>${label}</span> <span style="color:#fff; font-weight:bold;">${val}</span></div>`;
             });
+            
+            if (currentSample.phase1Data.length === 12 && (activeWorkflowPhase === 2 || currentSample.phase2Data.length > 0)) {
+                html += `<div class="phase-boundary" style="width: 100%; text-align: center; border-top: 1px dashed var(--gold); border-bottom: 1px dashed var(--gold); color: var(--gold); padding: 5px 0; margin: 10px 0; font-weight: 900; letter-spacing: 2px; font-size: 0.8rem; background: rgba(255, 234, 0, 0.05);">// PHASE 1 SECURED //</div>`;
+            }
+
+            currentSample.phase2Data.forEach((val, idx) => {
+                let alt = (idx % 2 === 0) ? "var(--ares-white)" : "#aaa";
+                let zIdx = Math.floor(idx / 2); let zName = zLabels[zIdx];
+                let label = (idx % 2 === 0) ? `[${zName}] <span style="color:var(--purple-light);">2nd Tg</span>` : `[${zName}] <span style="color:var(--cyan-neon);">3rd Tg</span>`;
+                html += `<div class="history-item" style="border-left-color: ${alt};">> <span>${label}</span> <span style="color:#fff; font-weight:bold;">${val}</span></div>`;
+            });
+
             document.getElementById('historyLog').innerHTML = html;
             const disp = document.getElementById('displayArea'); disp.scrollTop = disp.scrollHeight;
 
-            const totalWorkflowSteps = targetBatchSize * 24;
-            let completedSteps = 0;
+            const totalWorkflowSteps = targetBatchSize * 24; let completedSteps = 0;
             batchSamples.forEach(s => completedSteps += s.phase1Data.length + s.phase2Data.length);
             const pct = Math.round((completedSteps / totalWorkflowSteps) * 100);
-            document.getElementById('payloadFill').style.width = pct + "%";
-            document.getElementById('payloadText').innerText = pct + "%";
+            document.getElementById('payloadFill').style.width = pct + "%"; document.getElementById('payloadText').innerText = pct + "%";
 
             if(step < 12) {
-                let zIdx = Math.floor(step / 2);
-                let zName = zLabels[zIdx];
-                let prompt = "";
-                let cursorColor = "var(--ares-white)";
-
+                let zIdx = Math.floor(step / 2); let zName = zLabels[zIdx]; let prompt = ""; let cursorColor = "var(--ares-white)";
                 if(activeWorkflowPhase === 1) {
-                    if(step % 2 === 0) { 
-                        prompt = `<span style="color:var(--crimson);">TOTAL (mg)</span>`; 
-                        cursorColor = "var(--crimson)"; 
-                    } else { 
-                        prompt = `<span style="color:var(--gold);">SAMP (mg)</span>`; 
-                        cursorColor = "var(--gold)"; 
-                    }
+                    if(step % 2 === 0) { prompt = `<span style="color:var(--crimson);">TOTAL (mg)</span>`; cursorColor = "var(--crimson)"; } 
+                    else { prompt = `<span style="color:var(--gold);">SAMP (mg)</span>`; cursorColor = "var(--gold)"; }
                 } else {
-                    if(step % 2 === 0) {
-                        prompt = `<span style="color:var(--purple-light); text-shadow:0 0 10px var(--purple-light);">2ND TG</span>`;
-                        cursorColor = "var(--purple-light)";
-                    } else {
-                        prompt = `<span style="color:var(--cyan-neon); text-shadow:0 0 10px var(--cyan-neon);">3RD TG</span>`;
-                        cursorColor = "var(--cyan-neon)";
-                    }
+                    if(step % 2 === 0) { prompt = `<span style="color:var(--purple-light); text-shadow:0 0 10px var(--purple-light);">2ND TG</span>`; cursorColor = "var(--purple-light)"; } 
+                    else { prompt = `<span style="color:var(--cyan-neon); text-shadow:0 0 10px var(--cyan-neon);">3RD TG</span>`; cursorColor = "var(--cyan-neon)"; }
                 }
-
                 document.getElementById('statusBar').innerHTML = `S${activeSampleIndex + 1}/${targetBatchSize} [${zName}] ${prompt}`;
                 document.getElementById('currentInput').style.setProperty('--cursor-color', cursorColor);
             }
@@ -1251,105 +1060,260 @@
             const currentSample = batchSamples[activeSampleIndex];
             const currentDataArray = (activeWorkflowPhase === 1) ? currentSample.phase1Data : currentSample.phase2Data;
             
-            currentDataArray.push(currentString);
-            currentString = "";
-            
-            updateDisplay();
+            currentDataArray.push(currentString); currentString = ""; updateDisplay(); saveSession();
 
             if(currentDataArray.length === 12) {
                 await writeSampleCSV(currentSample, activeWorkflowPhase === 1 ? "PHASE_1_COMPLETE" : "PHASE_2_COMPLETE");
-
                 if(activeWorkflowPhase === 1) {
                     if(activeSampleIndex + 1 < targetBatchSize) {
                         activeSampleIndex++;
-                        showNotice(
-                            `SAMPLE ${activeSampleIndex} PHASE 1 COMPLETE`,
-                            `Sample ${activeSampleIndex} data committed.<br>Starting Phase 1 for Sample ${activeSampleIndex + 1}.`
-                        );
+                        showNotice(`SAMPLE ${activeSampleIndex} PHASE 1 COMPLETE`, `Sample ${activeSampleIndex} data committed.<br>Starting Phase 1 for Sample ${activeSampleIndex + 1}.`);
                     } else {
-                        activeSampleIndex = 0;
-                        activeWorkflowPhase = 2;
-                        showNotice(
-                            "ALL SAMPLES PHASE 1 COMPLETE",
-                            `All ${targetBatchSize} sample masses committed.<br>Cycling back to Sample 1 for Phase 2 (Tg readings).`
-                        );
+                        activeSampleIndex = 0; activeWorkflowPhase = 2;
+                        showNotice("ALL SAMPLES PHASE 1 COMPLETE", `All ${targetBatchSize} sample masses committed.<br>Cycling back to Sample 1 for Phase 2 (Tg readings).`);
                     }
                 } else {
                     if(activeSampleIndex + 1 < targetBatchSize) {
                         activeSampleIndex++;
-                        showNotice(
-                            `SAMPLE ${activeSampleIndex} PHASE 2 COMPLETE`,
-                            `Sample ${activeSampleIndex} Tg data committed.<br>Starting Phase 2 for Sample ${activeSampleIndex + 1}.`
-                        );
+                        showNotice(`SAMPLE ${activeSampleIndex} PHASE 2 COMPLETE`, `Sample ${activeSampleIndex} Tg data committed.<br>Starting Phase 2 for Sample ${activeSampleIndex + 1}.`);
                     } else {
-                        showBatchSummary();
+                        runDiagnostic();
                     }
                 }
+                saveSession();
             }
         }
 
-        /* HORIZONTAL TAB-SEPARATED UNIFIED QR CODE */
+        function runDiagnostic() {
+            document.getElementById('batchSummaryOverlay').classList.add('hidden');
+            document.getElementById('diagnosticOverlay').classList.remove('hidden');
+            const log = document.getElementById('aiOutputLog');
+            log.innerHTML = `<div class="ai-line" style="color: var(--text-muted);">> NEURAL AGENT INITIATING DSC ANALYSIS...</div>`;
+            
+            setTimeout(() => {
+                log.innerHTML += `<div class="ai-line" style="color: var(--text-muted);">> CROSS-REFERENCING MASS & THERMAL LIMITS...</div>`;
+                
+                setTimeout(() => {
+                    diagnosticErrors = [];
+                    let allPassed = true;
+
+                    batchSamples.forEach((sample, sampleIdx) => {
+                        for (let i = 0; i < 6; i++) {
+                            let panVal = parseFloat(sample.phase1Data[i*2]);
+                            let sampVal = parseFloat(sample.phase1Data[i*2 + 1]);
+                            let tg2Val = parseFloat(sample.phase2Data[i*2]);
+                            let tg3Val = parseFloat(sample.phase2Data[i*2 + 1]);
+                            
+                            let zoneName = zLabels[i];
+                            let title = batchSamples.length > 1 ? `S${sampleIdx+1}: ${zoneName}` : `[ ${zoneName} ]`;
+                            
+                            let pFail = isNaN(panVal) || panVal < 45 || panVal > 60;
+                            let sFail = isNaN(sampVal) || sampVal < 4 || sampVal > 7;
+                            
+                            let delta = NaN;
+                            let dFail = false;
+                            if (!isNaN(tg2Val) && !isNaN(tg3Val)) {
+                                delta = tg3Val - tg2Val;
+                                dFail = delta < -5 || delta > 5;
+                            }
+
+                            if (pFail || sFail || dFail) {
+                                allPassed = false;
+                                diagnosticErrors.push({
+                                    sampleIdx: sampleIdx, zoneIdx: i, name: title,
+                                    panVal, sampVal, tg2Val, tg3Val, delta,
+                                    pFail, sFail, dFail
+                                });
+                            }
+                        }
+                    });
+
+                    if (allPassed) {
+                        log.innerHTML += `
+                            <div class="ai-line" style="margin-top: 15px;">
+                                <span class="ai-success">> ALL ZONES VERIFIED. POLYMER CROSSLINKING OPTIMAL.</span>
+                            </div>
+                            <div class="ai-line" style="color: var(--text-muted); margin-top: 5px;">> Generating final payload structure...</div>`;
+                        
+                        setTimeout(() => { 
+                            document.getElementById('diagnosticOverlay').classList.add('hidden');
+                            showBatchSummary(); 
+                        }, 1500);
+                    } else {
+                        let failHTML = `<div class="ai-line" style="margin-top: 15px;"><span class="ai-extreme">> ANOMALIES DETECTED. POTENTIAL OPERATOR TYPO.</span></div>`;
+                        
+                        diagnosticErrors.forEach((err, index) => {
+                            let reasons = [];
+                            if (err.pFail) reasons.push("PAN+LID");
+                            if (err.sFail) reasons.push("SAMP MASS");
+                            if (err.dFail) reasons.push(`ΔTg (${!isNaN(err.delta) ? err.delta.toFixed(2) : '--'})`);
+                            
+                            failHTML += `
+                                <div class="typo-box ai-line" style="animation-delay: ${0.2 + (index*0.1)}s;">
+                                    <div class="typo-label">${err.name} - DEVIATION: ${reasons.join(', ')}</div>
+                                    
+                                    ${err.pFail || err.sFail ? `
+                                    <div class="typo-input-group">
+                                        <span style="color: var(--text-muted); font-size: 0.8rem;">TOTAL (mg):</span>
+                                        <input type="number" step="0.01" id="fix_p_${err.sampleIdx}_${err.zoneIdx}" class="typo-input" value="${err.panVal}" ${!err.pFail ? 'disabled style="opacity:0.5;"' : ''}>
+                                        <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 10px;">SAMP (mg):</span>
+                                        <input type="number" step="0.01" id="fix_s_${err.sampleIdx}_${err.zoneIdx}" class="typo-input" value="${err.sampVal}" ${!err.sFail ? 'disabled style="opacity:0.5;"' : ''}>
+                                    </div>` : ''}
+
+                                    ${err.dFail ? `
+                                    <div class="typo-input-group">
+                                        <span style="color: var(--text-muted); font-size: 0.8rem;">2nd Tg:</span>
+                                        <input type="number" step="0.01" id="fix_c_${err.sampleIdx}_${err.zoneIdx}" class="typo-input" value="${err.tg2Val}">
+                                        <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 10px;">3rd Tg:</span>
+                                        <input type="number" step="0.01" id="fix_d_${err.sampleIdx}_${err.zoneIdx}" class="typo-input" value="${err.tg3Val}">
+                                    </div>` : ''}
+                                </div>`;
+                        });
+
+                        failHTML += `
+                            <div class="ai-line" style="margin-top: 20px; animation-delay: 0.8s; display: flex; flex-direction: column; gap: 10px;">
+                                <button class="btn-proceed" style="border-color: var(--purple-light); color: var(--purple-light);" onclick="applyDiagnosticFixes()">UPDATE & RECALCULATE</button>
+                                <button class="btn-proceed btn-secondary" style="border-color: var(--crimson); color: var(--crimson);" onclick="forceDiagnosticOverride()">CONFIRM ANOMALIES (PROCEED)</button>
+                            </div>`;
+
+                        log.innerHTML += failHTML;
+                    }
+                }, 800);
+            }, 600);
+        }
+
+        async function applyDiagnosticFixes() {
+            diagnosticErrors.forEach(err => {
+                let sample = batchSamples[err.sampleIdx];
+                if (err.pFail) sample.phase1Data[err.zoneIdx*2] = document.getElementById(`fix_p_${err.sampleIdx}_${err.zoneIdx}`).value;
+                if (err.sFail) sample.phase1Data[err.zoneIdx*2 + 1] = document.getElementById(`fix_s_${err.sampleIdx}_${err.zoneIdx}`).value;
+                if (err.dFail) {
+                    sample.phase2Data[err.zoneIdx*2] = document.getElementById(`fix_c_${err.sampleIdx}_${err.zoneIdx}`).value;
+                    sample.phase2Data[err.zoneIdx*2 + 1] = document.getElementById(`fix_d_${err.sampleIdx}_${err.zoneIdx}`).value;
+                }
+            });
+            
+            for (let i=0; i<diagnosticErrors.length; i++) {
+                await writeSampleCSV(batchSamples[diagnosticErrors[i].sampleIdx], "PHASE_2_COMPLETE");
+            }
+            
+            updateDisplay();
+            saveSession();
+            runDiagnostic();
+        }
+
+        function forceDiagnosticOverride() {
+            document.getElementById('diagnosticOverlay').classList.add('hidden');
+            showBatchSummary();
+        }
+
+        function clearLast() {
+            if(isSubmitting) return; 
+            if (currentString !== "") {
+                currentString = currentString.slice(0, -1);
+            } else if (batchSamples.length > 0) {
+                const currentSample = batchSamples[activeSampleIndex];
+                const arr = (activeWorkflowPhase === 1) ? currentSample.phase1Data : currentSample.phase2Data;
+                if (arr.length > 0) {
+                    currentString = arr.pop();
+                } else {
+                    if (activeWorkflowPhase === 2) {
+                        if (activeSampleIndex > 0) {
+                            activeSampleIndex--;
+                            currentString = batchSamples[activeSampleIndex].phase2Data.pop();
+                        } else {
+                            activeWorkflowPhase = 1;
+                            activeSampleIndex = targetBatchSize - 1;
+                            currentString = batchSamples[activeSampleIndex].phase1Data.pop();
+                        }
+                    } else if (activeWorkflowPhase === 1) {
+                        if (activeSampleIndex > 0) {
+                            activeSampleIndex--;
+                            currentString = batchSamples[activeSampleIndex].phase1Data.pop();
+                        } else {
+                            return; 
+                        }
+                    }
+                    document.getElementById('forgeModeBadge').innerText = `${currentMode} [${activeSampleIndex + 1}/${targetBatchSize}]`;
+                }
+                writeSampleCSV(batchSamples[activeSampleIndex], "IN_PROGRESS");
+            }
+            updateDisplay(); 
+            saveSession();
+        }
+
+        function toggleMobileData() {
+            const container = document.getElementById('mobileDataContainer');
+            const btn = document.getElementById('btnMobileDataToggle');
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                btn.innerText = "HIDE BATCH DATA";
+            } else {
+                container.style.display = 'none';
+                btn.innerText = "VIEW BATCH DATA";
+            }
+        }
+
         function showBatchSummary() {
             try {
                 document.getElementById('statusBar').innerHTML = `<span style="color:#39ff14;">ALL SAMPLES COMPLETE</span>`;
-                
                 const isTicket = (currentMode === "TICKET" && batchSamples.length > 1);
                 document.getElementById('summaryHeaderTitle').innerText = isTicket ? "QUALITY TICKET SECURED" : "DAILY ROUTINE SECURED";
-                document.getElementById('deckCardTitle').innerText = isTicket 
-                    ? `BATCH TICKET: ${batchSamples.length} SAMPLES ENCODED` 
-                    : `SAMPLE 1: ${batchSamples[0].filename}`;
+                document.getElementById('deckCardTitle').innerText = isTicket ? `BATCH TICKET: ${batchSamples.length} SAMPLES ENCODED` : `SAMPLE 1: ${batchSamples[0].filename}`;
 
-                let payloadLines = [];
-                payloadLines.push(batchSamples.map(s => s.qrData.raw).join("\t"));
-                
+                let payloadLines = []; payloadLines.push(batchSamples.map(s => s.qrData.raw).join("\t"));
                 const allDataArrays = batchSamples.map(s => generateColumnData(s, "FINAL"));
-                
-                for(let i = 0; i < 43; i++) {
-                    let rowVals = allDataArrays.map(arr => arr[i]);
-                    payloadLines.push(rowVals.join("\t"));
-                }
-                
+                for(let i = 0; i < 43; i++) { let rowVals = allDataArrays.map(arr => arr[i]); payloadLines.push(rowVals.join("\t")); }
                 const combinedPayload = payloadLines.join("\r\n");
 
                 const listEl = document.getElementById('deckSampleList');
-                if (isTicket) {
-                    listEl.innerHTML = "INCLUDED SAMPLES:<br>" + batchSamples.map((s, i) => `S${i+1}: ${s.filename}`).join(" | ");
-                } else {
-                    listEl.innerHTML = "";
-                }
+                if (isTicket) { listEl.innerHTML = "INCLUDED SAMPLES:<br>" + batchSamples.map((s, i) => `S${i+1}: ${s.filename}`).join(" | "); } 
+                else { listEl.innerHTML = ""; }
 
-                const canvas = document.getElementById('deckCanvas');
-                const qrSize = isTicket ? 280 : 250;
+                const canvas = document.getElementById('deckCanvas'); const qrSize = isTicket ? 280 : 250;
+                try { new QRious({ element: canvas, value: combinedPayload, size: qrSize, padding: 0, level: 'L', background: '#fff', foreground: '#000' }); } 
+                catch (qrErr) {
+                    const ctx = canvas.getContext('2d'); canvas.width = qrSize; canvas.height = qrSize; ctx.fillStyle = "#fff"; ctx.fillRect(0,0,qrSize,qrSize);
+                    ctx.fillStyle = "#ff003c"; ctx.font = "bold 14px monospace"; ctx.fillText("PAYLOAD TOO LARGE", 20, qrSize/2);
+                }
                 
-                try {
-                    new QRious({
-                        element: canvas,
-                        value: combinedPayload,
-                        size: qrSize,
-                        padding: 0,
-                        level: 'L',
-                        background: '#fff',
-                        foreground: '#000'
+                // Show mobile data toggle only if virtual sync or small screen
+                if (window.isVirtualSync || window.innerWidth <= 1000) {
+                    document.getElementById('btnMobileDataToggle').style.display = 'flex';
+                    document.getElementById('mobileDataContainer').style.display = 'none';
+                    document.getElementById('btnMobileDataToggle').innerText = "VIEW BATCH DATA";
+                    
+                    let dataHTML = "";
+                    batchSamples.forEach((sample, idx) => {
+                        dataHTML += `<div style="color: var(--gold); font-weight: bold; margin-bottom: 5px; margin-top: ${idx > 0 ? '15px' : '0'}; border-bottom: 1px dashed var(--gold); padding-bottom: 3px;">SAMPLE ${idx+1}: ${sample.filename}</div>`;
+                        for(let i=0; i<6; i++) {
+                            let pVal = sample.phase1Data[i*2] || '--';
+                            let sVal = sample.phase1Data[i*2+1] || '--';
+                            let t2Val = sample.phase2Data[i*2] || '--';
+                            let t3Val = sample.phase2Data[i*2+1] || '--';
+                            let delta = (!isNaN(parseFloat(t2Val)) && !isNaN(parseFloat(t3Val))) ? (parseFloat(t3Val) - parseFloat(t2Val)).toFixed(2) : '--';
+                            dataHTML += `<div style="font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: 8px; color: #fff;">
+                                <span style="color: var(--mint);">${zLabels[i]}</span><br>
+                                <span style="color: var(--text-muted);">MASS:</span> ${pVal}mg / ${sVal}mg<br>
+                                <span style="color: var(--text-muted);">THERMAL:</span> ${t2Val}ºC / ${t3Val}ºC <span style="color: var(--crimson);">(Δ ${delta})</span>
+                            </div>`;
+                        }
                     });
-                } catch (qrErr) {
-                    console.error("QR Payload exceeded capacity:", qrErr);
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = qrSize; canvas.height = qrSize;
-                    ctx.fillStyle = "#fff"; ctx.fillRect(0,0,qrSize,qrSize);
-                    ctx.fillStyle = "#ff003c"; ctx.font = "bold 14px monospace";
-                    ctx.fillText("PAYLOAD TOO LARGE", 20, qrSize/2);
+                    document.getElementById('mobileDataContainer').innerHTML = dataHTML;
+                } else {
+                    document.getElementById('btnMobileDataToggle').style.display = 'none';
+                    document.getElementById('mobileDataContainer').style.display = 'none';
                 }
 
                 document.getElementById('batchSummaryOverlay').classList.remove('hidden');
-            } catch (err) {
-                console.error("Fatal error displaying summary overlay:", err);
-            }
+                localStorage.removeItem('dscForgeSession');
+                document.getElementById('resumeSessionContainer').style.display = 'none';
+            } catch (err) { console.error("Summary error:", err); }
         }
 
         function purgeAndResetWorkflow() {
-            const overlays = ['batchSummaryOverlay', 'scanOverlay', 'visualOverlay', 'phaseNoticeOverlay', 'ticketQtyOverlay'];
+            const overlays = ['batchSummaryOverlay', 'scanOverlay', 'visualOverlay', 'phaseNoticeOverlay', 'ticketQtyOverlay', 'resumeFileOverlay', 'diagnosticOverlay'];
             overlays.forEach(id => document.getElementById(id).classList.add('hidden'));
-
             document.getElementById('modeSelectOverlay').classList.remove('hidden');
             document.getElementById('forgeModeBadge').innerText = "IDLE";
             document.getElementById('statusBar').innerText = "SELECT WORKFLOW MODE";
@@ -1358,9 +1322,8 @@
             document.getElementById('payloadFill').style.width = "0%";
             document.getElementById('payloadText').innerText = "0%";
             
-            batchSamples = [];
-            currentMode = "IDLE";
-            currentString = "";
+            batchSamples = []; currentMode = "IDLE"; currentString = ""; pendingResumeFile = null;
+            localStorage.removeItem('dscForgeSession'); document.getElementById('resumeSessionContainer').style.display = 'none';
         }
 
         function toggleFocusMode() { document.body.classList.toggle('focus-mode'); }
@@ -1370,7 +1333,6 @@
             if(isSubmitting) return;
             if(char === '.' && currentString.includes('.')) return;
             currentString += char;
-
             const currentSample = batchSamples[activeSampleIndex];
             if(currentSample) {
                 const arr = (activeWorkflowPhase === 1) ? currentSample.phase1Data : currentSample.phase2Data;
@@ -1385,30 +1347,16 @@
                 }
             }
             updateDisplay();
-
             if (currentString.includes('.') && currentString.split('.')[1].length === 2) { 
-                isSubmitting = true; 
-                setTimeout(() => { submitNumber(); isSubmitting = false; }, 100); 
+                isSubmitting = true; setTimeout(() => { submitNumber(); isSubmitting = false; }, 100); 
             }
-        }
-
-        function clearLast() {
-            if (currentString !== "") currentString = currentString.slice(0, -1);
-            else if (batchSamples.length > 0) {
-                const arr = (activeWorkflowPhase === 1) ? batchSamples[activeSampleIndex].phase1Data : batchSamples[activeSampleIndex].phase2Data;
-                if(arr.length > 0) currentString = arr.pop();
-            }
-            updateDisplay();
         }
 
         function toggleForge() {
-            const panel = document.getElementById('forgePanel'); 
-            const btn = document.getElementById('btnForgeToggle'); 
-            panel.classList.toggle('hidden'); 
-            btn.classList.toggle('inactive');
+            const panel = document.getElementById('forgePanel'); const btn = document.getElementById('btnForgeToggle'); 
+            panel.classList.toggle('hidden'); btn.classList.toggle('inactive');
         }
 
-        // Chinese Decrypt Hologram
         const chnChars = "數據檢測鎖定系統分析錯誤流合格不合格";
         setInterval(() => {
             const cells = Array.from(document.querySelectorAll('.sample-cell')).filter(c => c.innerText.trim() !== "---"); 
@@ -1419,20 +1367,13 @@
                 const origText = target.dataset.val || target.innerText; 
                 target.dataset.isGlitching = "true"; target.dataset.originalText = origText;
                 target.dataset.origColor = target.style.color; target.dataset.origShadow = target.style.textShadow;
-                target.classList.add('matrix-hijack'); 
-                target.innerText = chnChars[Math.floor(Math.random() * chnChars.length)] + chnChars[Math.floor(Math.random() * chnChars.length)];
-                
+                target.classList.add('matrix-hijack'); target.innerText = chnChars[Math.floor(Math.random() * chnChars.length)] + chnChars[Math.floor(Math.random() * chnChars.length)];
                 setTimeout(() => {
                     target.classList.remove('matrix-hijack'); 
                     let iterations = 0; const targetStr = target.dataset.originalText;
                     const interval = setInterval(() => { 
                         target.innerText = targetStr.split("").map((l, idx) => idx < iterations ? targetStr[idx] : "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>"[Math.floor(Math.random()*44)]).join(""); 
-                        if(iterations >= targetStr.length) { 
-                            clearInterval(interval); target.dataset.isGlitching = ""; 
-                            target.innerText = targetStr;
-                            target.style.color = target.dataset.origColor || '';
-                            target.style.textShadow = target.dataset.origShadow || '';
-                        } 
+                        if(iterations >= targetStr.length) { clearInterval(interval); target.dataset.isGlitching = ""; target.innerText = targetStr; target.style.color = target.dataset.origColor || ''; target.style.textShadow = target.dataset.origShadow || ''; } 
                         iterations += 0.5; 
                     }, 35);
                 }, 1000);
