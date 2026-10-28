@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VALEO // NEURAL OS : DSC FORGE</title>
     <script src="qrious.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Courier+Prime:wght@400;700&family=Noto+Sans+JP:wght@700&display=swap');
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Courier+Prime:wght@400;700&family=Noto+Sans+JP:wght@700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
@@ -35,32 +35,9 @@
         .os-container { display: flex; width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 10; }
         .matrix-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; transition: all 0.4s ease; }
         
-        .forge-panel { width: 450px; flex-shrink: 0; display: flex; flex-direction: column; background: rgba(5, 1, 2, 0.95); box-shadow: -10px 0 50px rgba(255,0,60,0.3); border-left: 2px solid var(--crimson); z-index: 20; transition: all 0.4s cubic-bezier(0.25, 1, 0.3, 1); overflow: visible; opacity: 1; position: relative; }
-        .forge-panel.hidden { width: 0; border-left-width: 0; opacity: 0; box-shadow: none; overflow: hidden; }
+	.forge-panel { width: 450px; flex-shrink: 0; display: flex; flex-direction: column; background: rgba(5, 1, 2, 0.95); box-shadow: -10px 0 50px rgba(255,0,60,0.3); border-left: 2px solid var(--crimson); z-index: 20; transition: all 0.4s cubic-bezier(0.25, 1, 0.3, 1); overflow: visible; opacity: 1; position: relative; }
+	.forge-panel.hidden { width: 0; border-left-width: 0; opacity: 0; box-shadow: none; overflow: hidden; pointer-events: none; }
 
-        body.mini-mode .matrix-panel { width: 0 !important; flex: none !important; opacity: 0 !important; overflow: hidden !important; border: none !important; display: none !important; }
-        body.mini-mode .forge-panel { width: 100vw !important; max-width: 100vw !important; border-left: none !important; }
-
-        .side-tab-toggle {
-            position: absolute; top: 50%; left: -28px; transform: translateY(-50%); width: 28px; height: 80px;
-            background: rgba(10, 2, 4, 0.95); border: 1px solid rgba(255, 0, 60, 0.2); border-right: none;
-            border-radius: 8px 0 0 8px; display: flex; align-items: center; justify-content: center; cursor: pointer;
-            z-index: 100; color: var(--crimson); box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5); transition: all 0.3s cubic-bezier(0.25, 1, 0.3, 1);
-            overflow: hidden;
-        }
-        .side-tab-toggle::before {
-            content: ""; position: absolute; left: 0; top: -100%; width: 2px; height: 100%;
-            background: linear-gradient(to bottom, transparent, var(--crimson), #ff4d6d, var(--crimson), transparent);
-            box-shadow: 0 0 10px var(--crimson); animation: tab-flow 2s linear infinite;
-        }
-        @keyframes tab-flow { 0% { top: -100%; } 100% { top: 100%; } }
-        .side-tab-toggle:hover { background: rgba(10, 2, 4, 0.95); color: #ffffff; box-shadow: -5px 0 20px rgba(255, 0, 60, 0.3); width: 36px; left: -36px; }
-        .side-tab-icon { font-family: var(--font-mono); font-size: 1.2rem; transition: transform 0.3s ease, color 0.3s ease; position: relative; z-index: 2; }
-        
-        body.mini-mode .side-tab-toggle { left: 0; border-radius: 0 8px 8px 0; border-left: none; border-right: 1px solid rgba(255, 0, 60, 0.2); box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5); }
-        body.mini-mode .side-tab-toggle::before { left: auto; right: 0; }
-        body.mini-mode .side-tab-toggle:hover { width: 36px; left: 0; background: rgba(10, 2, 4, 0.95); box-shadow: 5px 0 20px rgba(255, 0, 60, 0.3); color: #ffffff; }
-        body.mini-mode .side-tab-icon { transform: rotate(180deg); }
 
         .mobile-uplink-alert { display: none; position: absolute; top: 25px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyan-neon); letter-spacing: 3px; text-shadow: 0 0 8px var(--cyan-neon); animation: tron-blink 2s infinite alternate; text-align: center; width: 100%; }
 
@@ -91,15 +68,66 @@
         .f-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--crimson); transition: 0.2s; }
         .f-btn:hover { background: rgba(255, 0, 60, 0.3); border-color: var(--crimson); }
 
-        .btn-sync { height: 50px; background: rgba(10, 2, 4, 0.9); border: 1px solid rgba(255,0,60,0.3); color: var(--ares-white); font-family: var(--font-mono); cursor: pointer; position: relative; overflow: hidden; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; padding: 0 25px; font-weight: 900; letter-spacing: 3px; }
-        .btn-sync::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--crimson); box-shadow: 0 0 15px var(--crimson); transition: width 0.2s; }
-        .btn-sync:hover { background: rgba(255, 0, 60, 0.1); border-color: var(--crimson); box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,0,60,0.3); transform: translateY(-2px); }
-        .btn-sync .btn-title { position: relative; z-index: 2; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
-        .btn-sync.synced { border-color: var(--mint); color: var(--mint); }
-        .btn-sync.synced::before { background: var(--mint); box-shadow: 0 0 20px var(--mint); }
+       .btn-sync {
+            background: rgba(15, 5, 20, 0.85); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.02); border-right: 1px solid rgba(29, 242, 186, 0.15);
+            color: var(--ares-white); font-family: var(--font-mono); cursor: pointer; position: relative; overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+            display: flex; align-items: center; justify-content: center; padding: 0 25px; height: 50px; font-weight: 900; letter-spacing: 3px; transform-style: preserve-3d;
+        }
+        .btn-sync::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--mint); box-shadow: 0 0 15px var(--mint); transition: width 0.3s ease; z-index: 2; }
+        .btn-sync::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(29, 242, 186, 0.15) 0%, transparent 70%); pointer-events: none; z-index: 1; }
+        .btn-sync:hover { background: rgba(5, 20, 15, 0.95); border-color: rgba(29, 242, 186, 0.4); transform: translateY(-2px) scale(0.98); box-shadow: 0 10px 25px rgba(0,0,0,0.8), inset 0 0 15px rgba(29, 242, 186, 0.2); }
         
-        .btn-forge-toggle { color: var(--crimson); }
+        /* ========================================= */
+        /* FULL-BODY MINT GREEN ACTIVE SYNC STATE    */
+        /* ========================================= */
+        .btn-sync.synced {
+            background: rgba(5, 30, 20, 0.95) !important;
+            border: 1px solid var(--mint) !important;
+            border-left: 3px solid var(--mint) !important;
+            border-right: 3px solid var(--mint) !important;
+            color: #000 !important;
+            box-shadow: 0 0 25px rgba(29, 242, 186, 0.6), inset 0 0 20px rgba(29, 242, 186, 0.35) !important;
+            animation: mint-glow-pulse 2s infinite alternate ease-in-out;
+        }
+
+        .btn-sync.synced::before {
+            display: none !important;
+        }
+
+        .btn-sync.synced::after {
+            background: radial-gradient(circle at center, rgba(29, 242, 186, 0.45) 0%, transparent 80%) !important;
+            opacity: 1 !important;
+        }
+
+        .btn-sync.synced .btn-title {
+            color: var(--mint) !important;
+            text-shadow: 0 0 12px var(--mint), 0 0 24px rgba(29, 242, 186, 0.8) !important;
+        }
+
+        .btn-sync.synced:hover {
+            background: rgba(10, 45, 30, 1) !important;
+            box-shadow: 0 0 35px rgba(29, 242, 186, 0.9), inset 0 0 25px rgba(29, 242, 186, 0.5) !important;
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        @keyframes mint-glow-pulse {
+            0% {
+                box-shadow: 0 0 15px rgba(29, 242, 186, 0.4), inset 0 0 15px rgba(29, 242, 186, 0.2);
+                border-color: rgba(29, 242, 186, 0.6);
+            }
+            100% {
+                box-shadow: 0 0 30px rgba(29, 242, 186, 0.8), inset 0 0 25px rgba(29, 242, 186, 0.4);
+                border-color: var(--mint);
+            }
+        }
+
+        /* Keep the DSC Forge toggle button red to differentiate it */
+        .btn-forge-toggle { border-right-color: rgba(255, 0, 60, 0.15); }
         .btn-forge-toggle::before { background: var(--crimson); box-shadow: 0 0 15px var(--crimson); }
+        .btn-forge-toggle::after { background: radial-gradient(circle at center, rgba(255, 0, 60, 0.15) 0%, transparent 70%); }
+        .btn-forge-toggle:hover { border-color: rgba(255, 0, 60, 0.4); box-shadow: 0 10px 25px rgba(0,0,0,0.8), inset 0 0 15px rgba(255, 0, 60, 0.2); }
 
         body.focus-mode .header { position: absolute; top: 0; left: 0; right: 0; transform: translateY(calc(-100% + 12px)); z-index: 1000; padding-top: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); border-bottom: none; background: rgba(5, 1, 2, 0.98); transition: transform 0.4s; }
         body.focus-mode .header:hover { transform: translateY(0); }
@@ -181,21 +209,21 @@
         }
         .phantom-qr-box:hover { opacity: 0.15 !important; }
 
-@keyframes twin-ghost {
+        @keyframes twin-ghost {
             0% { opacity: 0; filter: blur(15px) contrast(3) grayscale(1) drop-shadow(40px 0 0px rgba(255,255,255,0.8)) drop-shadow(-40px 0 0px rgba(255,255,255,0.8)); transform: translateX(-50%) scale(1.3) skewX(25deg) !important; }
             25% { opacity: 0.6; filter: blur(8px) contrast(2) drop-shadow(20px 0 10px rgba(255,255,255,0.6)) drop-shadow(-20px 0 10px rgba(0,243,255,0.6)); transform: translateX(-50%) scale(1.1) skewX(-15deg) !important; }
             50% { opacity: 0.8; filter: blur(3px) contrast(1.5) drop-shadow(10px 0 5px rgba(216,252,255,0.4)); transform: translateX(-50%) scale(1.05) skewX(5deg) !important; }
             100% { opacity: 1; filter: blur(0) contrast(1); transform: translateX(-50%) scale(1) skewX(0) !important; }
         }
 
-        /* NEW: VIOLENT WARP-OUT ANIMATION */
+        /* VIOLENT WARP-OUT ANIMATION */
         @keyframes twin-ghost-out {
             0% { opacity: 1; filter: blur(0) contrast(1); transform: translateX(-50%) scale(1) skewX(0) !important; }
             40% { opacity: 0.8; filter: blur(5px) contrast(2) drop-shadow(20px 0 10px rgba(0,243,255,0.6)) drop-shadow(-20px 0 10px rgba(255,0,170,0.6)); transform: translateX(-50%) scale(1.1) skewX(15deg) !important; }
             100% { opacity: 0; filter: blur(15px) contrast(3) grayscale(1) drop-shadow(-40px 0 0px rgba(255,255,255,0.8)); transform: translateX(-50%) scale(0.4) skewX(-35deg) translateY(-30px) !important; }
         }
 
-@keyframes twin-idle {
+        @keyframes twin-idle {
             0%, 100% { filter: drop-shadow(0 0 10px rgba(216,252,255,0.5)); transform: translateX(-50%) translateY(0) !important; }
             50% { filter: drop-shadow(0 0 25px rgba(216,252,255,0.9)) drop-shadow(0 5px 15px rgba(0,243,255,0.6)); transform: translateX(-50%) translateY(-5px) !important; }
         }
@@ -203,6 +231,22 @@
         .sample-header-cell.col-active-qr { background: rgba(255, 60, 0, 0.2) !important; box-shadow: inset 0 0 15px rgba(255,60,0,0.5) !important; }
         .shc-state-3 .shc-top { color: var(--red-gold) !important; text-shadow: 0 0 10px var(--red-gold); }
         .sample-cell.matrix-hijack { font-family: var(--font-jp); font-weight: 900; color: var(--gold) !important; text-shadow: 0 0 15px var(--gold), 0 0 30px var(--crimson) !important; transition: none; }
+
+        /* MULTI-SAMPLE DROPDOWN STYLES */
+        .sample-dropdown-container { position: relative; display: flex; align-items: center; justify-content: center; }
+        .sample-dropdown { position: absolute; top: calc(100% + 5px); right: 0; background: rgba(5, 1, 10, 0.98); border: 1px solid var(--gold); box-shadow: 0 5px 25px rgba(255, 234, 0, 0.2); z-index: 9999; display: flex; flex-direction: column; min-width: 220px; padding: 4px; opacity: 0; pointer-events: none; transform: translateY(-10px); transition: all 0.2s cubic-bezier(0.25, 1, 0.3, 1); border-radius: 4px; }
+        .sample-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+        .sample-dropdown-btn { background: transparent; color: #fff; border: none; padding: 12px 15px; font-family: var(--font-mono); font-size: 0.9rem; text-align: left; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; display: flex; justify-content: space-between; align-items: center; letter-spacing: 1px; }
+        .sample-dropdown-btn:last-child { border-bottom: none; }
+        .sample-dropdown-btn:hover { background: rgba(255, 234, 0, 0.15); color: var(--gold); padding-left: 20px; }
+        .sample-dropdown-btn.active { color: var(--mint); font-weight: bold; background: rgba(29, 242, 186, 0.1); border-left: 3px solid var(--mint); padding-left: 12px; }
+        .sample-dropdown-btn.completed { color: var(--text-muted); }
+        .sample-dropdown-btn.completed span:last-child { color: var(--mint); }
+        
+        .forge-badge { cursor: pointer; transition: 0.2s; user-select: none; }
+        .forge-badge:hover { background: var(--crimson); color: #000; box-shadow: 0 0 10px var(--crimson); }
+        .forge-badge.phase2-active { border-color: var(--gold); color: var(--gold); }
+        .forge-badge.phase2-active:hover { background: var(--gold); color: #000; box-shadow: 0 0 10px var(--gold); }
 
         .forge-header { background: rgba(255, 0, 60, 0.05); border-bottom: 2px solid var(--crimson); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .forge-title { font-family: var(--font-en); font-weight: 900; font-size: 1.4rem; letter-spacing: 4px; color: var(--ares-white); text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px var(--crimson); }
@@ -227,12 +271,23 @@
         .overlay-title { font-size: 1.5rem; font-weight: 900; color: var(--ares-white); margin-bottom: 20px; text-shadow: 0 0 15px var(--ares-white), 0 0 30px var(--crimson); letter-spacing: 3px; line-height: 1.4; }
         .scan-input { background: rgba(255,255,255,0.05); border: 2px solid var(--ares-white); color: #fff; font-family: var(--font-mono); font-size: 1.2rem; padding: 10px; text-align: center; width: 85%; outline: none; box-shadow: 0 0 15px rgba(255,0,60,0.3); }
         
-        .btn-proceed { background: rgba(10, 2, 4, 0.9); border: 1px solid rgba(255,0,60,0.3); color: var(--ares-white); font-family: var(--font-mono); cursor: pointer; position: relative; overflow: hidden; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; padding: 14px 20px; font-weight: 900; letter-spacing: 3px; font-size: 1rem; margin: 8px auto; width: 90%; text-transform: uppercase; }
-        .btn-proceed::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--crimson); box-shadow: 0 0 15px var(--crimson); transition: width 0.2s; }
-        .btn-proceed:hover { background: rgba(255, 0, 60, 0.15); border-color: var(--crimson); box-shadow: 0 5px 15px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,0,60,0.3); transform: translateY(-2px); }
+        .btn-proceed {
+            background: rgba(15, 5, 20, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.02); border-right: 1px solid rgba(255, 0, 60, 0.15);
+            color: var(--ares-white); font-family: var(--font-mono); cursor: pointer; position: relative; overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+            display: flex; align-items: center; justify-content: center; padding: 14px 20px; font-weight: 900; letter-spacing: 3px; font-size: 1rem; margin: 8px auto; width: 90%; text-transform: uppercase; transform-style: preserve-3d;
+        }
+        .btn-proceed::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--crimson); box-shadow: 0 0 15px var(--crimson); transition: width 0.3s ease; z-index: 2; }
+        .btn-proceed::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(255, 0, 60, 0.15) 0%, transparent 70%); pointer-events: none; }
+        .btn-proceed:hover, .btn-proceed:active { background: rgba(25, 5, 10, 0.95); border-color: rgba(255, 0, 60, 0.4); transform: translateY(-2px) scale(0.98) rotateX(2deg); box-shadow: 0 15px 30px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,0,60,0.15); color: #fff; }
         .btn-proceed:hover::before { width: 6px; }
-        .btn-secondary { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: var(--ares-white); }
-        .btn-secondary::before { background: var(--ares-white); box-shadow: 0 0 15px var(--ares-white); }
+
+        .btn-secondary { border-right-color: rgba(255, 255, 255, 0.15); color: var(--text-muted); }
+        .btn-secondary::before { background: var(--text-muted); box-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .btn-secondary::after { background: radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, transparent 70%); }
+        .btn-secondary:hover, .btn-secondary:active { border-color: rgba(255,255,255,0.3); box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(255,255,255,0.1); color: #fff; }
+        .btn-secondary:hover::before { background: #fff; box-shadow: 0 0 20px #fff; }
 
         .btn-choice { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px; margin: 10px 0; width: 100%; border: 1px solid var(--crimson); background: rgba(255,0,60,0.05); cursor: pointer; color: #fff; font-family: var(--font-en); font-weight: 900; font-size: 1.3rem; letter-spacing: 3px; transition: all 0.2s; }
         .btn-choice span.sub { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); font-weight: 400; letter-spacing: 1px; margin-top: 4px; }
@@ -252,12 +307,18 @@
         .current-input.typing-active::after { content: '█'; color: var(--cursor-color, var(--red-gold)); text-shadow: 0 0 15px var(--cursor-color, var(--red-gold)); animation: cyber-cursor-blink 1s step-end infinite; margin-left: 8px; font-size: 2.4rem; }
 
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: rgba(5, 1, 2, 0.95); padding: 10px; flex-shrink: 0; }
-        .btn { background: rgba(18, 2, 5, 0.92); border: 1px solid rgba(255, 0, 60, 0.45); border-left: 2px solid var(--crimson); box-shadow: inset 0 0 8px rgba(255, 0, 60, 0.15), 0 0 5px rgba(255, 0, 60, 0.1); color: #ffffff; font-size: 1.8rem; padding: 16px 0; font-family: var(--font-en); font-weight: 700; cursor: pointer; outline: none; transition: all 0.12s ease; position: relative; }
+        .btn {
+            background: rgba(15, 5, 20, 0.85); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.02); border-left: 2px solid var(--crimson);
+            color: #ffffff; font-size: 1.8rem; padding: 16px 0; font-family: var(--font-en); font-weight: 700;
+            cursor: pointer; outline: none; position: relative; overflow: hidden;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+            transform-style: preserve-3d;
+        }
+        .btn::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at left center, rgba(255, 0, 60, 0.15) 0%, transparent 70%); pointer-events: none; }
+        .btn:hover { background: rgba(25, 5, 10, 0.95); border-color: rgba(255, 0, 60, 0.4); transform: translateY(-1px) scale(0.98); box-shadow: 0 10px 20px rgba(0,0,0,0.8), inset 0 0 15px rgba(255,0,60,0.2); text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); z-index: 2; animation: none; }
+        .btn:active { background: var(--crimson) !important; color: #ffffff !important; box-shadow: 0 0 30px var(--crimson), inset 0 0 15px rgba(0, 0, 0, 0.5) !important; border-color: var(--crimson) !important; transform: scale(0.92); }
         .num-btn { animation: keypad-red-idle 2.4s infinite alternate ease-in-out; }
-        @keyframes keypad-red-idle { 0% { box-shadow: inset 0 0 6px rgba(255, 0, 60, 0.1), 0 0 4px rgba(255, 0, 60, 0.1); border-color: rgba(255, 0, 60, 0.35); } 100% { box-shadow: inset 0 0 16px rgba(255, 0, 60, 0.35), 0 0 10px rgba(255, 0, 60, 0.3); border-color: var(--crimson); } }
-        .btn:hover { background: rgba(255, 0, 60, 0.22); border-color: var(--crimson); border-left-color: var(--crimson); box-shadow: 0 0 20px var(--crimson), inset 0 0 15px rgba(255, 0, 60, 0.45); color: #ffffff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.7); transform: scale(1.04); z-index: 2; animation: none; }
-        .btn:active { background: var(--crimson) !important; color: #ffffff !important; box-shadow: 0 0 25px var(--crimson), inset 0 0 12px rgba(0, 0, 0, 0.5) !important; border-color: var(--crimson) !important; transform: scale(0.94); }
-        .btn-action { font-size: 1.2rem; } .btn-undo { border-left-color: var(--crimson); } .btn-enter { border-left-color: var(--crimson); }
 
         .qr-container { position: relative; padding: 14px; border: 2px solid var(--mint); border-radius: 0; background: #fff; clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px)); box-shadow: 0 0 0 4px rgba(29,242,186,.18), 0 0 30px rgba(29,242,186,.25); margin-bottom: 20px; display: flex; justify-content: center; align-items: center; box-sizing: border-box; width: auto; max-width: 100%; transition: all 0.3s ease; }
         .qr-container::before { content: 'SECURE MATRIX PAYLOAD'; position: absolute; top: -20px; left: 0; right: 0; color: var(--mint); text-align: center; font: 9px var(--font-mono); letter-spacing: 2px; text-shadow: 0 0 5px var(--mint); }
@@ -276,16 +337,103 @@
         .typo-box { background: rgba(20, 5, 5, 0.8); border: 1px solid var(--crimson); padding: 15px; margin-top: 15px; }
         .typo-label { color: var(--crimson); font-weight: bold; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 10px; }
         .typo-input-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
-        .typo-input { background: rgba(0,0,0,0.5); border: 1px solid var(--purple-light); color: var(--purple-light); font-family: var(--font-mono); font-size: 1.1rem; font-weight: bold; width: 75px; text-align: center; padding: 4px; outline: none; transition: 0.2s; }
+        .typo-input { background: rgba(0,0,0,0.5); border: 1px solid var(--ares-white); color: var(--ares-white); font-family: var(--font-mono); font-size: 1.1rem; font-weight: bold; width: 75px; text-align: center; padding: 4px; outline: none; transition: 0.2s; }
         .typo-input:focus { border-color: var(--mint); color: var(--mint); box-shadow: 0 0 15px rgba(29,242,186,0.3); }
 
-        @media (max-width: 1000px) {
-            .matrix-panel { width: 0 !important; flex: none !important; opacity: 0 !important; overflow: hidden !important; border: none !important; display: none !important; }
-            .forge-panel { width: 100vw !important; max-width: 100vw !important; border-left: none !important; }
+	
+	/* --- KINETIC MENU BUTTONS (ALL CRIMSON) --- */
+        .menu-btn {
+            width: 100%; height: 100px;
+            background: rgba(15, 5, 20, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.02); border-right: 1px solid rgba(255, 0, 60, 0.15);
+            border-radius: 2px; color: var(--text-main); font-family: var(--font-en); cursor: pointer;
+            margin-bottom: 20px; position: relative; overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+            display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+            padding: 0 35px; text-align: left; transform-style: preserve-3d;
+        }
+        
+        .menu-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--crimson); transition: width 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 0 20px var(--crimson); }
+        .menu-btn::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at left center, rgba(255, 0, 60, 0.15) 0%, transparent 70%); opacity: 1; transition: opacity 0.4s ease; pointer-events: none; }
+        .menu-btn:hover, .menu-btn:active { background: rgba(25, 5, 10, 0.95); border-color: rgba(255, 0, 60, 0.4); transform: translateY(-2px) scale(0.98) rotateX(2deg); box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,0,60,0.1); }
+
+        .btn-title { font-size: 1.5rem; font-weight: 900; letter-spacing: 3px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); color: #fff; }
+        .btn-jp { font-family: var(--font-jp); font-size: 0.8rem; font-weight: 500; letter-spacing: 3px; margin-top: 6px; text-transform: uppercase; color: var(--crimson); opacity: 0.8; }
+
+        /* ========================================= */
+        /* RESPONSIVE LAYOUT ENGINES                 */
+        /* ========================================= */
+        .long-name { display: inline; }
+        .short-name { display: none; }
+        .desktop-text { display: inline; }
+        .tablet-text { display: none; }
+
+        /* 1. Global overrides for ANY screen smaller than Desktop */
+        @media (max-width: 1024px) {
             .side-tab-toggle { display: none !important; }
+            .f-btn-group { display: none !important; }
+            .forge-panel, .forge-panel.hidden { 
+                width: 100vw !important; max-width: 100vw !important; border-left: none !important; 
+                opacity: 1 !important; overflow: visible !important; display: flex !important; box-shadow: none !important;
+            }
         }
 
+        /* 2. iPAD / TABLET EXCLUSIVE SLATE MODE */
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .os-container { width: 200vw; transition: transform 0.4s cubic-bezier(0.25, 1, 0.3, 1); }
+            /* Gold Border between panels */
+            .matrix-panel { width: 100vw !important; flex: none !important; opacity: 1 !important; display: flex !important; border-right: 2px solid var(--gold) !important; }
+            .forge-panel { position: relative; }
+            
+            body.swipe-matrix .os-container { transform: translateX(0); }
+            body:not(.swipe-matrix) .os-container { transform: translateX(-100vw); }
+            
+            /* Matrix Header Refinements */
+            .matrix-panel .title-block { display: none !important; }
+            .matrix-panel .header { padding: 10px 15px !important; }
+            .forge-header { padding: 10px 15px !important; }
+            
+            /* GOLD TOP PORTIONS FOR SLATE MODE */
+            .forge-header, .matrix-panel .header {
+                background: linear-gradient(180deg, rgba(255, 234, 0, 0.15) 0%, rgba(5, 1, 2, 0.95) 100%) !important;
+                border-bottom: 2px solid var(--gold) !important;
+                box-shadow: 0 5px 20px rgba(255, 234, 0, 0.15), inset 0 2px 10px rgba(255, 234, 0, 0.1) !important;
+            }
+            .forge-title { color: var(--gold) !important; text-shadow: 0 0 15px var(--gold), 0 0 30px rgba(255,234,0,0.5) !important; font-size: 1.1rem !important; }
+            .forge-badge { border-color: var(--gold) !important; color: var(--gold) !important; box-shadow: 0 0 10px rgba(255, 234, 0, 0.3), inset 0 0 8px rgba(255, 234, 0, 0.2) !important; }
+            
+            .global-status-container { border-left: 2px solid var(--gold) !important; border-right: 2px solid var(--gold) !important; background: rgba(255, 234, 0, 0.05) !important; box-shadow: inset 0 0 15px rgba(255, 234, 0, 0.15) !important; }
+            .global-status-text:not(.active-success):not(.active-error) { color: var(--gold) !important; text-shadow: 0 0 10px var(--gold) !important; }
+            
+            /* Skinnier Top Buttons */
+            .btn-sync { height: 35px !important; padding: 0 15px !important; font-size: 0.9rem !important; }
+            .f-btn { height: 35px !important; width: 35px !important; font-size: 1rem !important; }
+            .global-status-container { height: 35px !important; margin: 0 10px !important; }
+            
+            /* Skinny Matrix Left Panel */
+            .long-name { display: none !important; }
+            .short-name { display: inline !important; }
+            .desktop-text { display: none !important; }
+            .tablet-text { display: inline !important; }
+            
+            .fixed-pane { width: 100px !important; min-width: 100px !important; padding-right: 0 !important; }
+            .col-seq { display: none !important; }
+            .col-metrics { display: none !important; }
+            .col-item { width: 90px !important; min-width: 90px !important; font-size: 0.85rem !important; padding: 0 5px !important; white-space: normal !important; text-align: left; line-height: 1.1; }
+            .divider-content { padding-left: 5px !important; }
+            .div-zone { /*font-size: 0.85rem !important;*/ letter-spacing: 0px !important; white-space: nowrap !important; }
+
+            /* Floating Arrow Button for Non-Touch Desktop Simulators */
+            #floatingToggleBtn { display: flex !important; }
+        }
+
+        /* 3. iPHONE / MOBILE EXCLUSIVE MODE */
         @media (max-width: 600px) {
+            /* CRITICAL FIX: Disable sliding canvas entirely for phones */
+            .os-container { width: 100vw !important; transform: none !important; transition: none !important; }
+            .matrix-panel { display: none !important; width: 0 !important; opacity: 0 !important; }
+            .ipad-matrix-btn { display: none !important; }
+            
             .mobile-uplink-alert { display: block; }
             .forge-title { font-size: 1.1rem; letter-spacing: 2px; }
             .forge-badge { font-size: 0.7rem; padding: 3px 6px; }
@@ -300,10 +448,7 @@
             .scan-input { width: 95%; font-size: 1rem; }
             .history-item { font-size: 0.75rem; }
             .status-bar { font-size: 0.9rem; padding: 10px; }
-.massive-qr-canvas { 
-            display: block; margin: 0 auto; border-radius: 4px; padding: 0 !important; border: none !important;
-            box-shadow: 0 0 15px rgba(216,252,255,0.8); max-width: 250px; height: auto; background: #ffffff;
-        }
+            .massive-qr-canvas { display: block; margin: 0 auto; border-radius: 4px; padding: 0 !important; border: none !important; box-shadow: 0 0 15px rgba(216,252,255,0.8); max-width: 250px; height: auto; background: #ffffff; }
             .deck-canvas { max-width: 220px; }
 
             .forge-header { background: linear-gradient(180deg, rgba(0, 243, 255, 0.15) 0%, rgba(5, 1, 2, 0.95) 100%) !important; border-bottom: 2px solid var(--cyan-neon) !important; box-shadow: 0 5px 20px rgba(0, 243, 255, 0.2), inset 0 2px 10px rgba(0, 243, 255, 0.1) !important; position: relative; overflow: hidden; padding-top: 30px !important; }
@@ -314,9 +459,243 @@
         }
         @keyframes tron-lightcycle { 0% { left: -100%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { left: 150%; opacity: 0; } }
         @keyframes tron-blink { 0% { opacity: 0.5; } 100% { opacity: 1; text-shadow: 0 0 12px var(--cyan-neon); } }
-    </style>
+
+        /* ========================================= */
+        /* TRIOS-THEMED INACTIVITY STANDBY MODULE    */
+        /* ========================================= */
+        #standbyOverlay {
+            position: fixed; inset: 0; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(5, 1, 2, 0.98); opacity: 0; pointer-events: none; transition: opacity 0.5s ease; backdrop-filter: blur(15px); overflow: hidden;
+        }
+        #standbyOverlay.active { opacity: 1; pointer-events: all; }
+        
+        /* FULLSCREEN WRAPPER */
+        .standby-wrapper { width: 100vw; max-width: 100vw; height: 100vh; padding: 25px 35px; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* TRIOS HEADER */
+        #standbyHeader { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--crimson); padding-bottom: 10px; transition: border-color 0.5s; flex-shrink: 0; }
+        .trios-branding { font-family: var(--font-en); font-size: 1.5rem; font-weight: 900; color: var(--ares-white); letter-spacing: 4px; }
+        .trios-version { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); letter-spacing: 2px; }
+        #standbyTitle { font-family: var(--font-mono); font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin: 0; color: var(--crimson); text-shadow: 0 0 10px var(--crimson); animation: glitch-flash 2s infinite; }
+        
+        /* MULTI-PANEL LAYOUT */
+        .standby-body { display: flex; flex-direction: row; gap: 25px; flex: 1; min-height: 0; }
+        .standby-left, .standby-right { width: 3in; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px; }
+        .standby-center { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+        /* SIDE PANELS (DIRECTORY & PARAMETERS) */
+        .side-panel { background: rgba(5, 2, 8, 0.7); border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); display: flex; flex-direction: column; border-radius: 2px; overflow: hidden; }
+        .side-panel-header { background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 10px 15px; font-family: var(--font-mono); font-size: 0.9rem; font-weight: bold; color: var(--text-muted); letter-spacing: 2px; flex-shrink: 0; }
+        .side-panel-content { padding: 15px; font-family: var(--font-mono); font-size: 0.85rem; color: #fff; line-height: 1.8; overflow-y: auto; flex: 1; }
+        
+        /* HARDWARE CONTROL BUTTONS */
+        .standby-ctrl-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted); padding: 10px; font-family: var(--font-mono); font-weight: bold; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; text-align: center; letter-spacing: 1px; margin-bottom: 5px; }
+        .standby-ctrl-btn:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: #fff; }
+        
+        #standbyOverlay.reactive .standby-ctrl-btn.warn { color: var(--crimson); border-color: var(--crimson); animation: glitch-flash 1.5s infinite; }
+        #standbyOverlay.reactive .standby-ctrl-btn.warn:hover { background: var(--crimson); color: #000; }
+        #standbyOverlay.reactive .standby-ctrl-btn:not(.warn) { animation: standby-shake 0.8s infinite; color: var(--crimson); border-color: rgba(255,30,70,0.3); }
+        
+        /* DIRECTORY TREE */
+        .dir-folder { color: var(--gold); font-weight: bold; margin-bottom: 5px; }
+        .dir-file { color: var(--text-muted); padding-left: 15px; position: relative; }
+        .dir-file::before { content: "├─ "; color: rgba(255,255,255,0.2); }
+        .dir-file.last::before { content: "└─ "; }
+        .dir-file.active-file { color: var(--cyan); text-shadow: 0 0 5px var(--cyan); }
+        
+        /* PARAMETERS GRID */
+        .param-row { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.05); padding: 4px 0; }
+        .param-label { color: var(--text-muted); }
+        .param-val { font-weight: bold; text-align: right; }
+
+        /* TRIOS GRAPH AREA */
+        .standby-graph-container { flex: 1; position: relative; border: 1px solid rgba(255,255,255,0.1); background: rgba(2, 1, 4, 0.8); box-shadow: inset 0 0 40px rgba(0,0,0,1); display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 2px; }
+        
+        .trios-legend { position: absolute; top: 20px; right: 20px; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted); background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); padding: 10px; line-height: 1.6; }
+        .legend-line { display: inline-block; width: 15px; height: 3px; background: var(--crimson); margin-right: 8px; vertical-align: middle; box-shadow: 0 0 5px var(--crimson); transition: background 0.5s; }
+        
+        .exo-indicator { position: absolute; left: 65px; top: 20px; font-family: var(--font-mono); font-size: 0.9rem; font-weight: bold; color: var(--text-muted); letter-spacing: 1px; }
+        .y-axis-label { position: absolute; left: -65px; top: 50%; transform: translateY(-50%) rotate(-90deg); font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-main); letter-spacing: 2px; }
+        .x-axis-label { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-main); letter-spacing: 2px; }
+        
+        .dsc-graph { width: 100%; height: 100%; padding: 40px 40px 40px 80px; box-sizing: border-box; overflow: visible; }
+        .grid-line { stroke: rgba(255,255,255,0.05); stroke-width: 1; }
+        .axis-line { stroke: rgba(255,255,255,0.3); stroke-width: 2; }
+        .grid-text { fill: rgba(255,255,255,0.3); font-family: var(--font-mono); font-size: 10px; }
+        
+        .dsc-curve { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 8px currentColor); transition: stroke 0.5s ease; }
+        
+        /* TRIOS COMMAND PROMPT (BOTTOM) */
+        .standby-terminal { height: 160px; flex-shrink: 0; background: rgba(5, 2, 8, 0.9); border: 1px solid var(--crimson); border-left: 4px solid var(--crimson); padding: 15px; font-family: var(--font-mono); font-size: 0.85rem; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); transition: border-color 0.5s; }
+        .s-line { margin-bottom: 4px; opacity: 0; animation: fade-in 0.1s forwards; word-wrap: break-word; }
+        
+        /* PHASE 1: REACTIVE / CHAOS */
+        #standbyOverlay.reactive #standbyHeader { border-color: var(--crimson); box-shadow: 0 10px 20px -10px rgba(255,30,70,0.2); }
+        #standbyOverlay.reactive #standbyTitle { color: var(--crimson); text-shadow: 0 0 15px var(--crimson); animation: glitch-flash 2s infinite; }
+        #standbyOverlay.reactive .dsc-curve { stroke: var(--crimson); animation: dsc-draw 2s linear infinite, standby-shake 0.4s infinite; stroke-dasharray: 1800; stroke-dashoffset: 1800; }
+        #standbyOverlay.reactive .legend-line { background: var(--crimson); box-shadow: 0 0 8px var(--crimson); }
+        #standbyOverlay.reactive .standby-terminal, #standbyOverlay.reactive .side-panel { border-color: var(--crimson); box-shadow: 0 0 30px rgba(255, 30, 70, 0.15), inset 0 0 20px rgba(255, 30, 70, 0.1); transition: border-color 0.5s; }
+        #standbyOverlay.reactive .s-line { color: var(--text-muted); }
+        #standbyOverlay.reactive .s-line.warn { color: var(--crimson); font-weight: bold; text-shadow: 0 0 10px var(--crimson); background: rgba(255,30,70,0.1); padding-left: 5px; border-left: 2px solid var(--crimson); }
+        #standbyOverlay.reactive .param-val.dynamic { color: var(--crimson); text-shadow: 0 0 10px var(--crimson); animation: glitch-flash 2s infinite; }
+        
+        /* PHASE 2: STABLE / CALM */
+        #standbyOverlay.stable #standbyHeader { border-color: var(--mint); box-shadow: 0 10px 20px -10px rgba(29, 242, 186, 0.1); }
+        #standbyOverlay.stable #standbyTitle { color: var(--mint); text-shadow: 0 0 15px var(--mint); animation: breathe 4s infinite alternate ease-in-out; }
+        #standbyOverlay.stable .dsc-curve { stroke: var(--mint); animation: dsc-draw-stable 8s ease-in-out infinite alternate; stroke-dasharray: 1800; stroke-dashoffset: 0; }
+        #standbyOverlay.stable .legend-line { background: var(--mint); box-shadow: 0 0 8px var(--mint); }
+        #standbyOverlay.stable .standby-terminal, #standbyOverlay.stable .side-panel { border-color: var(--mint); box-shadow: 0 0 20px rgba(29, 242, 186, 0.05), inset 0 0 10px rgba(29, 242, 186, 0.05); transition: border-color 0.5s; }
+        #standbyOverlay.stable .s-line { color: var(--mint); opacity: 0.8; }
+        #standbyOverlay.stable .s-line.warn { color: var(--ares-white); background: none; border-left: none; padding-left: 0; }
+        #standbyOverlay.stable .param-val.dynamic { color: var(--mint); text-shadow: 0 0 5px var(--mint); }
+        
+        .standby-footer { text-align: center; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted); letter-spacing: 4px; animation: breathe 2s infinite alternate; cursor: pointer; padding: 5px; flex-shrink: 0; }
+        .standby-footer:hover { color: var(--ares-white); text-shadow: 0 0 10px var(--ares-white); }
+        
+        @keyframes dsc-draw { 0% { stroke-dashoffset: 1800; } 100% { stroke-dashoffset: 0; } }
+        @keyframes dsc-draw-stable { 0% { stroke-dashoffset: 1800; } 30%, 100% { stroke-dashoffset: 0; } }
+        @keyframes standby-shake { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-1px, 1px); } 50% { transform: translate(1px, -1px); } 75% { transform: translate(-1px, 1px); } }
+        @keyframes breathe { from { opacity: 0.4; } to { opacity: 1; } }
+
+	/* Hide the button completely on Desktop and Phone */
+        #floatingToggleBtn { display: none; }
+
+        /* Only render the Ghost Button in iPad/Tablet Mode */
+        @media (min-width: 601px) and (max-width: 1024px) {
+            #floatingToggleBtn {
+                display: flex !important; position: fixed !important; top: 50% !important; transform: translateY(-50%) !important;
+                width: 60px; height: 100px; background: transparent; border: none;
+                align-items: center; justify-content: center; font-size: 3.5rem;
+                z-index: 99999 !important; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 1, 0.3, 1);
+                opacity: 0.5; /* Resting visibility */
+            }
+            #floatingToggleBtn:hover { opacity: 1; transform: translateY(-50%) scale(1.15) !important; }
+            
+            /* Matrix is visible (Slide right) -> Arrow on Right edge, pointing to Forge */
+            body.swipe-matrix #floatingToggleBtn { left: auto !important; right: 15px !important; color: var(--crimson) !important; text-shadow: 0 0 5px rgba(255,0,60,0.5); }
+            body.swipe-matrix #floatingToggleBtn:hover { text-shadow: 0 0 25px var(--crimson), 0 0 10px var(--crimson) !important; }
+            body.swipe-matrix #floatingToggleBtn .arrow-matrix { display: none !important; }
+            body.swipe-matrix #floatingToggleBtn .arrow-forge { display: block !important; }
+            
+            /* Forge is visible (Slide left) -> Arrow on Left edge, pointing to Matrix */
+            body:not(.swipe-matrix) #floatingToggleBtn { right: auto !important; left: 15px !important; color: var(--cyan-neon) !important; text-shadow: 0 0 5px rgba(0,243,255,0.5); }
+            body:not(.swipe-matrix) #floatingToggleBtn:hover { text-shadow: 0 0 25px var(--cyan-neon), 0 0 10px var(--cyan-neon) !important; }
+            body:not(.swipe-matrix) #floatingToggleBtn .arrow-matrix { display: block !important; }
+            body:not(.swipe-matrix) #floatingToggleBtn .arrow-forge { display: none !important; }
+        }
+</style>
 </head>
 <body>
+
+    <!-- STANDBY MODE OVERLAY (TRIOS DSC THEME) -->
+    <div id="standbyOverlay" class="reactive">
+        <div class="standby-wrapper">
+            
+            <div id="standbyHeader">
+                <div class="trios-branding">TRIOS <span class="trios-version">v5.8.1 // TA INSTRUMENTS</span></div>
+                <div id="standbyTitle">CRITICAL: DSC EXOTHERMIC RUNAWAY</div>
+            </div>
+            
+            <div class="standby-body">
+                <!-- LEFT PANEL: DATA MANAGER -->
+                <div class="standby-left side-panel">
+                    <div class="side-panel-header">DATA MANAGER</div>
+                    <div class="side-panel-content">
+                        <div class="dir-folder">▼ Active Sequence</div>
+                        <div class="dir-file">Calibration_TZero.tri</div>
+                        <div class="dir-file">Baseline_EmptyPan.tri</div>
+                        <div class="dir-file active-file">ANOMALY_DETECTED_01.tri</div>
+                        <div class="dir-file last">Run_043_Pending.tri</div>
+                        <br>
+                        <div class="dir-folder">▼ Historical Data</div>
+                        <div class="dir-file">Epoxy_Cure_Profile.tri</div>
+                        <div class="dir-file">Nylon_Melt_01.tri</div>
+                        <div class="dir-file">PET_Quench_02.tri</div>
+                        <div class="dir-file">Sapphire_Standard.tri</div>
+                        <div class="dir-file last">Indium_Cal_Q3.tri</div>
+                    </div>
+                </div>
+
+                <!-- CENTER PANEL: GRAPH & TERMINAL -->
+                <div class="standby-center">
+                    <div class="standby-graph-container">
+                        <div class="trios-legend">
+                            <div><span class="legend-line"></span> Heat Flow (mW/mg)</div>
+                            <div><span style="color:#fff;">Sample:</span> ANOMALY_DETECTED_01</div>
+                            <div><span style="color:#fff;">Method:</span> Ramp 10 °C/min to 300 °C</div>
+                        </div>
+                        
+                        <div class="exo-indicator">↑ Exo</div>
+                        <div class="y-axis-label">Heat Flow (mW/mg)</div>
+                        <div class="x-axis-label">Temperature (°C)</div>
+                        
+                        <svg class="dsc-graph" viewBox="0 0 1000 400" preserveAspectRatio="none">
+                            <line x1="0" y1="50" x2="1000" y2="50" class="grid-line" />
+                            <line x1="0" y1="125" x2="1000" y2="125" class="grid-line" />
+                            <line x1="0" y1="200" x2="1000" y2="200" class="grid-line" />
+                            <line x1="0" y1="275" x2="1000" y2="275" class="grid-line" />
+                            <line x1="0" y1="350" x2="1000" y2="350" class="grid-line" />
+                            
+                            <line x1="200" y1="0" x2="200" y2="400" class="grid-line" />
+                            <line x1="400" y1="0" x2="400" y2="400" class="grid-line" />
+                            <line x1="600" y1="0" x2="600" y2="400" class="grid-line" />
+                            <line x1="800" y1="0" x2="800" y2="400" class="grid-line" />
+                            
+                            <line x1="0" y1="200" x2="1000" y2="200" class="axis-line" />
+                            <line x1="0" y1="0" x2="0" y2="400" class="axis-line" />
+                            
+                            <text x="-30" y="55" class="grid-text"> 1.0</text>
+                            <text x="-30" y="205" class="grid-text"> 0.0</text>
+                            <text x="-35" y="355" class="grid-text">-1.0</text>
+                            
+                            <text x="190" y="420" class="grid-text">50</text>
+                            <text x="390" y="420" class="grid-text">100</text>
+                            <text x="590" y="420" class="grid-text">150</text>
+                            <text x="790" y="420" class="grid-text">200</text>
+                            
+                            <text x="140" y="180" fill="var(--text-muted)" font-family="Courier Prime" font-size="14">Tg (Glass Transition)</text>
+                            <text x="380" y="60" fill="var(--text-muted)" font-family="Courier Prime" font-size="14">Tc (Cold Crystallization)</text>
+                            <text x="660" y="360" fill="var(--text-muted)" font-family="Courier Prime" font-size="14">Tm (Melting Point)</text>
+                            
+                            <path class="dsc-curve" d="M 0 200 L 150 200 C 170 200, 180 230, 200 230 L 320 230 C 350 230, 370 80, 400 80 C 430 80, 450 230, 480 230 L 600 230 C 630 230, 660 340, 690 340 C 720 340, 750 230, 780 230 L 1000 230" />
+                        </svg>
+                    </div>
+                    <div class="standby-terminal" id="standbyTerminal">
+                        <!-- Data injected via JS -->
+                    </div>
+                </div>
+
+                <!-- RIGHT PANEL: PARAMETERS -->
+                <div class="standby-right side-panel">
+                    <div class="side-panel-header">INSTRUMENT PARAMETERS</div>
+                    <div class="side-panel-content">
+                        <div class="param-row"><span class="param-label">Lid Status:</span><span class="param-val dynamic" id="paramLid">CLOSED</span></div>
+                        <div class="param-row"><span class="param-label">RCS Coolant:</span><span class="param-val dynamic" id="paramCoolant">-90.0 °C</span></div>
+                        <div class="param-row"><span class="param-label">Flange Temp:</span><span class="param-val dynamic" id="paramFlange">35.2 °C</span></div>
+                        <div class="param-row"><span class="param-label">Cell Purge:</span><span class="param-val dynamic" id="paramCellPurge">50.0 mL/min N2</span></div>
+                        <div class="param-row"><span class="param-label">Base Purge:</span><span class="param-val dynamic" id="paramBasePurge">300.0 mL/min N2</span></div>
+                        <br>
+                        <div class="param-row"><span class="param-label">Sequence:</span><span class="param-val dynamic" id="paramSeq">3 of 5</span></div>
+                        <div class="param-row"><span class="param-label">Method:</span><span class="param-val dynamic" id="paramMethod">Ramp</span></div>
+                        <div class="param-row"><span class="param-label">Time Rem:</span><span class="param-val dynamic" id="paramTime">01:24:00</span></div>
+                        <br>
+                        <div class="param-row"><span class="param-label">Cell Temp:</span><span class="param-val dynamic" id="paramTemp">420.5 °C</span></div>
+                        <div class="param-row"><span class="param-label">Heat Flow:</span><span class="param-val dynamic" id="paramHeatFlow">+45.2 mW/mg</span></div>
+                    </div>
+                    
+                    <div class="side-panel-header" style="border-top: 1px solid rgba(255,255,255,0.1);">HARDWARE CONTROL</div>
+                    <div class="side-panel-content" style="flex: none; display: flex; flex-direction: column; padding-bottom: 10px;">
+                        <button class="standby-ctrl-btn">[ OPEN CELL ]</button>
+                        <button class="standby-ctrl-btn">[ OVERRIDE GAS ]</button>
+                        <button class="standby-ctrl-btn warn">[ EMERGENCY ABORT ]</button>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="standby-footer" onclick="resetStandby()">[ CLICK ANYWHERE TO RESUME UPLINK ]</div>
+        </div>
+    </div>
 
     <div id="bootScreen" class="fullscreen-loader active" style="z-index: 9999; background: #000; opacity: 1;">
         <div class="boot-container" style="width:100%; max-width:600px; padding:30px;">
@@ -327,6 +706,9 @@
     </div>
 
     <canvas id="particleCanvas"></canvas>
+    
+    <!-- FLOATING IPAD TOGGLE BUTTON -->
+    <div id="floatingToggleBtn" onclick="toggleForge()"><span class="arrow-matrix">⬅</span><span class="arrow-forge">➔</span></div>
 
     <div class="os-container">
         <!-- LEFT PANEL: MATRIX -->
@@ -337,7 +719,12 @@
                     <h1 id="mainTitle">VALEO // NEURAL OS</h1>
                     <span><span class="status-dot"></span>ADHESION & THERMAL MATRIX</span>
                 </div>
-                <div class="global-status-container" id="globalStatusContainer"><div class="global-status-text" id="globalStatusText">SYSTEM OPTIMAL</div></div>
+                <div class="global-status-container" id="globalStatusContainer">
+                    <div class="global-status-text" id="globalStatusText">
+                        <span class="desktop-text">SYSTEM OPTIMAL</span>
+                        <span class="tablet-text">SLATE MODE // DUAL-MATRIX ACTIVE</span>
+                    </div>
+                </div>
                 <div class="controls-wrapper">
                     <div class="f-btn-group"><button class="f-btn" title="F1 FOCUS" onclick="toggleFocusMode()">焦</button><button class="f-btn" title="F2 COMPRESS" onclick="toggleCompressMode()">圧</button></div>
                     <button class="btn-sync btn-forge-toggle" id="btnForgeToggle" onclick="toggleForge()"><span class="btn-title">DSC FORGE</span></button>
@@ -349,22 +736,44 @@
 
         <!-- RIGHT PANEL: DSC FORGE -->
         <div class="forge-panel" id="forgePanel">
-            <div class="side-tab-toggle" onclick="document.body.classList.toggle('mini-mode')"><div class="side-tab-icon">▶</div></div>
-            <div class="forge-header"><span class="forge-title">DSC FORGE</span><span class="forge-badge" id="forgeModeBadge">IDLE</span></div>
+                        
+            <div class="forge-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="ipad-matrix-btn" style="display: none;" onclick="toggleForge()">⬅ MATRIX</button>
+                    <span class="forge-title">
+                        <span class="desktop-text">DSC FORGE</span>
+                        <span class="tablet-text">SLATE MODE // DUAL-MATRIX</span>
+                    </span>
+                </div>
+                <div class="sample-dropdown-container">
+                    <span class="forge-badge" id="forgeModeBadge" onclick="toggleSampleMenu()">IDLE</span>
+                    <div id="sampleMenu" class="sample-dropdown"></div>
+                </div>
+            </div>
 
             <!-- 1. MODE SELECT OVERLAY -->
             <div class="forge-overlay" id="modeSelectOverlay">
                 <div class="overlay-title">SELECT OPERATION MODE</div>
-                <div style="width: 85%;">
+                <div style="width: 85%; margin-top: 15px;">
+                    
                     <!-- DYNAMIC RESUME BUTTON FOR iOS CACHE -->
                     <div id="resumeSessionContainer" style="display: none; width: 100%;">
-                        <div class="btn-choice" style="border-color: var(--gold); color: var(--gold); background: rgba(255, 234, 0, 0.1);" onclick="resumeSession()">
-                            RESUME SESSION
-                            <span class="sub" style="color: var(--gold);">RECOVER UNFINISHED BATCH</span>
-                        </div>
+                        <button class="menu-btn cipher-btn" data-cipher="[ RESUME SESSION ]" onclick="resumeSession()">
+                            <span class="btn-title">[ RESUME SESSION ]</span>
+                            <span class="btn-jp">RECOVER UNFINISHED BATCH</span>
+                        </button>
                     </div>
-                    <div class="btn-choice" onclick="startDailyRoutine()">DAILY ROUTINE<span class="sub">1 SAMPLE STANDARD WORKFLOW</span></div>
-                    <div class="btn-choice" onclick="showTicketQtySelect()">QUALITY TICKET<span class="sub">BATCH WORKFLOW (2 TO 4 SAMPLES)</span></div>
+                    
+                    <button class="menu-btn cipher-btn" data-cipher="[ DAILY ROUTINE ]" onclick="startDailyRoutine()">
+                        <span class="btn-title">[ DAILY ROUTINE ]</span>
+                        <span class="btn-jp">1 SAMPLE STANDARD WORKFLOW</span>
+                    </button>
+                    
+                    <button class="menu-btn cipher-btn" data-cipher="[ QUALITY TICKET ]" onclick="showTicketQtySelect()">
+                        <span class="btn-title">[ QUALITY TICKET ]</span>
+                        <span class="btn-jp">BATCH WORKFLOW (2 TO 4 SAMPLES)</span>
+                    </button>
+                    
                 </div>
             </div>
 
@@ -414,11 +823,11 @@
                 <button class="btn-proceed" onclick="dismissPhaseNotice()">PROCEED</button>
             </div>
 
-            <!-- 6. AI DIAGNOSTIC OVERLAY -->
+<!-- 6. AI DIAGNOSTIC OVERLAY -->
             <div class="forge-overlay hidden" id="diagnosticOverlay" style="align-items: center; justify-content: flex-start; overflow-y: auto; padding-top: 40px;">
                 <div style="width: 100%; max-width: 400px; text-align: left;" id="diagnosticContainer">
-                    <div style="background: rgba(5, 1, 10, 0.95); border: 1px solid var(--purple-light); border-left: 4px solid var(--purple-light); padding: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.9); margin-bottom: 30px;">
-                        <div style="font-weight: 900; letter-spacing: 2px; border-bottom: 1px dashed rgba(216, 132, 255, 0.5); padding-bottom: 8px; margin-bottom: 15px; color: var(--purple-light);">>> NEURAL AGENT DIAGNOSTIC</div>
+                    <div style="background: rgba(5, 1, 10, 0.95); border: 1px solid var(--ares-white); border-left: 4px solid var(--ares-white); padding: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.9); margin-bottom: 30px;">
+                        <div style="font-weight: 900; letter-spacing: 2px; border-bottom: 1px dashed rgba(255, 255, 255, 0.5); padding-bottom: 8px; margin-bottom: 15px; color: var(--ares-white);">>> NEURAL AGENT DIAGNOSTIC</div>
                         <div id="aiOutputLog" style="font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.6;"></div>
                     </div>
                 </div>
@@ -511,8 +920,13 @@
             textEl.innerText = msg; textEl.className = "global-status-text"; container.className = "global-status-container"; 
             if (type === 'error') { container.classList.add('error-mode'); textEl.classList.add('active-error'); } 
             else if (type === 'success') { textEl.classList.add('active-success'); }
+            
             if (globalStatusTimer) clearTimeout(globalStatusTimer);
-            globalStatusTimer = setTimeout(() => { textEl.innerText = "SYSTEM OPTIMAL"; textEl.className = "global-status-text"; container.className = "global-status-container"; }, 6000);
+            globalStatusTimer = setTimeout(() => { 
+                textEl.innerHTML = '<span class="desktop-text">SYSTEM OPTIMAL</span><span class="tablet-text">SLATE MODE // DUAL-MATRIX ACTIVE</span>';
+                textEl.className = "global-status-text"; 
+                container.className = "global-status-container"; 
+            }, 6000);
         }
 
         let dirHandle = null; 
@@ -627,9 +1041,9 @@
             return { id: rawQR, tube: parsed.tube, ose: parsed.ose, cav: parsed.cav, week: parsed.week, data: dataCol, isComplete: isComplete };
         }
 
-        function renderMatrix(filesData = []) {
+       function renderMatrix(filesData = []) {
             const container = document.getElementById('tableBody'); let html = '';
-            html += `<div class="table-row table-header"><div class="fixed-pane"><div class="cell col-seq">#</div><div class="cell cell-left col-item" style="padding-left:15px;">ITEM METRICS</div><div class="cell col-metrics">NOM/DEV</div></div><div class="scroll-pane">`;
+            html += `<div class="table-row table-header"><div class="fixed-pane"><div class="cell col-seq">#</div><div class="cell cell-left col-item" style="padding-left:15px;"><span class="long-name">ITEM METRICS</span><span class="short-name">METRICS</span></div><div class="cell col-metrics">NOM/DEV</div></div><div class="scroll-pane">`;
             
             if(filesData.length === 0) { html += `<div class="cell col-sample"><span style="color:var(--text-muted); font-size:0.8rem;">NO UPLINK</span></div>`; }
             else {
@@ -653,8 +1067,15 @@
                     return; 
                 }
                 if (r.t === "div") {
-                    currentTheme = (r.z === "S5") ? "theme-s5" : "theme-s1";
-                    html += `<div class="table-row divider-row ${currentTheme}"><div class="fixed-pane"><div class="divider-content"><span class="div-zone">${r.z}</span><span class="div-side">// ${r.s}</span></div></div><div class="scroll-pane">`;
+                    currentTheme = (r.z === "S5" || r.s === "BENT") ? "theme-s5" : "theme-s1";
+                    
+                    let shortSide = r.s.replace("NO_QR_Code_Side", "NQR").replace("QR_Code_Side", "QR");
+                    
+                    // Intercept BENT to remove the S5 tag
+                    let longTitle = r.s === "BENT" ? `<span class="div-zone">BENT</span>` : `<span class="div-zone">${r.z}</span><span class="div-side">// ${r.s}</span>`;
+                    let shortTitle = r.s === "BENT" ? `BENT` : `${r.z} ${shortSide}`;
+                    
+                    html += `<div class="table-row divider-row ${currentTheme}"><div class="fixed-pane"><div class="divider-content"><span class="long-name">${longTitle}</span><span class="short-name div-zone">${shortTitle}</span></div></div><div class="scroll-pane">`;
                     if(filesData.length === 0) html += `<div class="cell col-sample divider-pattern"></div>`;
                     else filesData.forEach((_, i) => html += `<div class="cell col-sample divider-pattern" data-col="${i}"></div>`);
                     html += `</div></div>`;
@@ -664,7 +1085,15 @@
                     let iName = items[r.n - 1]; let bCls = r.b ? "cell-bold" : "cell-left";
                     if (iName.includes("Delta Tg")) bCls += " cell-crimson";
                     
-                    html += `<div class="table-row data-row ${currentTheme} ${stripeClass}"><div class="fixed-pane"><div class="cell col-seq">${r.n}</div><div class="cell col-item ${bCls}">${iName}</div><div class="cell col-metrics">N:---</div></div><div class="scroll-pane">`;
+                    let shortName = iName
+                        .replace("Pan + Lid Mass [mg]", "Pan+Lid")
+                        .replace("Sample Mass [mg]", "Sample")
+                        .replace("2nd Tg [ºC]", "2nd Tg")
+                        .replace("3rd Tg [ºC]", "3rd Tg")
+                        .replace("Delta Tg (3rd-2nd)", "Δ Tg")
+                        .replace("X SCRIBE", "X");
+                    
+                    html += `<div class="table-row data-row ${currentTheme} ${stripeClass}"><div class="fixed-pane"><div class="cell col-seq">${r.n}</div><div class="cell col-item ${bCls}"><span class="long-name">${iName}</span><span class="short-name">${shortName}</span></div><div class="cell col-metrics">N:---</div></div><div class="scroll-pane">`;
                     
                     if(filesData.length === 0) html += `<div class="cell col-sample sample-cell">---</div>`;
                     else {
@@ -693,7 +1122,7 @@
             });
         }
 
-function cycleHeaderState(el) {
+        function cycleHeaderState(el) {
             let state = parseInt(el.getAttribute('data-state') || '0'); 
             const colIdx = el.dataset.col; 
             const sId = el.getAttribute('data-id');
@@ -1004,6 +1433,51 @@ function cycleHeaderState(el) {
             } catch(e) { console.error("CSV write error:", e); } 
             finally { setTimeout(() => { windowPollingLocked = false; }, 250); }
         }
+        
+        function toggleSampleMenu() {
+            if (activeWorkflowPhase !== 2 || targetBatchSize <= 1) return;
+            const menu = document.getElementById('sampleMenu');
+            
+            if (menu.classList.contains('open')) {
+                menu.classList.remove('open');
+            } else {
+                let html = "";
+                batchSamples.forEach((s, idx) => {
+                    let isCompleted = s.phase2Data.length === 12;
+                    let isActive = idx === activeSampleIndex;
+                    let cls = "sample-dropdown-btn";
+                    if (isActive) cls += " active";
+                    if (isCompleted && !isActive) cls += " completed";
+                    
+                    let shortName = s.filename.length > 14 ? s.filename.substring(0,14) + "..." : s.filename;
+                    
+                    html += `<button class="${cls}" onclick="switchSample(${idx})">
+                        <span>S${idx+1}: ${shortName}</span>
+                        <span>${isActive ? 'ACTIVE' : (isCompleted ? 'DONE' : 'PENDING')}</span>
+                    </button>`;
+                });
+                menu.innerHTML = html;
+                menu.classList.add('open');
+            }
+        }
+        
+        function switchSample(idx) {
+            if (activeWorkflowPhase !== 2) return;
+            activeSampleIndex = idx;
+            currentString = ""; 
+            document.getElementById('sampleMenu').classList.remove('open');
+            showGlobalStatus(`SWITCHED TO SAMPLE ${idx + 1}`, 'success');
+            updateDisplay();
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const container = document.querySelector('.sample-dropdown-container');
+            const menu = document.getElementById('sampleMenu');
+            if (menu && menu.classList.contains('open') && container && !container.contains(e.target)) {
+                menu.classList.remove('open');
+            }
+        });
 
         function updateDisplay() {
             if(batchSamples.length === 0) return;
@@ -1012,9 +1486,21 @@ function cycleHeaderState(el) {
             const currentDataArray = (activeWorkflowPhase === 1) ? currentSample.phase1Data : currentSample.phase2Data;
             const step = currentDataArray.length;
             document.getElementById('currentInput').innerText = currentString;
+            
+            // Dynamic Dropdown Badge Logic
+            let badgeText = `${currentMode} [${activeSampleIndex + 1}/${targetBatchSize}]`;
+            const badgeEl = document.getElementById('forgeModeBadge');
+            if (activeWorkflowPhase === 2 && targetBatchSize > 1) {
+                badgeText += " ▼";
+                badgeEl.classList.add('phase2-active');
+                badgeEl.title = "CLICK TO SWITCH SAMPLE";
+            } else {
+                badgeEl.classList.remove('phase2-active');
+                badgeEl.title = "";
+            }
+            badgeEl.innerText = badgeText;
 
             let html = "";
-            
             currentSample.phase1Data.forEach((val, idx) => {
                 let alt = (idx % 2 === 0) ? "var(--ares-white)" : "#aaa";
                 let zIdx = Math.floor(idx / 2); let zName = zLabels[zIdx];
@@ -1052,6 +1538,8 @@ function cycleHeaderState(el) {
                 }
                 document.getElementById('statusBar').innerHTML = `S${activeSampleIndex + 1}/${targetBatchSize} [${zName}] ${prompt}`;
                 document.getElementById('currentInput').style.setProperty('--cursor-color', cursorColor);
+            } else {
+                document.getElementById('statusBar').innerHTML = `SAMPLE ${activeSampleIndex + 1} COMPLETE`;
             }
         }
 
@@ -1059,6 +1547,8 @@ function cycleHeaderState(el) {
             if(currentString === "" || batchSamples.length === 0) return;
             const currentSample = batchSamples[activeSampleIndex];
             const currentDataArray = (activeWorkflowPhase === 1) ? currentSample.phase1Data : currentSample.phase2Data;
+            
+            if(currentDataArray.length >= 12) return; // Prevent overfilling if jumping around
             
             currentDataArray.push(currentString); currentString = ""; updateDisplay(); saveSession();
 
@@ -1073,11 +1563,17 @@ function cycleHeaderState(el) {
                         showNotice("ALL SAMPLES PHASE 1 COMPLETE", `All ${targetBatchSize} sample masses committed.<br>Cycling back to Sample 1 for Phase 2 (Tg readings).`);
                     }
                 } else {
-                    if(activeSampleIndex + 1 < targetBatchSize) {
-                        activeSampleIndex++;
-                        showNotice(`SAMPLE ${activeSampleIndex} PHASE 2 COMPLETE`, `Sample ${activeSampleIndex} Tg data committed.<br>Starting Phase 2 for Sample ${activeSampleIndex + 1}.`);
-                    } else {
+                    // Check if EVERY sample is complete before running Diagnostic
+                    let allDone = batchSamples.every(s => s.phase2Data.length === 12);
+                    if (allDone) {
                         runDiagnostic();
+                    } else {
+                        // Automatically find the next unfinished sample in the batch
+                        let nextIdx = batchSamples.findIndex(s => s.phase2Data.length < 12);
+                        if(nextIdx !== -1) {
+                            activeSampleIndex = nextIdx;
+                            showNotice(`SAMPLE SECURED`, `Tg data committed.<br>Switching to Sample ${activeSampleIndex + 1} for Phase 2.`);
+                        }
                     }
                 }
                 saveSession();
@@ -1170,9 +1666,9 @@ function cycleHeaderState(el) {
                                 </div>`;
                         });
 
-                        failHTML += `
+			failHTML += `
                             <div class="ai-line" style="margin-top: 20px; animation-delay: 0.8s; display: flex; flex-direction: column; gap: 10px;">
-                                <button class="btn-proceed" style="border-color: var(--purple-light); color: var(--purple-light);" onclick="applyDiagnosticFixes()">UPDATE & RECALCULATE</button>
+                                <button class="btn-proceed" style="border-color: var(--crimson); color: var(--crimson); background: rgba(255, 0, 60, 0.1);" onclick="applyDiagnosticFixes()">UPDATE & RECALCULATE</button>
                                 <button class="btn-proceed btn-secondary" style="border-color: var(--crimson); color: var(--crimson);" onclick="forceDiagnosticOverride()">CONFIRM ANOMALIES (PROCEED)</button>
                             </div>`;
 
@@ -1214,12 +1710,20 @@ function cycleHeaderState(el) {
             } else if (batchSamples.length > 0) {
                 const currentSample = batchSamples[activeSampleIndex];
                 const arr = (activeWorkflowPhase === 1) ? currentSample.phase1Data : currentSample.phase2Data;
+                
                 if (arr.length > 0) {
                     currentString = arr.pop();
                 } else {
                     if (activeWorkflowPhase === 2) {
-                        if (activeSampleIndex > 0) {
-                            activeSampleIndex--;
+                        // Advanced Deep Undo: Find which sample to drop back into
+                        let targetIdx = -1;
+                        for(let i = activeSampleIndex - 1; i >= 0; i--) { if(batchSamples[i].phase2Data.length > 0) { targetIdx = i; break; } }
+                        if(targetIdx === -1) {
+                            for(let i = targetBatchSize - 1; i > activeSampleIndex; i--) { if(batchSamples[i].phase2Data.length > 0) { targetIdx = i; break; } }
+                        }
+                        
+                        if (targetIdx !== -1) {
+                            activeSampleIndex = targetIdx;
                             currentString = batchSamples[activeSampleIndex].phase2Data.pop();
                         } else {
                             activeWorkflowPhase = 1;
@@ -1234,7 +1738,6 @@ function cycleHeaderState(el) {
                             return; 
                         }
                     }
-                    document.getElementById('forgeModeBadge').innerText = `${currentMode} [${activeSampleIndex + 1}/${targetBatchSize}]`;
                 }
                 writeSampleCSV(batchSamples[activeSampleIndex], "IN_PROGRESS");
             }
@@ -1277,7 +1780,6 @@ function cycleHeaderState(el) {
                     ctx.fillStyle = "#ff003c"; ctx.font = "bold 14px monospace"; ctx.fillText("PAYLOAD TOO LARGE", 20, qrSize/2);
                 }
                 
-                // Show mobile data toggle only if virtual sync or small screen
                 if (window.isVirtualSync || window.innerWidth <= 1000) {
                     document.getElementById('btnMobileDataToggle').style.display = 'flex';
                     document.getElementById('mobileDataContainer').style.display = 'none';
@@ -1336,6 +1838,9 @@ function cycleHeaderState(el) {
             const currentSample = batchSamples[activeSampleIndex];
             if(currentSample) {
                 const arr = (activeWorkflowPhase === 1) ? currentSample.phase1Data : currentSample.phase2Data;
+                
+                if (arr.length >= 12) return; // Prevent typing if this specific sample is already full
+                
                 let step = arr.length;
                 if(!currentString.includes('.')) {
                     if(activeWorkflowPhase === 1) {
@@ -1353,9 +1858,55 @@ function cycleHeaderState(el) {
         }
 
         function toggleForge() {
-            const panel = document.getElementById('forgePanel'); const btn = document.getElementById('btnForgeToggle'); 
-            panel.classList.toggle('hidden'); btn.classList.toggle('inactive');
+            // ONLY trigger sliding mode on iPads (601px to 1024px)
+            if (window.innerWidth > 600 && window.innerWidth <= 1024) {
+                document.body.classList.toggle('swipe-matrix');
+            } else if (window.innerWidth > 1024) {
+                // Desktop functionality remains normal
+                const panel = document.getElementById('forgePanel'); 
+                const btn = document.getElementById('btnForgeToggle'); 
+                panel.classList.toggle('hidden'); 
+                btn.classList.toggle('inactive');
+            }
         }
+
+        // =========================================================================
+        //                 iPAD SLATE MODE SWIPE GESTURE ENGINE
+        // =========================================================================
+        let touchStartX = 0; let touchStartY = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, {passive: true});
+
+        document.addEventListener('touchend', e => {
+            // CRITICAL: ABORT SWIPE ON iPHONES (< 601) OR DESKTOPS (> 1024)
+            if (window.innerWidth <= 600 || window.innerWidth > 1024) return; 
+            
+            let touchEndX = e.changedTouches[0].screenX;
+            let touchEndY = e.changedTouches[0].screenY;
+            
+            // Ignore if the swipe is mostly vertical (scrolling)
+            if (Math.abs(touchEndY - touchStartY) > Math.abs(touchEndX - touchStartX)) return;
+            
+            // Smart Edge-Detection: Ignore swipes inside the horizontally scrolling table, 
+            // UNLESS the user starts swiping from the extreme left/right edges of the iPad screen
+            const target = e.target;
+            if (target.closest('.table-wrapper')) {
+                if (touchStartX > 50 && touchStartX < window.innerWidth - 50) return;
+            }
+            
+            const threshold = 60; // Minimum distance in pixels to trigger a slide
+            if (touchEndX < touchStartX - threshold) {
+                // Swipe Left -> Slides to the Forge
+                document.body.classList.remove('swipe-matrix');
+            }
+            if (touchEndX > touchStartX + threshold) {
+                // Swipe Right -> Slides to the Matrix
+                document.body.classList.add('swipe-matrix');
+            }
+        }, {passive: true});
 
         const chnChars = "數據檢測鎖定系統分析錯誤流合格不合格";
         setInterval(() => {
@@ -1379,6 +1930,166 @@ function cycleHeaderState(el) {
                 }, 1000);
             }
         }, 8000);
+
+        // =========================================================================
+        //                 ISOLATED INACTIVITY STANDBY ENGINE (TRIOS)
+        // =========================================================================
+        let standbyTimer = null;
+        let phaseTimer = null;
+        let terminalInterval = null;
+        let isStandbyActive = false;
+        let isPhaseStable = false;
+
+        const INACTIVITY_LIMIT = 3600000; 
+
+        function resetStandby() {
+            if (isStandbyActive) exitStandby();
+            clearTimeout(standbyTimer);
+            standbyTimer = setTimeout(enterStandby, INACTIVITY_LIMIT);
+        }
+
+        function enterStandby() {
+            if (isStandbyActive) return;
+            isStandbyActive = true;
+            document.getElementById('standbyOverlay').classList.add('active');
+            setReactivePhase();
+        }
+
+        function exitStandby() {
+            isStandbyActive = false;
+            document.getElementById('standbyOverlay').classList.remove('active');
+            clearTimeout(phaseTimer);
+            clearInterval(terminalInterval);
+            document.getElementById('standbyTerminal').innerHTML = ""; 
+        }
+
+        function setReactivePhase() {
+            isPhaseStable = false;
+            const overlay = document.getElementById('standbyOverlay');
+            overlay.className = 'active reactive';
+            document.getElementById('standbyTitle').innerText = "CRITICAL: DSC EXOTHERMIC RUNAWAY";
+            startTerminalLoop();
+            clearTimeout(phaseTimer);
+            phaseTimer = setTimeout(setStablePhase, INACTIVITY_LIMIT);
+        }
+
+        function setStablePhase() {
+            isPhaseStable = true;
+            const overlay = document.getElementById('standbyOverlay');
+            overlay.className = 'active stable';
+            document.getElementById('standbyTitle').innerText = "INSTRUMENT STABILIZED // NOMINAL";
+            startTerminalLoop();
+            clearTimeout(phaseTimer);
+            phaseTimer = setTimeout(setReactivePhase, INACTIVITY_LIMIT);
+        }
+
+        function startTerminalLoop() {
+            clearInterval(terminalInterval);
+            const terminal = document.getElementById('standbyTerminal');
+            const paramTemp = document.getElementById('paramTemp');
+            const paramHeatFlow = document.getElementById('paramHeatFlow');
+            const paramLid = document.getElementById('paramLid');
+            const paramCoolant = document.getElementById('paramCoolant');
+            const paramFlange = document.getElementById('paramFlange');
+            const paramCellPurge = document.getElementById('paramCellPurge');
+            const paramBasePurge = document.getElementById('paramBasePurge');
+            const paramSeq = document.getElementById('paramSeq');
+            const paramMethod = document.getElementById('paramMethod');
+            const paramTime = document.getElementById('paramTime');
+            
+            terminal.innerHTML = "";
+            
+            const reactiveLines = [
+                "> [ WARN ] ENTHALPY SURGE DETECTED: EXOTHERMIC RUNAWAY",
+                "> TRIOS: INJECTING LIQUID NITROGEN COOLANT FLUX...",
+                "> COMPENSATING HEAT FLUX SENSORS // OVERRIDE",
+                "> [ FAIL ] CELL TEMPERATURE CRITICAL: OVER LIMIT",
+                "> RECALIBRATING THERMOCOUPLE ARRAY...",
+                "> PURGING CONTAMINANT GASSES // VALVE 04",
+                "> ERROR 0xFA9B: BASELINE SHIFT RUNAWAY",
+                "> ENGAGING ARES GOD MODE STABILIZERS..."
+            ];
+
+            const stableLines = [
+                "> [ INFO ] ISOTHERMAL BASELINE ACHIEVED.",
+                "> TRIOS: HEAT FLOW NOMINAL (0.002 mW/mg)",
+                "> FURNACE TEMPERATURE STABLE AT 25.0ºC",
+                "> LIQUID NITROGEN COOLING RATE: OPTIMAL",
+                "> [ SYS ] CELL PURGE COMPLETE.",
+                "> SENSOR ARRAY SYNCED AND CALIBRATED.",
+                "> AWAITING NEXT NEURAL PAYLOAD...",
+                "> INSTRUMENT IN STANDBY MODE."
+            ];
+
+            terminalInterval = setInterval(() => {
+                if (!isStandbyActive) return;
+                
+                const lines = isPhaseStable ? stableLines : reactiveLines;
+                const randomLine = lines[Math.floor(Math.random() * lines.length)];
+                const isWarn = randomLine.includes("[ WARN ]") || randomLine.includes("[ FAIL ]") || randomLine.includes("ERROR");
+                
+                const lineHTML = `<div class="s-line ${isWarn ? 'warn' : ''}">${randomLine} ${Math.random().toString(36).substring(7).toUpperCase()}</div>`;
+                terminal.innerHTML += lineHTML;
+                
+                if (isPhaseStable) {
+                    paramTemp.innerText = (25.0 + (Math.random() * 0.5 - 0.25)).toFixed(1) + " °C";
+                    paramHeatFlow.innerText = (Math.random() * 0.004).toFixed(3) + " mW/mg";
+                    paramLid.innerText = "CLOSED";
+                    paramCoolant.innerText = "-90.0 °C";
+                    paramFlange.innerText = "35.2 °C";
+                    paramCellPurge.innerText = "50.0 mL/min N2";
+                    paramBasePurge.innerText = "300.0 mL/min N2";
+                    paramSeq.innerText = "3 of 5";
+                    paramMethod.innerText = "Ramp";
+                    paramTime.innerText = "01:24:00";
+                } else {
+                    paramTemp.innerText = (400.0 + Math.random() * 50).toFixed(1) + " °C";
+                    paramHeatFlow.innerText = "+" + (20.0 + Math.random() * 30).toFixed(1) + " mW/mg";
+                    paramLid.innerText = Math.random() > 0.5 ? "ERR_L0CK" : "JAMMED";
+                    paramCoolant.innerText = (Math.random() * 40 - 10).toFixed(1) + " °C"; 
+                    paramFlange.innerText = (100.0 + Math.random() * 150).toFixed(1) + " °C";
+                    paramCellPurge.innerText = (Math.random() * 999).toFixed(1) + " mL/min O2";
+                    paramBasePurge.innerText = (Math.random() * 999).toFixed(1) + " mL/min O2";
+                    paramSeq.innerText = "NaN";
+                    paramMethod.innerText = "RUNAWAY";
+                    paramTime.innerText = Math.floor(Math.random() * 99) + ":" + Math.floor(Math.random() * 60).toString().padStart(2, '0') + ":" + Math.floor(Math.random() * 60).toString().padStart(2, '0');
+                }
+                
+                if (terminal.childElementCount > 8) terminal.removeChild(terminal.firstChild);
+                
+            }, isPhaseStable ? 2500 : 350);
+        }
+
+        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+            document.addEventListener(evt, resetStandby, { passive: true });
+        });
+        resetStandby();
+
+	// =========================================================================
+        //                 CIPHER TEXT HOVER ENGINE
+        // =========================================================================
+        const cipherLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
+        function applyCipherEffect(elements, selector) {
+            elements.forEach(btn => {
+                btn.addEventListener('mouseenter', event => {
+                    let iterations = 0; const targetText = btn.dataset.cipher; const textElement = btn.querySelector(selector);
+                    if(!textElement) return;
+                    clearInterval(btn.dataset.interval);
+                    btn.dataset.interval = setInterval(() => {
+                        textElement.innerText = targetText.split("").map((letter, index) => {
+                            if(index < iterations) return targetText[index]; 
+                            return cipherLetters[Math.floor(Math.random() * cipherLetters.length)];
+                        }).join("");
+                        if(iterations >= targetText.length) clearInterval(btn.dataset.interval);
+                        iterations += 1 / 2; 
+                    }, 20);
+                });
+            });
+        }
+        
+        // Initialize the cipher effect on boot
+        setTimeout(() => applyCipherEffect(document.querySelectorAll('.cipher-btn'), '.btn-title'), 500);
+
     </script>
 </body>
 </html>
