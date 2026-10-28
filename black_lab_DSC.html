@@ -1160,22 +1160,16 @@
         async function writeSampleCSV(sample, stage) {
             if(!dirHandle || !sample) return;
             
+            // If we are on iOS/Safari (Virtual Sync), skip file generation completely.
+            // The data stays securely in memory to build the Final Matrix QR Code at the end.
+            if (window.isVirtualSync) {
+                console.log(`[VIRTUAL SYNC] File save bypassed for ${sample.filename} at ${stage}. Data held in memory.`);
+                return;
+            }
+
             let colData = generateColumnData(sample, stage);
             let output = `#,FEATURE ID,NOMINAL,TOLERANCE,MIN,MAX,${sample.qrData.raw}\n`;
             for(let i=0; i<44; i++) { output += `${i+1},${items[i]},---,---,---,---,${colData[i]}\n`; }
-            
-            if (window.isVirtualSync) {
-                const blob = new Blob([output], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${sample.filename}.csv`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                return;
-            }
 
             try {
                 windowPollingLocked = true;
@@ -1183,8 +1177,11 @@
                 const writable = await fileHandle.createWritable();
                 await writable.write(output);
                 await writable.close();
-            } catch(e) { console.error("CSV write error:", e); }
-            finally { setTimeout(() => { windowPollingLocked = false; }, 250); }
+            } catch(e) { 
+                console.error("CSV write error:", e); 
+            } finally { 
+                setTimeout(() => { windowPollingLocked = false; }, 250); 
+            }
         }
 
         function updateDisplay() {
