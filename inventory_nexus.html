@@ -81,7 +81,7 @@
             padding: 0 25px; text-align: left; transform-style: preserve-3d;
             box-shadow: none; 
             
-            /* Simultaneous pulse animation */
+            /* Simultaneous pulse animation (Removed delays) */
             animation: cat-pulse 4s infinite alternate ease-in-out;
         }
 
@@ -191,8 +191,6 @@
         .cell-name { font-family: var(--font-en); font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 1px; }
         .cell-category { font-size: 0.95rem; font-weight: bold; letter-spacing: 1px; }
         .cell-type { color: var(--text-muted); font-size: 0.85rem; font-weight: bold; letter-spacing: 1px; }
-        
-        /* TOUCH FRIENDLY QTY TEXT */
         .cell-qty { font-size: 2.6rem; font-weight: bold; color: var(--gold); text-shadow: 0 0 8px var(--gold); }
         .cell-badge { display: inline-block; padding: 4px 8px; font-size: 0.75rem; border: 1px solid currentColor; border-radius: 2px; box-shadow: 0 0 8px currentColor; }
 
@@ -395,7 +393,7 @@
             <button class="btn-mini del" style="border:none;" onclick="closeModal()">[ X ]</button>
         </div>
         <div class="modal-body">
-            <input type="hidden" id="editIndex" value="-1">
+            <input type="hidden" id="editId" value="">
             
             <div class="input-block">
                 <label class="input-label">PART ID / BARCODE</label>
@@ -724,7 +722,6 @@
     }
 
     // --- ACCORDION FOLDER STATE CONTROL ---
-    // Make toggleGroup globally accessible so inline HTML strings can call it
     window.toggleGroup = function(groupId) {
         const isOpening = !openFolders.has(groupId);
         if (isOpening) {
@@ -732,7 +729,7 @@
         } else {
             openFolders.delete(groupId);
         }
-        renderGrid(); // Redraw with new open/close state
+        renderGrid(); 
     };
 
     // --- RENDERING LOGIC ---
@@ -760,7 +757,7 @@
         renderGrid();
     }
 
-    function renderRowHtml(item, index, isCritical, isChild = false, parentId = "") {
+    function renderRowHtml(item, isCritical, isChild = false, parentId = "") {
         const statusClass = isCritical ? 'status-critical' : 'status-nominal';
         const statusText = isCritical ? 'CRITICAL' : 'NOMINAL';
         const statusColor = isCritical ? 'var(--crimson)' : 'var(--mint)';
@@ -769,10 +766,10 @@
         
         const childClass = isChild ? `child-of-${parentId} group-child` : '';
         
-        // If it's a child but its parent folder isn't in our memory, keep it hidden on render
         const childStyle = isChild && !openFolders.has(parentId) ? `style="display: none;"` : '';
         const idPrefix = isChild ? `<span class="tree-branch">└─ </span>` : '';
 
+        // REFACTORED TO USE ID FOR CRUD INSTEAD OF INDEX
         return `
             <tr class="${statusClass} ${childClass}" ${childStyle}>
                 <td class="cell-id">${idPrefix}${item.id}</td>
@@ -783,10 +780,10 @@
                 <td><span class="cell-badge" style="color:${statusColor}; border-color:${statusColor};">${statusText}</span></td>
                 <td>
                     <div class="action-group">
-                        <button class="btn-mini sub" onclick="updateQty(${index}, -1)">[ - ]</button>
-                        <button class="btn-mini add" onclick="updateQty(${index}, 1)">[ + ]</button>
-                        <button class="btn-mini edit" onclick="openModal('edit', ${index})">[ EDIT ]</button>
-                        <button class="btn-mini del" onclick="deleteItem(${index})">[ DEL ]</button>
+                        <button class="btn-mini sub" onclick="updateQty('${item.id}', -1)">[ - ]</button>
+                        <button class="btn-mini add" onclick="updateQty('${item.id}', 1)">[ + ]</button>
+                        <button class="btn-mini edit" onclick="openModal('edit', '${item.id}')">[ EDIT ]</button>
+                        <button class="btn-mini del" onclick="deleteItem('${item.id}')">[ DEL ]</button>
                     </div>
                 </td>
             </tr>
@@ -796,26 +793,26 @@
     function renderGrid() {
         if (isLockedDown) return; 
 
+        // LIVE SORT GLOBALLY BY QUANTITY (Least stock gets priority)
+        inventory.sort((a, b) => a.qty - b.qty);
+
         const tbodyNormal = document.getElementById('inventoryGridBody');
         const tbodyCritical = document.getElementById('criticalGridBody');
         const criticalSection = document.getElementById('criticalSection');
         
         let normalHtml = '';
         let criticalHtml = '';
-        
         let hasCritical = false;
         let normalGroups = {};
         let standaloneNormal = [];
 
-        // Sort out Critical vs Normal items
-        // We iterate through the raw inventory and sort them based on threshold
-        inventory.forEach((item, index) => {
+        // Route items
+        inventory.forEach((item) => {
             if (currentFilter !== "ALL" && item.category !== currentFilter) return;
 
-            item.originalIndex = index; 
-            
             if (item.qty <= item.threshold) {
-                criticalHtml += renderRowHtml(item, index, true);
+                // Ripped from folder and placed globally in Critical zone
+                criticalHtml += renderRowHtml(item, true);
                 hasCritical = true;
             } else {
                 if (item.group) {
@@ -827,12 +824,19 @@
             }
         });
 
-        // Construct HTML for Folders inside the Normal table
-        for (const [groupName, items] of Object.entries(normalGroups)) {
-            const headerId = groupName.replace(/\s+/g, '-').toLowerCase();
-            const totalQty = items.reduce((sum, i) => sum + i.qty, 0);
-            
-            // Check memory state so it doesn't snap shut on edit
+        // Compute total quantities for Folders to sort them
+        let sortedFolders = Object.keys(normalGroups).map(groupName => {
+            let items = normalGroups[groupName];
+            let totalQty = items.reduce((sum, i) => sum + i.qty, 0);
+            return { groupName, items, totalQty };
+        });
+
+        // Sort Folders by total quantity (Least stock gets priority)
+        sortedFolders.sort((a, b) => a.totalQty - b.totalQty);
+
+        // Build HTML for Folders
+        sortedFolders.forEach(folder => {
+            const headerId = folder.groupName.replace(/\s+/g, '-').toLowerCase();
             const isOpen = openFolders.has(headerId);
             const iconText = isOpen ? '[ - ]' : '[ + ]';
             
@@ -840,34 +844,34 @@
                 <tr class="group-header status-nominal" style="cursor: pointer;" onclick="toggleGroup('${headerId}')">
                     <td colspan="2" style="color:var(--cyan); font-weight:bold; font-size:1.1rem; text-shadow:0 0 5px var(--cyan);">
                         <span class="folder-icon" style="color:var(--mint); margin-right: 8px;">${iconText}</span> 
-                        ${groupName.toUpperCase()} FOLDER
+                        ${folder.groupName.toUpperCase()} FOLDER
                     </td>
-                    <td><div class="cell-name">${items.length} ITEMS INSIDE</div></td>
-                    <td class="cell-qty" style="color:var(--text-main); text-shadow:none;">${totalQty} <span style="font-size:1rem;color:var(--text-muted)">TOTAL UNITS</span></td>
+                    <td><div class="cell-name">${folder.items.length} ITEMS INSIDE</div></td>
+                    <td class="cell-qty" style="color:var(--text-main); text-shadow:none;">${folder.totalQty} <span style="font-size:1rem;color:var(--text-muted)">TOTAL UNITS</span></td>
                     <td>-</td>
                     <td><span class="cell-badge" style="color:var(--mint); border-color:var(--mint);">NOMINAL</span></td>
                     <td>-</td>
                 </tr>
             `;
 
-            items.forEach(item => {
-                normalHtml += renderRowHtml(item, item.originalIndex, false, true, headerId);
+            folder.items.forEach(item => {
+                normalHtml += renderRowHtml(item, false, true, headerId);
             });
-        }
+        });
 
-        // Construct HTML for Normal Standalone Items (like Keller's Reagent)
+        // Build HTML for Normal Standalone Items
         standaloneNormal.forEach(item => {
-            normalHtml += renderRowHtml(item, item.originalIndex, false);
+            normalHtml += renderRowHtml(item, false, false, "");
         });
         
-        // Push massive HTML strings into DOM perfectly once
+        // Single DOM Inject
         tbodyNormal.innerHTML = normalHtml;
         tbodyCritical.innerHTML = criticalHtml;
         criticalSection.style.display = hasCritical ? 'block' : 'none';
     }
 
-    // --- CRUD OPERATIONS ---
-    window.updateQty = function(index, delta) {
+    // --- CRUD OPERATIONS BY STRING ID ---
+    window.updateQty = function(id, delta) {
         if (isLockedDown) return;
 
         // Anti-Spam Check
@@ -883,33 +887,42 @@
         }
         lastClickTime = now;
 
-        let newQty = inventory[index].qty + delta;
+        // Find by ID, avoiding array index shifting issues
+        let idx = inventory.findIndex(i => i.id === id);
+        if (idx === -1) return;
+
+        let newQty = inventory[idx].qty + delta;
         if (newQty < 0) newQty = 0;
-        inventory[index].qty = newQty;
-        triggerStatus(`UPDATED > ${inventory[index].id}`, "success");
-        renderGrid(); // Memory state saves folder opens!
+        inventory[idx].qty = newQty;
+        
+        triggerStatus(`UPDATED > ${inventory[idx].id}`, "success");
+        renderGrid(); 
     };
 
-    window.deleteItem = function(index) {
+    window.deleteItem = function(id) {
         if (isLockedDown) return;
-        if (confirm(`PURGE ITEM [ ${inventory[index].id} ] FROM CORE MEMORY?`)) {
-            triggerStatus(`PURGED > ${inventory[index].id}`, "warning");
-            inventory.splice(index, 1);
+        if (confirm(`PURGE ITEM [ ${id} ] FROM CORE MEMORY?`)) {
+            triggerStatus(`PURGED > ${id}`, "warning");
+            let idx = inventory.findIndex(i => i.id === id);
+            if (idx > -1) inventory.splice(idx, 1);
             renderGrid();
         }
     };
 
-    // --- MODAL LOGIC ---
-    window.openModal = function(mode, index = -1) {
+    // --- MODAL LOGIC BY STRING ID ---
+    window.openModal = function(mode, id = null) {
         if (isLockedDown) return;
         const modal = document.getElementById('forgeModal');
         const title = document.getElementById('modalTitle');
         const idInput = document.getElementById('inputId');
         
-        if (mode === 'edit' && index > -1) {
+        if (mode === 'edit' && id) {
             title.innerText = "EDIT EXISTING PROTOCOL";
-            document.getElementById('editIndex').value = index;
-            const item = inventory[index];
+            document.getElementById('editId').value = id;
+            
+            let idx = inventory.findIndex(i => i.id === id);
+            const item = inventory[idx];
+            
             idInput.value = item.id;
             idInput.disabled = true; idInput.style.opacity = '0.5';
             document.getElementById('inputName').value = item.name;
@@ -920,7 +933,7 @@
             document.getElementById('inputThreshold').value = item.threshold;
         } else {
             title.innerText = "FORGE NEW ITEM";
-            document.getElementById('editIndex').value = -1;
+            document.getElementById('editId').value = "";
             idInput.disabled = false; idInput.style.opacity = '1';
             idInput.value = '';
             document.getElementById('inputName').value = '';
@@ -937,7 +950,7 @@
     window.closeModal = function() { document.getElementById('forgeModal').classList.remove('active'); };
 
     window.saveItem = function() {
-        const editIndex = parseInt(document.getElementById('editIndex').value);
+        const editId = document.getElementById('editId').value;
         const id = document.getElementById('inputId').value.trim().toUpperCase();
         const name = document.getElementById('inputName').value.trim();
         const group = document.getElementById('inputGroup').value.trim();
@@ -948,9 +961,12 @@
 
         if (!id || !name) { alert("SYS_ERROR: PART ID and NOMENCLATURE are required parameters."); return; }
 
-        if (editIndex > -1) {
-            inventory[editIndex] = { id, name, group, category, type, qty, threshold };
-            triggerStatus(`EDITED > ${id}`, "success");
+        if (editId) {
+            let idx = inventory.findIndex(i => i.id === editId);
+            if (idx > -1) {
+                inventory[idx] = { id, name, group, category, type, qty, threshold };
+                triggerStatus(`EDITED > ${id}`, "success");
+            }
         } else {
             if (inventory.some(i => i.id === id)) { alert(`SYS_ERROR: PART ID [ ${id} ] already exists.`); return; }
             inventory.push({ id, name, group, category, type, qty, threshold });
