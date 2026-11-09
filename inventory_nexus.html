@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>VALEO // WAREHOUSE NEXUS : MASTER CONTROL</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;900&family=Courier+Prime:wght@400;700&family=VT323&display=swap');
+        
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --crimson: #ff1e46; 
+            --violet: #9d00ff; 
+            --gold: #ffea00; 
+            --cyan: #00f3ff; 
+            --mint: #1df2ba;
+            --bg-deep: #020104; 
+            --text-main: #f0e6fa; 
+            --text-muted: #b8a6d4; 
+            --glass-border: rgba(157, 0, 255, 0.15);
+            
+            --font-en: 'Rajdhani', sans-serif;
+            --font-mono: 'Courier Prime', 'Courier New', monospace; 
+            --font-lcd: 'VT323', monospace;
+        }
+
+        body, html { width: 100vw; height: 100vh; background: var(--bg-deep); color: var(--text-main); font-family: var(--font-en); overflow: hidden; position: relative; transition: filter 0.5s ease; }
+        
+        /* Tactical Backgrounds & Organism Canvas */
+        body { background: radial-gradient(ellipse at 50% 12%, rgba(0, 243, 255, .08), transparent 42%), linear-gradient(135deg, #010406 0%, #03080d 48%, #010406 100%); }
+        body::after { content: ''; position: fixed; inset: 0; z-index: 4; pointer-events: none; opacity: .15; background: repeating-linear-gradient(0deg, transparent 0 4px, rgba(0,243,255,.055) 5px, transparent 6px 9px); }
+
+        #alienCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.9; mix-blend-mode: screen; transition: 0.5s; }
+
+        .os-container { display: flex; flex-direction: column; width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 10; pointer-events: none; }
+        .os-container > * { pointer-events: auto; }
+        
+        /* --- HEADER & RETRO BEEPER STATUS BAR --- */
+        .header { background: linear-gradient(110deg, rgba(7,22,24,.96), rgba(5,7,14,.97)); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 243, 255, 0.3); box-shadow: 0 5px 25px rgba(0,243,255,0.1); flex-shrink: 0; gap: 20px; z-index: 20; }
+        
+        .header-brand { display: flex; align-items: center; gap: 15px; width: 250px; }
+        .corsair-node { width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-right: 14px solid var(--cyan); animation: triangle-pulse 2s infinite ease-in-out; }
+        @keyframes triangle-pulse { 0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px var(--cyan)); } 50% { opacity: 0.4; } }
+        
+        .valeo-header-logo { height: 28px; filter: drop-shadow(0 0 12px rgba(0, 243, 255, 0.8)); }
+        .brand-title-fallback { font-family: var(--font-en); font-weight: 900; font-size: 1.8rem; letter-spacing: 4px; color: #fff; text-shadow: 0 0 10px var(--cyan); display: none; }
+
+        /* THE BEEPER */
+        .status-panel { 
+            flex: 1; height: 50px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
+            background: #021a08; 
+            border: 3px solid #111; border-radius: 6px;
+            box-shadow: inset 0 0 25px rgba(57, 255, 20, 0.25), inset 0 0 10px #000; 
+            transition: 0.3s;
+        }
+        .status-panel::before {
+            content: ''; position: absolute; inset: 0; pointer-events: none;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.4) 3px);
+            z-index: 2;
+        }
+        .status-text { 
+            font-family: var(--font-lcd); font-size: 2.2rem; letter-spacing: 4px; 
+            color: #39ff14; text-shadow: 0 0 8px #39ff14, 0 0 15px #39ff14; 
+            z-index: 1; transition: 0.3s; text-transform: uppercase;
+        }
+
+        .system-online { width: 250px; font-family: var(--font-mono); color: var(--mint); font-weight: bold; text-shadow: 0 0 15px var(--mint); text-align: right; }
+
+        /* --- CATEGORY KINETIC NAVIGATION --- */
+        .category-nav { display: flex; gap: 15px; padding: 25px 25px 15px 25px; overflow-x: auto; perspective: 1000px; }
+        
+        .menu-btn {
+            flex: 1; height: 85px; min-width: 180px;
+            background: rgba(15, 5, 20, 0.85); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.02); border-right: 1px solid var(--glass-border);
+            border-radius: 2px; color: var(--text-main); font-family: var(--font-en); cursor: pointer;
+            position: relative; overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease, filter 0.3s ease;
+            display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+            padding: 0 25px; text-align: left; transform-style: preserve-3d;
+            box-shadow: none; 
+            
+            /* Simultaneous pulse animation */
+            animation: cat-pulse 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes cat-pulse {
+            0%, 20% { filter: brightness(1); box-shadow: inset 0 0 0px rgba(255,255,255,0); }
+            100% { filter: brightness(1.4); box-shadow: inset 0 0 25px rgba(255,255,255,0.08); }
+        }
+
+        /* 5-Minute Hack Glitch Effect */
+        .hacked-glitch { animation: glitch-snap 0.15s infinite alternate !important; filter: hue-rotate(90deg) contrast(2) !important; border-color: var(--crimson) !important; }
+        @keyframes glitch-snap {
+            0% { transform: translate(0) skew(0deg); }
+            25% { transform: translate(-3px, 2px) skew(-3deg); box-shadow: inset -5px 0 10px var(--crimson); }
+            50% { transform: translate(3px, -2px) skew(3deg); box-shadow: inset 5px 0 10px var(--cyan); }
+            75% { transform: translate(-3px, -2px); }
+            100% { transform: translate(3px, 2px); }
+        }
+        
+        .menu-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; transition: width 0.3s ease, box-shadow 0.3s ease; }
+        .menu-btn::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 1; transition: opacity 0.4s ease; pointer-events: none; }
+        .menu-btn:hover, .menu-btn.active-cat { 
+            animation: none; 
+            transform: translateY(-2px) scale(0.98) rotateX(2deg); background: rgba(25, 5, 10, 0.95); border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 20px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,255,255,0.05); filter: brightness(1.1); 
+        }
+        
+        .btn-dsc::before { background: var(--crimson); box-shadow: 0 0 20px var(--crimson); }
+        .btn-dsc::after { background: radial-gradient(circle at left center, rgba(255, 30, 70, 0.15) 0%, transparent 70%); }
+        .btn-xsec::before { background: var(--violet); box-shadow: 0 0 20px var(--violet); border-right-color: rgba(157, 0, 255, 0.2); }
+        .btn-xsec::after { background: radial-gradient(circle at left center, rgba(157, 0, 255, 0.15) 0%, transparent 70%); }
+        .btn-qual::before { background: var(--cyan); box-shadow: 0 0 20px var(--cyan); border-right-color: rgba(0, 243, 255, 0.2); }
+        .btn-qual::after { background: radial-gradient(circle at left center, rgba(0, 243, 255, 0.15) 0%, transparent 70%); }
+        .btn-clean::before { background: var(--mint); box-shadow: 0 0 20px var(--mint); border-right-color: rgba(29, 242, 186, 0.2); }
+        .btn-clean::after { background: radial-gradient(circle at left center, rgba(29, 242, 186, 0.15) 0%, transparent 70%); }
+        .btn-all::before { background: var(--text-muted); box-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .btn-all::after { background: radial-gradient(circle at left center, rgba(255,255,255,0.05) 0%, transparent 70%); }
+
+        .btn-title { font-size: clamp(1.1rem, 1.5vw, 1.4rem); font-weight: 900; letter-spacing: 3px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); color: #fff; pointer-events: none; }
+        .btn-jp { font-family: var(--font-mono); font-size: 0.75rem; font-weight: bold; letter-spacing: 4px; margin-top: 6px; text-transform: uppercase; opacity: 0.8; pointer-events: none; }
+        
+        .btn-dsc .btn-jp { color: var(--crimson); }
+        .btn-xsec .btn-jp { color: var(--violet); }
+        .btn-qual .btn-jp { color: var(--cyan); }
+        .btn-clean .btn-jp { color: var(--mint); }
+        .btn-all .btn-jp { color: var(--text-muted); }
+
+        /* ACTION ROW (FORGE BUTTON) */
+        .action-row { padding: 0 25px 15px 25px; display: flex; justify-content: flex-start; }
+        .action-btn { background: rgba(0,243,255,0.1); border: 1px solid var(--cyan); color: var(--cyan); font-family: var(--font-mono); font-weight: bold; font-size: 0.9rem; padding: 10px 20px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 15px var(--cyan), inset 0 0 10px rgba(0,243,255,0.2); text-shadow: 0 0 5px var(--cyan); }
+        .action-btn:hover { background: var(--cyan); color: #000; box-shadow: 0 0 25px var(--cyan), inset 0 0 15px #fff; transform: translateY(-2px); text-shadow: none; }
+
+        /* MATRIX DATA GRID */
+        .grid-wrapper { flex: 1; overflow: hidden; padding: 0 25px 20px 25px; position: relative; }
+        
+        .scroll-container { width: 100%; height: 100%; overflow: auto; position: relative; z-index: 5; }
+        .scroll-container::-webkit-scrollbar { width: 10px; height: 10px; }
+        .scroll-container::-webkit-scrollbar-track { background: rgba(2,10,15,0.9); }
+        .scroll-container::-webkit-scrollbar-thumb { background: var(--cyan); border: 1px solid #000; box-shadow: 0 0 10px var(--cyan); }
+
+        /* THE SCAN BORDERS */
+        .table-scan-line { position: sticky; top: 51px; left: 0; width: 100%; height: 1px; background: rgba(0, 243, 255, 0.1); z-index: 11; }
+        .table-scan-line::after {
+            content: ""; position: absolute; top: -1px; left: 0; height: 4px; width: 80px;
+            background: var(--cyan); box-shadow: 0 0 15px var(--cyan), 0 0 30px var(--cyan);
+            border-radius: 50%; animation: border-scan 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+        }
+        @keyframes border-scan {
+            0% { left: 0%; transform: translateX(0); width: 80px; }
+            50% { width: 65vw; } 
+            100% { left: 100%; transform: translateX(-100%); width: 80px; }
+        }
+
+        .scan-critical { background: rgba(255, 30, 70, 0.2); }
+        .scan-critical::after { 
+            width: 100%; left: 0; border-radius: 0; background: var(--crimson); 
+            box-shadow: 0 0 15px var(--crimson), 0 0 30px var(--crimson); 
+            animation: critical-glow-pulse 0.8s infinite alternate ease-in-out; 
+        }
+        @keyframes critical-glow-pulse {
+            0% { opacity: 0.6; box-shadow: 0 0 10px var(--crimson), 0 0 20px var(--crimson); }
+            100% { opacity: 1; box-shadow: 0 0 20px var(--crimson), 0 0 40px var(--crimson), 0 0 50px rgba(255, 255, 255, 0.5); }
+        }
+
+        /* DATA TABLE CORE */
+        .data-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.95rem; }
+        .data-table th { position: sticky; top: 0; background: #010508; color: var(--cyan); font-family: var(--font-en); font-weight: 900; font-size: 1.1rem; letter-spacing: 2px; text-align: left; padding: 15px; z-index: 10; box-shadow: 0 5px 15px rgba(0,0,0,0.8); border-bottom: none; }
+        .data-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.6); transition: 0.2s; backdrop-filter: blur(5px); }
+        .data-table tr { border-left: 3px solid transparent; transition: all 0.2s ease; }
+        
+        .data-table tr:hover:not(.group-header) td { background: rgba(0,243,255,0.1); box-shadow: inset 0 0 15px rgba(0,243,255,0.2); }
+        
+        /* FOLDER GROUPING STYLES */
+        .group-header td { background: rgba(157, 0, 255, 0.08) !important; border-top: 1px solid rgba(157, 0, 255, 0.3); border-bottom: 1px solid rgba(157, 0, 255, 0.3) !important; transition: 0.2s; }
+        .group-header:hover td { background: rgba(157, 0, 255, 0.2) !important; box-shadow: inset 0 0 20px rgba(157, 0, 255, 0.2); }
+        .group-header .cell-name { color: #fff; text-shadow: 0 0 8px var(--violet); }
+        
+        .group-child td { background: rgba(0, 0, 0, 0.85) !important; border-bottom: 1px dashed rgba(255,255,255,0.05) !important; }
+        .group-child:hover td { background: rgba(0,243,255,0.05) !important; }
+        .tree-branch { color: var(--text-muted); padding-right: 8px; font-weight: normal; }
+
+        .critical-table th { color: var(--crimson); text-shadow: 0 0 10px rgba(255,30,70,0.4); }
+        .status-nominal { border-left-color: var(--mint) !important; }
+        .status-critical { border-left-color: var(--crimson) !important; background: rgba(255,30,70,0.15) !important; }
+        
+        .cell-id { color: var(--cyan); font-weight: bold; text-shadow: 0 0 5px var(--cyan); }
+        .status-critical .cell-id { color: var(--crimson); text-shadow: 0 0 5px var(--crimson); }
+        
+        .cell-name { font-family: var(--font-en); font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 1px; }
+        .cell-category { font-size: 0.95rem; font-weight: bold; letter-spacing: 1px; }
+        .cell-type { color: var(--text-muted); font-size: 0.85rem; font-weight: bold; letter-spacing: 1px; }
+        
+        /* TOUCH FRIENDLY QTY TEXT */
+        .cell-qty { font-size: 2.6rem; font-weight: bold; color: var(--gold); text-shadow: 0 0 8px var(--gold); }
+        .cell-badge { display: inline-block; padding: 4px 8px; font-size: 0.75rem; border: 1px solid currentColor; border-radius: 2px; box-shadow: 0 0 8px currentColor; }
+
+        /* TOUCH-OPTIMIZED ACTION MINI BUTTONS */
+        .action-group { display: flex; gap: 15px; align-items: center; }
+        .btn-mini { 
+            position: relative; background: rgba(15, 5, 20, 0.85); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05); color: var(--text-muted);
+            cursor: pointer; padding: 12px 18px; 
+            font-family: var(--font-en); font-size: 1rem; font-weight: 900;
+            transition: all 0.3s ease; display: flex; align-items: center; justify-content: center;
+            letter-spacing: 1px; overflow: hidden; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            border-radius: 4px;
+        }
+        .btn-mini::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; transition: all 0.3s ease; }
+        .btn-mini:hover { background: rgba(255,255,255,0.1); color: #fff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .btn-mini:hover::before { width: 4px; }
+        
+        .btn-mini.sub { background: var(--crimson); color: #fff; border-color: var(--crimson); text-shadow: none; font-size: 1.4rem; padding: 10px 24px; }
+        .btn-mini.sub::before { display: none; }
+        .btn-mini.sub:hover { background: #ff4d6d; box-shadow: 0 5px 15px rgba(255,30,70,0.6); transform: translateY(-2px); border-color: #ff4d6d; }
+        
+        .btn-mini.add { background: var(--mint); color: #000; border-color: var(--mint); text-shadow: none; font-size: 1.4rem; padding: 10px 24px; }
+        .btn-mini.add::before { display: none; }
+        .btn-mini.add:hover { background: #39ff14; box-shadow: 0 5px 15px rgba(29,242,186,0.6); transform: translateY(-2px); border-color: #39ff14; }
+        
+        .btn-mini.edit::before { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+        .btn-mini.edit:hover { border-color: rgba(0, 243, 255, 0.4); }
+        .btn-mini.del::before { background: var(--crimson); box-shadow: 0 0 10px var(--crimson); }
+        .btn-mini.del:hover { border-color: rgba(255, 30, 70, 0.4); }
+
+        /* MODAL OVERLAY (THE FORGE) */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; animation: fade-in 0.3s forwards; }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        
+        .modal-content { background: rgba(5,1,10,0.95); border: 1px solid var(--cyan); box-shadow: 0 0 30px rgba(0,243,255,0.4), inset 0 0 20px rgba(0,0,0,0.8); width: 500px; position: relative; border-top: 4px solid var(--cyan); }
+        .modal-header { padding: 20px; border-bottom: 1px dashed rgba(0,243,255,0.3); font-family: var(--font-en); font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 3px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 25px; display: flex; flex-direction: column; gap: 15px; }
+        .input-block { display: flex; flex-direction: column; gap: 5px; }
+        .input-label { color: var(--cyan); font-family: var(--font-mono); font-size: 0.85rem; font-weight: bold; }
+        .forge-input { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px; font-family: var(--font-mono); font-size: 1rem; outline: none; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
+        .forge-input:focus { border-color: var(--cyan); box-shadow: 0 0 15px rgba(0,243,255,0.4), inset 0 0 10px rgba(0,243,255,0.1); background: rgba(0,243,255,0.05); }
+        .modal-footer { padding: 20px; border-top: 1px dashed rgba(0,243,255,0.3); display: flex; justify-content: flex-end; gap: 15px; background: rgba(0,0,0,0.4); }
+
+        /* ========================================================
+           SYSTEM LOCKDOWN (ANTI-SPAM) CSS PROTOCOLS 
+           ======================================================== */
+        .lockdown-active { filter: hue-rotate(-45deg) saturate(2) contrast(1.5); pointer-events: none; }
+        .lockdown-active .btn-mini { transition: all 1s ease !important; opacity: 0 !important; transform: scale(0.1) rotate(180deg) !important; pointer-events: none !important; }
+
+        #lockdownScreen {
+            position: fixed; inset: 0; background: rgba(255, 0, 0, 0.2); backdrop-filter: blur(15px);
+            z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center;
+            color: var(--crimson); font-family: var(--font-lcd); text-align: center; pointer-events: all;
+        }
+        #lockdownScreen.cooldown-mode { background: rgba(255, 150, 0, 0.1); color: var(--gold); }
+        
+        .lockdown-title { font-size: 6rem; text-shadow: 0 0 20px currentColor; margin: 0; animation: blinker 1s infinite alternate; }
+        .lockdown-sub { font-size: 3rem; text-shadow: 0 0 10px currentColor; margin: 0; margin-bottom: 20px; }
+        
+        .dispatch-message {
+            font-family: var(--font-mono); font-size: 1.6rem; color: #fff; text-align: left; background: rgba(255, 30, 70, 0.15);
+            border-left: 4px solid var(--crimson); padding: 20px 30px; box-shadow: 0 0 30px rgba(255,30,70,0.2), inset 0 0 20px rgba(0,0,0,0.8);
+            line-height: 1.6; text-shadow: 0 0 10px var(--crimson); max-width: 800px; width: 90%;
+        }
+        .dispatch-message span { display: block; margin-bottom: 10px; }
+        .blink-red { animation: text-blink 0.5s infinite alternate; color: var(--crimson); font-weight: bold; }
+        
+        .lockdown-timer { font-size: 5rem; font-weight: bold; background: rgba(0,0,0,0.8); padding: 10px 40px; border: 3px solid currentColor; border-radius: 8px; box-shadow: 0 0 30px currentColor, inset 0 0 20px #000; margin-top: 30px; }
+        
+        @keyframes blinker { from { opacity: 1; } to { opacity: 0.5; } }
+        @keyframes text-blink { from { opacity: 1; } to { opacity: 0.2; } }
+
+    </style>
+</head>
+<body>
+
+<!-- ALIEN ORGANISM CANVAS -->
+<canvas id="alienCanvas"></canvas>
+
+<!-- ANTI-SPAM LOCKDOWN OVERLAY WITH DISPATCH NOTIFICATION -->
+<div id="lockdownScreen">
+    <h1 class="lockdown-title" id="lockTitle">SECURITY VIOLATION</h1>
+    <h2 class="lockdown-sub" id="lockSub">TAMPERING DETECTED</h2>
+    
+    <div class="dispatch-message" id="dispatchMsg">
+        <span class="blink-red">> UPLINK SECURED: FACILITY SECURITY NOTIFIED.</span>
+        <span>> ARMED RESPONSE TEAM EN ROUTE...</span>
+        <span>> DO NOT ATTEMPT TO LEAVE THE TERMINAL.</span>
+        <span style="color:var(--cyan);">> PLEASE REMAIN IN DIRECT SIGHT OF OVERHEAD BIOMETRIC CAMERAS.</span>
+    </div>
+
+    <div class="lockdown-timer" id="lockTimer">05:00</div>
+</div>
+
+<div class="os-container">
+    
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-brand">
+            <div class="corsair-node"></div>
+            <img src="ValeoLogo.png" class="valeo-header-logo" alt="VALEO" onerror="this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
+            <div id="fallbackTitle" class="brand-title-fallback">VALEO</div>
+        </div>
+        
+        <!-- RETRO BEEPER STATUS BAR -->
+        <div class="status-panel" id="statusPanel">
+            <div class="status-text" id="sysStatus">VALEO LAB INVENTORY NEXUS</div>
+        </div>
+
+        <div class="system-online">
+            SYSTEM ONLINE // LOCAL DB
+        </div>
+    </header>
+
+    <!-- HORIZONTAL CATEGORY NAVIGATION -->
+    <div class="category-nav">
+        <button class="menu-btn btn-dsc cipher-btn" data-cipher="[ DSC ]" onclick="setCategoryFilter('DSC')">
+            <span class="btn-title">[ DSC ]</span>
+            <span class="btn-jp">THERMAL</span>
+        </button>
+        <button class="menu-btn btn-xsec cipher-btn" data-cipher="[ X-SECTION ]" onclick="setCategoryFilter('X-Section')">
+            <span class="btn-title">[ X-SECTION ]</span>
+            <span class="btn-jp">METALLURGY</span>
+        </button>
+        <button class="menu-btn btn-qual cipher-btn" data-cipher="[ QUALITY ]" onclick="setCategoryFilter('Quality')">
+            <span class="btn-title">[ QUALITY ]</span>
+            <span class="btn-jp">ASSURANCE</span>
+        </button>
+        <button class="menu-btn btn-clean cipher-btn" data-cipher="[ CLEAN-UP ]" onclick="setCategoryFilter('Clean-Up')">
+            <span class="btn-title">[ CLEAN-UP ]</span>
+            <span class="btn-jp">MAINTENANCE</span>
+        </button>
+        <button class="menu-btn btn-all active-cat cipher-btn" data-cipher="[ ALL ]" style="flex: 0.3;" onclick="setCategoryFilter('ALL')">
+            <span class="btn-title" style="color:var(--text-muted);">[ ALL ]</span>
+            <span class="btn-jp">OVERVIEW</span>
+        </button>
+    </div>
+
+    <!-- ACTION ROW -->
+    <div class="action-row">
+        <button class="action-btn" onclick="openModal('new')">[ + FORGE NEW ITEM ]</button>
+    </div>
+
+    <!-- DATA GRID SCROLL AREA -->
+    <div class="grid-wrapper">
+        <div class="scroll-container">
+            
+            <!-- CRITICAL THREATS TABLE (SEPARATE) -->
+            <div id="criticalSection" style="display: none; margin-bottom: 40px;">
+                <div class="table-scan-line scan-critical"></div>
+                <table class="data-table critical-table">
+                    <thead>
+                        <tr>
+                            <th>CRITICAL PART ID</th>
+                            <th>CATEGORY</th>
+                            <th>NOMENCLATURE</th>
+                            <th>STOCK QTY</th>
+                            <th>TYPE</th>
+                            <th>STATUS</th>
+                            <th>MANUAL OVERRIDE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="criticalGridBody">
+                        <!-- Critical rows populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- STANDARD INVENTORY TABLE -->
+            <div class="table-scan-line"></div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>PART ID</th>
+                        <th>CATEGORY</th>
+                        <th>NOMENCLATURE</th>
+                        <th>STOCK QTY</th>
+                        <th>TYPE</th>
+                        <th>STATUS</th>
+                        <th>MANUAL OVERRIDE</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryGridBody">
+                    <!-- Standard rows populated by JS -->
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="forgeModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span id="modalTitle">FORGE NEW ITEM</span>
+            <button class="btn-mini del" style="border:none;" onclick="closeModal()">[ X ]</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editIndex" value="-1">
+            
+            <div class="input-block">
+                <label class="input-label">PART ID / BARCODE</label>
+                <input type="text" id="inputId" class="forge-input" placeholder="e.g. V-001">
+            </div>
+            
+            <div class="input-block">
+                <label class="input-label">NOMENCLATURE</label>
+                <input type="text" id="inputName" class="forge-input" placeholder="e.g. 9µm Polishing Pads">
+            </div>
+            
+            <div class="input-block">
+                <label class="input-label">FOLDER GROUP (Optional - Groups items in table)</label>
+                <input type="text" id="inputGroup" class="forge-input" placeholder="e.g. Grit Paper, Diamond Suspension" list="groupHints">
+                <datalist id="groupHints">
+                    <option value="Grit Paper">
+                    <option value="Polishing Pads">
+                    <option value="Diamond Suspension">
+                </datalist>
+            </div>
+            
+            <div style="display: flex; gap: 15px;">
+                <div class="input-block" style="flex:1;">
+                    <label class="input-label">CATEGORY</label>
+                    <input type="text" id="inputCategory" class="forge-input" placeholder="DSC, X-Section..." list="categoryHints">
+                    <datalist id="categoryHints">
+                        <option value="DSC">
+                        <option value="X-Section">
+                        <option value="Quality">
+                        <option value="Clean-Up">
+                    </datalist>
+                </div>
+                <div class="input-block" style="flex:1;">
+                    <label class="input-label">PACKAGING TYPE</label>
+                    <input type="text" id="inputType" class="forge-input" placeholder="Box/Bottle" list="typeHints">
+                    <datalist id="typeHints">
+                        <option value="Box">
+                        <option value="Bottle">
+                        <option value="Spool">
+                        <option value="Pack">
+                    </datalist>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <div class="input-block" style="flex:1;">
+                    <label class="input-label">CURRENT QTY</label>
+                    <input type="number" id="inputQty" class="forge-input" value="0" min="0">
+                </div>
+                <div class="input-block" style="flex:1;">
+                    <label class="input-label">CRITICAL THRESHOLD</label>
+                    <input type="number" id="inputThreshold" class="forge-input" value="5" min="0">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="action-btn" style="border-color:var(--crimson); color:var(--crimson); box-shadow:0 0 15px rgba(255,30,70,0.3);" onclick="closeModal()">CANCEL</button>
+            <button class="action-btn" style="border-color:var(--mint); color:var(--mint); box-shadow:0 0 15px rgba(29,242,186,0.3);" onclick="saveItem()">[ COMMIT TO CORE ]</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- STATE MANAGEMENT ---
+    let currentFilter = "ALL";
+    let openFolders = new Set(); 
+    
+    // FULL PRE-LOADED INVENTORY DATABASE
+    let inventory = [
+        { id: "V-001", name: "Thermal Sensor Mk.IV", category: "DSC", type: "Box", qty: 142, threshold: 50 },
+        
+        // GRIT PAPER FOLDER
+        { id: "X-001", name: "80 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 100, threshold: 25 },
+        { id: "X-002", name: "180 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 80, threshold: 25 },
+        { id: "X-003", name: "320 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 75, threshold: 25 },
+        { id: "X-004", name: "500 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 60, threshold: 25 },
+        { id: "X-005", name: "600 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 55, threshold: 25 },
+        { id: "X-006", name: "1000 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 40, threshold: 25 },
+        
+        // POLISHING PADS FOLDER
+        { id: "X-007", name: "Textmet C Polishing Pad", group: "Polishing Pads", category: "X-Section", type: "Pack", qty: 20, threshold: 10 },
+        { id: "X-008", name: "Trident Polishing Pad", group: "Polishing Pads", category: "X-Section", type: "Pack", qty: 15, threshold: 10 },
+        { id: "X-009", name: "Micro Cloth Polishing Pad", group: "Polishing Pads", category: "X-Section", type: "Pack", qty: 18, threshold: 10 },
+        { id: "X-010", name: "Chemomet Polishing Pad", group: "Polishing Pads", category: "X-Section", type: "Pack", qty: 12, threshold: 10 },
+        
+        // DIAMOND SUSPENSION FOLDER
+        { id: "X-011", name: "9µm Diamond Suspension", group: "Diamond Suspension", category: "X-Section", type: "Bottle", qty: 5, threshold: 2 },
+        { id: "X-012", name: "6µm Diamond Suspension", group: "Diamond Suspension", category: "X-Section", type: "Bottle", qty: 4, threshold: 2 },
+        { id: "X-013", name: "3µm Diamond Suspension", group: "Diamond Suspension", category: "X-Section", type: "Bottle", qty: 6, threshold: 2 },
+        { id: "X-014", name: "1µm Diamond Suspension", group: "Diamond Suspension", category: "X-Section", type: "Bottle", qty: 3, threshold: 2 },
+        
+        // STANDALONE X-SECTION ITEMS
+        { id: "X-015", name: "Colloidal Silica Fluid", category: "X-Section", type: "Bottle", qty: 8, threshold: 3 },
+        { id: "X-016", name: "Keller's Reagent", category: "X-Section", type: "Bottle", qty: 2, threshold: 1 },
+        { id: "X-017", name: "SamplKwick Liquid (Fast Cure)", category: "X-Section", type: "Bottle", qty: 10, threshold: 4 },
+        { id: "X-018", name: "SamplKwick Powder (Fast Cure)", category: "X-Section", type: "Pack", qty: 9, threshold: 4 },
+        
+        { id: "Q-001", name: "Keyence Micrometer Lens", category: "Quality", type: "Box", qty: 4, threshold: 10 },
+        { id: "C-001", name: "Epoxy Resin (Part A)", category: "Clean-Up", type: "Bottle", qty: 2, threshold: 5 }
+    ];
+
+    // --- ALIEN ORGANISM CANVAS LOGIC ---
+    const canvas = document.getElementById('alienCanvas');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    let particlesArray = []; 
+    const MAX_PARTICLES = 90;
+
+    function initCanvas() { 
+        if(!canvas) return; 
+        canvas.width = window.innerWidth; 
+        canvas.height = window.innerHeight; 
+        initParticles(); 
+    }
+    window.addEventListener('resize', initCanvas); 
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width; 
+            this.y = Math.random() * canvas.height; 
+            this.size = Math.random() * 2.5 + 1.2; 
+            this.speedX = Math.random() * 0.4 - 0.2; 
+            this.speedY = Math.random() * -0.8 - 0.2; 
+            const colors = ['rgba(255, 30, 70,', 'rgba(157, 0, 255,', 'rgba(0, 243, 255,']; 
+            this.colorBase = colors[Math.floor(Math.random() * colors.length)]; 
+            
+            this.opacity = Math.random() * 0.5 + 0.35;
+            this.wiggleOffset = Math.random() * Math.PI * 2;
+            this.wiggleSpeed = Math.random() * 0.015 + 0.005;
+            this.wiggleMagnitude = Math.random() * 1.5 + 0.5;
+        }
+        update(time) { 
+            let wiggle = Math.sin(time * this.wiggleSpeed + this.wiggleOffset) * this.wiggleMagnitude;
+            this.x += this.speedX + wiggle; 
+            this.y += this.speedY; 
+            
+            if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; } 
+            if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX; 
+        }
+        draw() { 
+            ctx.fillStyle = `${this.colorBase} ${this.opacity})`; 
+            ctx.shadowBlur = 10; 
+            ctx.shadowColor = `${this.colorBase} 1)`;
+            ctx.beginPath(); 
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); 
+            ctx.fill(); 
+            ctx.shadowBlur = 0; 
+        }
+    }
+
+    function initParticles() { 
+        particlesArray = []; 
+        const numberOfParticles = Math.min(Math.floor((canvas.width * canvas.height) / 7000), MAX_PARTICLES); 
+        for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle()); 
+    }
+
+    let lastTime = 0; 
+    function animateParticles(time) { 
+        requestAnimationFrame(animateParticles);
+        if(!canvas || !ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        for (let i = 0; i < particlesArray.length; i++) { 
+            particlesArray[i].update(time * 0.05); 
+            particlesArray[i].draw(); 
+        } 
+    }
+    
+    initCanvas(); 
+    requestAnimationFrame(animateParticles);
+
+    // --- BEEPER STATUS BAR LOGIC ---
+    let statusTimer;
+    function triggerStatus(message, type = "info") {
+        const bar = document.getElementById('sysStatus');
+        const panel = document.getElementById('statusPanel');
+        
+        let color = "#39ff14"; 
+        if (type === "success") color = "var(--mint)";
+        if (type === "warning" || type === "critical") color = "var(--crimson)";
+        if (type === "info") color = "var(--cyan)";
+
+        bar.innerText = message;
+        bar.style.color = color;
+        bar.style.textShadow = `0 0 8px ${color}, 0 0 20px ${color}`;
+        
+        panel.style.boxShadow = `inset 0 0 35px ${color}, inset 0 0 10px #000`;
+
+        clearTimeout(statusTimer);
+        statusTimer = setTimeout(() => {
+            bar.innerText = "VALEO LAB INVENTORY NEXUS";
+            bar.style.color = "#39ff14";
+            bar.style.textShadow = "0 0 8px #39ff14, 0 0 15px #39ff14";
+            panel.style.boxShadow = "inset 0 0 25px rgba(57, 255, 20, 0.25), inset 0 0 10px #000";
+        }, 4000);
+    }
+
+    setInterval(() => {
+        const criticalItems = inventory.filter(i => i.qty <= i.threshold);
+        if (criticalItems.length > 0) {
+            triggerStatus(`[ WARN ] ${criticalItems.length} ITEM(S) CRITICAL`, "critical");
+        }
+    }, 15000);
+
+    // --- CIPHER & HACK EFFECT ---
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
+    function runCipher(btn, selector, durationMs = -1) {
+        let iterations = 0; 
+        const targetText = btn.dataset.cipher; 
+        const textElement = btn.querySelector(selector);
+        if(!textElement) return;
+        
+        clearInterval(btn.dataset.interval);
+        
+        btn.dataset.interval = setInterval(() => {
+            textElement.innerText = targetText.split("").map((letter, index) => {
+                if(index < iterations) return targetText[index]; 
+                return letters[Math.floor(Math.random() * letters.length)];
+            }).join("");
+            
+            if(iterations >= targetText.length) {
+                clearInterval(btn.dataset.interval);
+            }
+            iterations += durationMs > 0 ? 0.05 : 0.5;
+        }, 30);
+        
+        if (durationMs > 0) {
+            setTimeout(() => {
+                clearInterval(btn.dataset.interval);
+                textElement.innerText = targetText; 
+            }, durationMs);
+        }
+    }
+
+    document.querySelectorAll('.cipher-btn').forEach(btn => {
+        btn.addEventListener('mouseenter', () => runCipher(btn, '.btn-title'));
+    });
+
+    // 5-Minute Ghost Hack Loop
+    setInterval(() => {
+        triggerStatus("SYS_WARNING: ROGUE UPLINK DETECTED", "critical");
+        document.querySelectorAll('.category-nav .menu-btn').forEach(btn => {
+            btn.classList.add('hacked-glitch');
+            runCipher(btn, '.btn-title', 5000);
+        });
+        setTimeout(() => {
+            document.querySelectorAll('.category-nav .menu-btn').forEach(btn => {
+                btn.classList.remove('hacked-glitch');
+            });
+        }, 5000);
+    }, 300000);
+
+    // --- ANTI-SPAM CORE MELTDOWN PROTOCOL ---
+    let rapidClickCount = 0;
+    let lastClickTime = 0;
+    let isLockedDown = false;
+    let lockdownTimerInterval;
+
+    function triggerLockdown() {
+        if (isLockedDown) return;
+        isLockedDown = true;
+        
+        document.body.classList.add('lockdown-active');
+        
+        document.querySelectorAll('.btn-mini').forEach(btn => {
+            const randomX = (Math.random() - 0.5) * 600;
+            const randomY = (Math.random() - 0.5) * 600;
+            const randomRot = (Math.random() - 0.5) * 180;
+            btn.style.setProperty('transform', `translate(${randomX}px, ${randomY}px) rotate(${randomRot}deg)`, 'important');
+        });
+
+        const overlay = document.getElementById('lockdownScreen');
+        overlay.style.display = 'flex';
+        overlay.classList.remove('cooldown-mode');
+        
+        document.getElementById('lockTitle').innerText = "SECURITY VIOLATION";
+        document.getElementById('lockSub').innerText = "TAMPERING DETECTED";
+        
+        document.getElementById('dispatchMsg').innerHTML = `
+            <span class="blink-red">> UPLINK SECURED: FACILITY SECURITY NOTIFIED.</span>
+            <span>> ARMED RESPONSE TEAM EN ROUTE...</span>
+            <span>> DO NOT ATTEMPT TO LEAVE THE TERMINAL.</span>
+            <span style="color:var(--cyan);">> PLEASE REMAIN IN DIRECT SIGHT OF OVERHEAD BIOMETRIC CAMERAS.</span>
+        `;
+        
+        let timeLeft = 300; 
+        
+        lockdownTimerInterval = setInterval(() => {
+            timeLeft--;
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('lockTimer').innerText = `${m}:${s}`;
+            
+            if (timeLeft === 60) {
+                overlay.classList.add('cooldown-mode');
+                document.getElementById('lockTitle').innerText = "SYSTEM COOLING DOWN";
+                document.getElementById('lockSub').innerText = "RESTORE IMMINENT";
+                
+                document.getElementById('dispatchMsg').innerHTML = `
+                    <span style="color:var(--gold); font-weight:bold;">> SECURITY DISPATCH CANCELLED.</span>
+                    <span>> FALSE ALARM LOGGED IN SYSTEM CORE.</span>
+                    <span>> PLEASE WAIT FOR TERMINAL REBOOT.</span>
+                `;
+                
+                document.body.classList.remove('lockdown-active');
+                
+                document.querySelectorAll('.btn-mini').forEach(btn => {
+                    btn.style.cssText = ''; 
+                });
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(lockdownTimerInterval);
+                overlay.style.display = 'none';
+                isLockedDown = false;
+                rapidClickCount = 0;
+                
+                document.getElementById('dispatchMsg').innerHTML = `
+                    <span class="blink-red">> UPLINK SECURED: FACILITY SECURITY NOTIFIED.</span>
+                    <span>> ARMED RESPONSE TEAM EN ROUTE...</span>
+                    <span>> DO NOT ATTEMPT TO LEAVE THE TERMINAL.</span>
+                    <span style="color:var(--cyan);">> PLEASE REMAIN IN DIRECT SIGHT OF OVERHEAD BIOMETRIC CAMERAS.</span>
+                `;
+                
+                renderGrid();
+            }
+        }, 1000);
+    }
+
+    // --- ACCORDION FOLDER STATE CONTROL ---
+    // Make toggleGroup globally accessible so inline HTML strings can call it
+    window.toggleGroup = function(groupId) {
+        const isOpening = !openFolders.has(groupId);
+        if (isOpening) {
+            openFolders.add(groupId);
+        } else {
+            openFolders.delete(groupId);
+        }
+        renderGrid(); // Redraw with new open/close state
+    };
+
+    // --- RENDERING LOGIC ---
+    function getCategoryColorInfo(categoryName) {
+        let catColor = "var(--text-muted)";
+        let catTextShadow = "none";
+        const upperCat = (categoryName || "").toUpperCase();
+        if (upperCat === "DSC") { catColor = "var(--crimson)"; catTextShadow = "0 0 8px var(--crimson)"; }
+        else if (upperCat === "X-SECTION") { catColor = "var(--violet)"; catTextShadow = "0 0 8px var(--violet)"; }
+        else if (upperCat === "QUALITY") { catColor = "var(--cyan)"; catTextShadow = "0 0 8px var(--cyan)"; }
+        else if (upperCat === "CLEAN-UP") { catColor = "var(--mint)"; catTextShadow = "0 0 8px var(--mint)"; }
+        return { catColor, catTextShadow };
+    }
+
+    function setCategoryFilter(category) {
+        currentFilter = category;
+        triggerStatus(`FILTER > ${category}`, "info");
+        
+        document.querySelectorAll('.category-nav .menu-btn').forEach(btn => {
+            btn.classList.remove('active-cat');
+            if (btn.innerText.includes(category.toUpperCase())) btn.classList.add('active-cat');
+            if (category === 'ALL' && btn.classList.contains('btn-all')) btn.classList.add('active-cat');
+        });
+        
+        renderGrid();
+    }
+
+    function renderRowHtml(item, index, isCritical, isChild = false, parentId = "") {
+        const statusClass = isCritical ? 'status-critical' : 'status-nominal';
+        const statusText = isCritical ? 'CRITICAL' : 'NOMINAL';
+        const statusColor = isCritical ? 'var(--crimson)' : 'var(--mint)';
+        
+        let { catColor, catTextShadow } = getCategoryColorInfo(item.category);
+        
+        const childClass = isChild ? `child-of-${parentId} group-child` : '';
+        
+        // If it's a child but its parent folder isn't in our memory, keep it hidden on render
+        const childStyle = isChild && !openFolders.has(parentId) ? `style="display: none;"` : '';
+        const idPrefix = isChild ? `<span class="tree-branch">└─ </span>` : '';
+
+        return `
+            <tr class="${statusClass} ${childClass}" ${childStyle}>
+                <td class="cell-id">${idPrefix}${item.id}</td>
+                <td class="cell-category" style="color:${catColor}; text-shadow:${catTextShadow}; font-weight:bold;">${(item.category || "").toUpperCase()}</td>
+                <td><div class="cell-name">${item.name}</div></td>
+                <td class="cell-qty">${item.qty}</td>
+                <td class="cell-type">[ ${item.type ? item.type.toUpperCase() : 'UNIT'} ]</td>
+                <td><span class="cell-badge" style="color:${statusColor}; border-color:${statusColor};">${statusText}</span></td>
+                <td>
+                    <div class="action-group">
+                        <button class="btn-mini sub" onclick="updateQty(${index}, -1)">[ - ]</button>
+                        <button class="btn-mini add" onclick="updateQty(${index}, 1)">[ + ]</button>
+                        <button class="btn-mini edit" onclick="openModal('edit', ${index})">[ EDIT ]</button>
+                        <button class="btn-mini del" onclick="deleteItem(${index})">[ DEL ]</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    function renderGrid() {
+        if (isLockedDown) return; 
+
+        const tbodyNormal = document.getElementById('inventoryGridBody');
+        const tbodyCritical = document.getElementById('criticalGridBody');
+        const criticalSection = document.getElementById('criticalSection');
+        
+        let normalHtml = '';
+        let criticalHtml = '';
+        
+        let hasCritical = false;
+        let normalGroups = {};
+        let standaloneNormal = [];
+
+        // Sort out Critical vs Normal items
+        // We iterate through the raw inventory and sort them based on threshold
+        inventory.forEach((item, index) => {
+            if (currentFilter !== "ALL" && item.category !== currentFilter) return;
+
+            item.originalIndex = index; 
+            
+            if (item.qty <= item.threshold) {
+                criticalHtml += renderRowHtml(item, index, true);
+                hasCritical = true;
+            } else {
+                if (item.group) {
+                    if (!normalGroups[item.group]) normalGroups[item.group] = [];
+                    normalGroups[item.group].push(item);
+                } else {
+                    standaloneNormal.push(item);
+                }
+            }
+        });
+
+        // Construct HTML for Folders inside the Normal table
+        for (const [groupName, items] of Object.entries(normalGroups)) {
+            const headerId = groupName.replace(/\s+/g, '-').toLowerCase();
+            const totalQty = items.reduce((sum, i) => sum + i.qty, 0);
+            
+            // Check memory state so it doesn't snap shut on edit
+            const isOpen = openFolders.has(headerId);
+            const iconText = isOpen ? '[ - ]' : '[ + ]';
+            
+            normalHtml += `
+                <tr class="group-header status-nominal" style="cursor: pointer;" onclick="toggleGroup('${headerId}')">
+                    <td colspan="2" style="color:var(--cyan); font-weight:bold; font-size:1.1rem; text-shadow:0 0 5px var(--cyan);">
+                        <span class="folder-icon" style="color:var(--mint); margin-right: 8px;">${iconText}</span> 
+                        ${groupName.toUpperCase()} FOLDER
+                    </td>
+                    <td><div class="cell-name">${items.length} ITEMS INSIDE</div></td>
+                    <td class="cell-qty" style="color:var(--text-main); text-shadow:none;">${totalQty} <span style="font-size:1rem;color:var(--text-muted)">TOTAL UNITS</span></td>
+                    <td>-</td>
+                    <td><span class="cell-badge" style="color:var(--mint); border-color:var(--mint);">NOMINAL</span></td>
+                    <td>-</td>
+                </tr>
+            `;
+
+            items.forEach(item => {
+                normalHtml += renderRowHtml(item, item.originalIndex, false, true, headerId);
+            });
+        }
+
+        // Construct HTML for Normal Standalone Items (like Keller's Reagent)
+        standaloneNormal.forEach(item => {
+            normalHtml += renderRowHtml(item, item.originalIndex, false);
+        });
+        
+        // Push massive HTML strings into DOM perfectly once
+        tbodyNormal.innerHTML = normalHtml;
+        tbodyCritical.innerHTML = criticalHtml;
+        criticalSection.style.display = hasCritical ? 'block' : 'none';
+    }
+
+    // --- CRUD OPERATIONS ---
+    window.updateQty = function(index, delta) {
+        if (isLockedDown) return;
+
+        // Anti-Spam Check
+        const now = Date.now();
+        if (now - lastClickTime < 600) { 
+            rapidClickCount++;
+            if (rapidClickCount >= 6) { 
+                triggerLockdown();
+                return;
+            }
+        } else {
+            rapidClickCount = 1; 
+        }
+        lastClickTime = now;
+
+        let newQty = inventory[index].qty + delta;
+        if (newQty < 0) newQty = 0;
+        inventory[index].qty = newQty;
+        triggerStatus(`UPDATED > ${inventory[index].id}`, "success");
+        renderGrid(); // Memory state saves folder opens!
+    };
+
+    window.deleteItem = function(index) {
+        if (isLockedDown) return;
+        if (confirm(`PURGE ITEM [ ${inventory[index].id} ] FROM CORE MEMORY?`)) {
+            triggerStatus(`PURGED > ${inventory[index].id}`, "warning");
+            inventory.splice(index, 1);
+            renderGrid();
+        }
+    };
+
+    // --- MODAL LOGIC ---
+    window.openModal = function(mode, index = -1) {
+        if (isLockedDown) return;
+        const modal = document.getElementById('forgeModal');
+        const title = document.getElementById('modalTitle');
+        const idInput = document.getElementById('inputId');
+        
+        if (mode === 'edit' && index > -1) {
+            title.innerText = "EDIT EXISTING PROTOCOL";
+            document.getElementById('editIndex').value = index;
+            const item = inventory[index];
+            idInput.value = item.id;
+            idInput.disabled = true; idInput.style.opacity = '0.5';
+            document.getElementById('inputName').value = item.name;
+            document.getElementById('inputGroup').value = item.group || '';
+            document.getElementById('inputCategory').value = item.category;
+            document.getElementById('inputType').value = item.type || '';
+            document.getElementById('inputQty').value = item.qty;
+            document.getElementById('inputThreshold').value = item.threshold;
+        } else {
+            title.innerText = "FORGE NEW ITEM";
+            document.getElementById('editIndex').value = -1;
+            idInput.disabled = false; idInput.style.opacity = '1';
+            idInput.value = '';
+            document.getElementById('inputName').value = '';
+            document.getElementById('inputGroup').value = '';
+            document.getElementById('inputCategory').value = currentFilter !== 'ALL' ? currentFilter : '';
+            document.getElementById('inputType').value = '';
+            document.getElementById('inputQty').value = '0';
+            document.getElementById('inputThreshold').value = '5';
+        }
+        modal.classList.add('active');
+        if(mode === 'new') idInput.focus();
+    };
+
+    window.closeModal = function() { document.getElementById('forgeModal').classList.remove('active'); };
+
+    window.saveItem = function() {
+        const editIndex = parseInt(document.getElementById('editIndex').value);
+        const id = document.getElementById('inputId').value.trim().toUpperCase();
+        const name = document.getElementById('inputName').value.trim();
+        const group = document.getElementById('inputGroup').value.trim();
+        const category = document.getElementById('inputCategory').value.trim() || "Uncategorized";
+        const type = document.getElementById('inputType').value.trim() || "Unit";
+        const qty = parseInt(document.getElementById('inputQty').value) || 0;
+        const threshold = parseInt(document.getElementById('inputThreshold').value) || 0;
+
+        if (!id || !name) { alert("SYS_ERROR: PART ID and NOMENCLATURE are required parameters."); return; }
+
+        if (editIndex > -1) {
+            inventory[editIndex] = { id, name, group, category, type, qty, threshold };
+            triggerStatus(`EDITED > ${id}`, "success");
+        } else {
+            if (inventory.some(i => i.id === id)) { alert(`SYS_ERROR: PART ID [ ${id} ] already exists.`); return; }
+            inventory.push({ id, name, group, category, type, qty, threshold });
+            triggerStatus(`FORGED > ${id}`, "success");
+        }
+        closeModal();
+        renderGrid();
+    };
+
+    window.onload = () => { renderGrid(); };
+</script>
+</body>
+</html>
