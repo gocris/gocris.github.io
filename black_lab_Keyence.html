@@ -34,6 +34,15 @@
         .dragging { opacity: 0.4 !important; transform: scale(0.95); box-shadow: 0 0 25px var(--crimson) !important; border-color: var(--crimson) !important; z-index: 1000; }
 
 
+	/* --- FREE MODE: EDITABLE LABELS & THE VOID --- */
+        .edit-block-name { background: transparent; border: none; border-bottom: 1px dashed transparent; color: var(--cyan); font-family: var(--font-en); font-weight: 900; font-size: 1.6rem; letter-spacing: 2px; text-shadow: 0 0 8px var(--cyan); outline: none; width: 100%; transition: 0.2s; padding: 2px 0; }
+        .edit-block-name:focus { border-bottom: 1px dashed var(--cyan); background: rgba(0, 243, 255, 0.1); }
+        .edit-point-name { background: transparent; border: none; border-bottom: 1px dashed transparent; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono); font-weight: bold; letter-spacing: 1px; outline: none; width: 75px; transition: 0.2s; padding: 2px 0; }
+        .edit-point-name:focus { border-bottom: 1px dashed var(--violet); color: #fff; }
+        
+        .void-zone { width: 100%; height: 80px; border: 2px dashed var(--crimson); background: rgba(255, 30, 70, 0.05); display: flex; align-items: center; justify-content: center; color: var(--crimson); font-family: var(--font-mono); font-weight: 900; font-size: 1.2rem; letter-spacing: 4px; text-shadow: 0 0 10px var(--crimson); margin-top: 15px; transition: 0.3s; opacity: 0.5; }
+        .void-zone.dragover { background: rgba(255, 30, 70, 0.2); opacity: 1; transform: scale(1.02); box-shadow: inset 0 0 30px rgba(255, 30, 70, 0.5); }
+
 	/* Tactical Backgrounds */
         body { background: radial-gradient(ellipse at 50% 12%, rgba(62, 9, 75, .22), transparent 42%), linear-gradient(135deg, #030106 0%, #08030d 48%, #030106 100%); }
         body::before { content: ""; position: fixed; z-index: 0; width: 100vw; height: 100vh; inset: 0; opacity: .75; background: linear-gradient(90deg, transparent 49.85%, rgba(0,243,255,.045) 50%, transparent 50.15%), linear-gradient(transparent 49.85%, rgba(157,0,255,.05) 50%, transparent 50.15%), radial-gradient(ellipse at center, rgba(157,0,255,.12), transparent 68%); pointer-events: none; }
@@ -147,14 +156,28 @@
         .hud-status { position: absolute; bottom: 25%; color: var(--crimson); font-family: var(--font-mono); font-size: 1.1rem; font-weight: bold; letter-spacing: 6px; text-shadow: 0 0 10px var(--crimson); z-index: 10; animation: blink-status 1.2s step-end infinite; }
         @keyframes blink-status { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* CORSAIR GLOWING NODE & BRANDING */
+        /* CORSAIR GLOWING TRIANGLE (BACK LINK) & BRANDING */
         .header-brand { display: flex; align-items: center; gap: 15px; }
-        .corsair-node { width: 14px; height: 14px; background: var(--crimson); border-radius: 50%; border: none; cursor: pointer; flex-shrink: 0; transition: all 0.3s ease; animation: node-blink 2s infinite ease-in-out; }
-        .corsair-node:hover { transform: scale(1.2); background: #fff; box-shadow: 0 0 20px #fff, 0 0 30px var(--crimson); animation: none; }
+        .corsair-node { 
+            width: 0; height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-right: 14px solid var(--crimson);
+            cursor: pointer; flex-shrink: 0; 
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.3, 1); 
+            animation: triangle-pulse 2s infinite ease-in-out; 
+        }
+        .corsair-node:hover { 
+            border-right-color: #fff; 
+            transform: scale(1.3) translateX(-4px); 
+            animation: none; 
+            filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px var(--cyan)); 
+        }
         .corsair-node:active { transform: scale(0.9); }
-        @keyframes node-blink { 0%, 100% { opacity: 1; box-shadow: 0 0 12px var(--crimson), 0 0 25px var(--crimson); } 50% { opacity: 0.3; box-shadow: 0 0 2px var(--crimson), 0 0 5px var(--crimson); } }
-        .corsair-node.cyan-mode { background: var(--cyan); animation: cyan-blink 2s infinite ease-in-out; }
-        @keyframes cyan-blink { 0%, 100% { opacity: 1; box-shadow: 0 0 12px var(--cyan), 0 0 25px var(--cyan); } 50% { opacity: 0.3; box-shadow: 0 0 2px var(--cyan), 0 0 5px var(--cyan); } }
+        @keyframes triangle-pulse { 
+            0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px var(--crimson)) drop-shadow(0 0 15px var(--crimson)); } 
+            50% { opacity: 0.4; filter: drop-shadow(0 0 2px var(--crimson)); } 
+        }
 
         .header { background: linear-gradient(110deg, rgba(22,7,24,.96), rgba(7,5,14,.97)); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: inset 0 -5px 25px rgba(255, 0, 60, 0.2); flex-shrink: 0; z-index: 100; gap: 15px; border-bottom: 1px solid rgba(255, 30, 70, 0.3); }
         .valeo-header-logo { height: 30px; filter: drop-shadow(0 0 12px rgba(255, 0, 60, 0.8)) drop-shadow(0 0 25px var(--crimson)); }
@@ -449,6 +472,10 @@
         .free-point-cell::before { top: 0; }
         .free-point-cell::after { bottom: 0; animation-direction: reverse; }
 
+	/* --- FREE MODE THE VOID --- */
+        .void-zone { width: 100%; height: 80px; border: 2px dashed var(--crimson); background: rgba(255, 30, 70, 0.05); display: flex; align-items: center; justify-content: center; color: var(--crimson); font-family: var(--font-mono); font-weight: 900; font-size: 1.2rem; letter-spacing: 4px; text-shadow: 0 0 10px var(--crimson); margin-top: 15px; transition: 0.3s; opacity: 0.5; }
+        .void-zone.dragover { background: rgba(255, 30, 70, 0.2); opacity: 1; transform: scale(1.02); box-shadow: inset 0 0 30px rgba(255, 30, 70, 0.5); }
+
         @media (max-width: 1024px) {
             .matrix-panel { display: none !important; }
             .forge-panel { width: 100vw !important; min-width: 100vw !important; right: 0 !important; margin-right: 0 !important; border-left: none; }
@@ -456,9 +483,69 @@
             .btn-toggle-manual { top: 10px; right: 10px; font-size: 0.75rem; padding: 6px 10px; }
             .side-tab-toggle { display: none !important; }
         }
+
+	/* --- IPAD / TABLET MODE (SLIDING PANELS) --- */
+        .ipad-swipe-toggle { display: none; } /* Strictly hidden on desktop */
+
+        @media (max-width: 1100px) {
+            /* Hide the desktop shrink tab on iPad */
+            .side-tab-toggle { display: none !important; }
+            
+            .matrix-panel { width: 100vw !important; flex: none !important; }
+            
+            .forge-panel { 
+                position: fixed; top: 0; right: 0; width: 100vw; height: 100vh; 
+                transform: translateX(100%); z-index: 2000; 
+                transition: transform 0.5s cubic-bezier(0.25, 1, 0.3, 1); 
+                background: var(--bg-deep); border-left: 2px solid var(--crimson);
+            }
+
+            
+            .forge-panel.ipad-active { transform: translateX(0); border-left-color: var(--cyan); }
+            
+            /* NEW Distinct iPad Arrow (Hangs off the left edge of the off-screen panel) */
+            .ipad-swipe-toggle { 
+                display: flex; position: absolute; left: -60px; top: 40%; 
+                width: 60px; height: 100px; background: rgba(255,30,70,0.95); 
+                border: 2px solid var(--crimson); border-right: none; border-radius: 10px 0 0 10px; 
+                align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 2.2rem; 
+                box-shadow: -5px 0 25px rgba(255,30,70,0.6); transition: all 0.5s cubic-bezier(0.25, 1, 0.3, 1);
+                z-index: 2001; text-shadow: 0 0 10px #fff;
+            }
+            
+            /* Flips to the Left Side of the screen when panel is open */
+            .forge-panel.ipad-active .ipad-swipe-toggle { 
+                left: 0; border-radius: 0 10px 10px 0; border: 2px solid var(--cyan); border-left: none;
+                background: rgba(0,243,255,0.95); box-shadow: 5px 0 25px rgba(0,243,255,0.6); color: #000; text-shadow: none;
+            }
+            
+            .ipad-icon { transition: transform 0.5s cubic-bezier(0.25, 1, 0.3, 1); }
+            .forge-panel.ipad-active .ipad-icon { transform: rotate(180deg); }
+        }
+	
+	/* --- IPHONE / MOBILE MODE (STRICTLY DROP ZONE ONLY) --- */
+        @media (max-width: 768px) {
+            .matrix-panel { display: none !important; }
+            .ipad-swipe-toggle { display: none !important; }
+            .forge-panel { 
+                position: absolute !important; 
+                top: 0 !important; 
+                left: 0 !important; 
+                transform: translateX(0) !important; 
+                width: 100vw !important; 
+                height: 100vh !important;
+                border: none !important; 
+                z-index: 10000 !important;
+                background: var(--bg-deep) !important;
+            }
+        }
+
+       
     </style>
 </head>
 <body id="mainBody">
+
+<body>
 
 <div class="os-container">
     
@@ -520,8 +607,8 @@
 
         <div class="header">
             <div class="header-brand">
-                <div class="corsair-node" onclick="this.classList.toggle('cyan-mode')"></div>
-                <img src="valeoLogo.png" id="mainTitleLogo" alt="VALEO" class="valeo-header-logo"></img>
+                <div class="corsair-node" onclick="window.location.href='index.html'" title="Disconnect & Return to Hub"></div>
+                <img src="ValeoLogo.png" id="mainTitleLogo" alt="VALEO" class="valeo-header-logo" onerror="this.style.display='none'">
             </div>
 
             <div class="global-status-container" id="globalStatusContainer" style="margin-left: 15px;">
@@ -551,6 +638,16 @@
         <!-- Side Tab Toggle (Hangs off left edge, defaults to Crimson) -->
         <div class="side-tab-toggle" onclick="toggleDropZone()">
             <span class="toggle-icon">◀</span>
+        </div>
+
+	<!-- Side Tab Toggle (Desktop Original) -->
+        <div class="side-tab-toggle" onclick="toggleDropZone()">
+            <span class="toggle-icon">◀</span>
+        </div>
+
+        <!-- NEW Side Tab Toggle (iPad Exclusive) -->
+        <div class="ipad-swipe-toggle" onclick="toggleIpadView()">
+            <span class="ipad-icon">◀</span>
         </div>
 
         <div class="forge-inner">
@@ -628,6 +725,60 @@
                     </div>
                 </div>
 
+		<!-- FREE MODE EDIT LABELS MODAL -->
+                <div class="panel-modal" id="editLabelsModal" style="padding: 0; padding-top: 70px; align-items: stretch;">
+                    <div class="review-header">
+                        <div class="review-title">[ CUSTOMIZE NOMENCLATURE ]</div>
+                        <div class="review-desc">Define custom payload headers. Leave blank for minimal numeric output.</div>
+                    </div>
+                    <div class="review-content" style="display:flex; flex-direction:column; gap:20px; padding:20px;">
+                        
+                        <!-- Bulk Block Naming -->
+                        <div style="background:rgba(0,0,0,0.5); padding:15px; border:1px solid var(--cyan);">
+                            <div style="color:var(--cyan); margin-bottom:10px; font-weight:bold; font-family:var(--font-en); letter-spacing:2px;">BULK BLOCK RENAMING</div>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <input type="text" id="bulkBlockName" class="review-input" style="flex:1; width:auto; text-align:left; padding:10px;" placeholder="e.g. Sample">
+                                <button class="cipher-btn btn-action btn-enter" style="font-size:0.8rem; padding:0 15px;" onclick="applyBulkBlock()">FILL DOWN</button>
+                                <button class="cipher-btn btn-action btn-enter" style="font-size:0.8rem; padding:0 15px;" onclick="applySequentialNumbers()">+ SEQUENTIAL</button>
+                                <button class="cipher-btn btn-action btn-undo" style="font-size:0.8rem; padding:0 15px; border-left-color:var(--crimson);" onclick="resetBulkBlock()">RESET</button>
+                            </div>
+                        </div>
+
+                        <!-- Bulk Point Naming -->
+                        <div style="background:rgba(0,0,0,0.5); padding:15px; border:1px solid var(--violet);">
+                            <div style="color:var(--bright-purple); margin-bottom:10px; font-weight:bold; font-family:var(--font-en); letter-spacing:2px;">BULK POINT RENAMING (Applies to all blocks)</div>
+                            <div id="bulkPointContainer" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                                <!-- Dynamically injected via JS -->
+                            </div>
+                            <div style="display:flex; gap:10px; margin-top:15px;">
+                                <button class="cipher-btn btn-action btn-enter" style="font-size:0.8rem; padding:10px; flex:1;" onclick="applyBulkPoints()">APPLY POINT NAMES</button>
+                                <button class="cipher-btn btn-action btn-undo" style="font-size:0.8rem; padding:10px; flex:1; border-left-color:var(--crimson);" onclick="resetBulkPoints()">RESET</button>
+                            </div>
+                        </div>
+
+                        <!-- Payload Export Settings -->
+                        <div style="background:rgba(0,0,0,0.5); padding:15px; border:1px solid var(--gold);">
+                            <div style="color:var(--gold); margin-bottom:10px; font-weight:bold; font-family:var(--font-en); letter-spacing:2px;">PAYLOAD EXPORT SETTINGS</div>
+                            <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); color:#fff; font-size:0.9rem;">
+                                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                    <input type="checkbox" id="exportOptBlock" checked style="width:16px; height:16px; accent-color:var(--cyan);"> Include Block Names
+                                </label>
+                                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                    <input type="checkbox" id="exportOptPoint" checked style="width:16px; height:16px; accent-color:var(--cyan);"> Include Point Names
+                                </label>
+                                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                    <input type="checkbox" id="exportOptData" checked style="width:16px; height:16px; accent-color:var(--cyan);"> Include Data Values
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="review-footer" style="display:flex; gap:15px;">
+                        <button class="btn-confirm-map cipher-btn" style="flex:1; background:rgba(255,30,70,0.2); border-left-color:var(--crimson); color:var(--crimson);" onclick="document.getElementById('editLabelsModal').style.display='none'">[ CANCEL ]</button>
+                        <button class="btn-confirm-map cipher-btn" style="flex:1;" onclick="saveCustomLabels()">[ SAVE & REGENERATE ]</button>
+                    </div>
+                </div>
+
                 <!-- DROP ZONE MODULE & SHRINK LOGIC -->
                 <div id="dropModule" style="flex: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; transition: all 0.3s cubic-bezier(0.25, 1, 0.3, 1);">
                     <div class="drop-zone" id="dropZone" ondragover="this.classList.add('dragover'); event.dataTransfer.dropEffect = 'copy'; event.preventDefault();" ondragleave="this.classList.remove('dragover'); event.preventDefault();" ondrop="this.classList.remove('dragover'); event.preventDefault(); handleFileDrop(event);" onclick="document.getElementById('fileInput').click()">
@@ -643,9 +794,13 @@
                                 <canvas id="qrCanvas"></canvas>
                             </div>
                         </div>
+                        
+                        <!-- NEW: DROP ZONE EDIT BUTTON (Hidden by default) -->
+                        <!-- NEW: DROP ZONE EDIT BUTTON -->
+                        <button id="btnDropZoneEdit" class="btn-confirm-map cipher-btn" style="display:none; width:100%; margin-top: 25px; margin-bottom: 10px; background:rgba(0,243,255,0.1); box-shadow:0 0 15px var(--cyan); border-color:var(--cyan); border-left-color:var(--cyan); color:var(--cyan);" onclick="openEditLabelsModal()" data-original-text="[ EDIT LABELS ]">[ EDIT LABELS ]</button>
+                        
                         <button class="btn-purge cipher-btn" onclick="resetTransmitter()" data-original-text="[ PURGE & RESET ]">[ PURGE & RESET ]</button>
                     </div>
-                </div>
 
                 <!-- MANUAL ENTRY SELECTOR -->
                 <div id="manualModeSelector">
@@ -753,9 +908,15 @@
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>";
     function applyCipherEffect(elements) {
         elements.forEach(btn => {
+            // Save original text once so the glitch never corrupts it permanently
+            if (!btn.dataset.originalText) {
+                let targetEl = btn.querySelector('.btn-title') || btn;
+                btn.dataset.originalText = targetEl.innerText.trim();
+            }
+
             btn.addEventListener('mouseenter', event => {
                 let iterations = 0; 
-                const targetText = btn.dataset.originalText || btn.innerText.trim();
+                const targetText = btn.dataset.originalText;
                 let targetEl = btn.querySelector('.btn-title') || btn;
                 
                 clearInterval(btn.dataset.interval);
@@ -765,13 +926,13 @@
                         return letters[Math.floor(Math.random() * letters.length)];
                     }).join("");
                     if(iterations >= targetText.length) clearInterval(btn.dataset.interval);
-                    iterations += 1 / 2; 
+                    iterations += 1 / 3; 
                 }, 20);
             });
             btn.addEventListener('mouseleave', event => {
                 clearInterval(btn.dataset.interval);
                 let targetEl = btn.querySelector('.btn-title') || btn;
-                targetEl.innerText = btn.dataset.originalText || btn.innerText;
+                targetEl.innerText = btn.dataset.originalText; // Force restore pristine text
             });
         });
     }
@@ -1413,7 +1574,7 @@
         }, 100);
     }
 
-// --- GENERIC FREE MODE GENERATOR (Draggable Right-Side Grid) ---
+// --- GENERIC FREE MODE GENERATOR (Draggable + Editable Modals) ---
     function formatFreeMode(sampleBlocks, filename) {
         let extractedBlocks = [];
         let blockCount = 1;
@@ -1429,9 +1590,10 @@
             if (measurements.length > 0) {
                 extractedBlocks.push({ id: blockCount, points: measurements });
                 
-                pb += blockCount + "\t" + measurements[0] + "\r\n";
+                // 3-Column Vertical Format (Block | Point | Value)
+                pb += `${blockCount}\tPT 1\t${measurements[0]}\r\n`;
                 for (let mIdx = 1; mIdx < measurements.length; mIdx++) {
-                    pb += "\t" + measurements[mIdx] + "\r\n";
+                    pb += `\tPT ${mIdx+1}\t${measurements[mIdx]}\r\n`;
                 }
                 pb += "\r\n"; 
                 blockCount++;
@@ -1450,7 +1612,10 @@
                         </div>
                         <div class="grid-header" style="flex: 1; text-align:left; display:flex; justify-content:space-between; align-items:center;">
                             <span>EXTRACTED DATA POINTS</span>
-                            <button id="btnRegenerateFree" class="btn-confirm-map cipher-btn" style="display:none; width:auto; padding: 6px 20px; font-size:1rem; height:auto; margin:0; box-shadow:0 0 15px var(--mint);" onclick="regenerateFreeModeQR()" data-original-text="[ REGENERATE UPLINK ]">[ REGENERATE UPLINK ]</button>
+                            <div style="display:flex; gap:10px;">
+                                <button id="btnEditLabels" class="btn-confirm-map cipher-btn" style="width:auto; padding: 6px 15px; font-size:1rem; height:auto; margin:0; box-shadow:0 0 15px var(--cyan); border-color:var(--cyan); border-left-color:var(--cyan); color:var(--cyan);" onclick="openEditLabelsModal()">[ EDIT LABELS ]</button>
+                                <button id="btnRegenerateFree" class="btn-confirm-map cipher-btn" style="display:none; width:auto; padding: 6px 15px; font-size:1rem; height:auto; margin:0; box-shadow:0 0 15px var(--mint);" onclick="regenerateFreeModeQR()">[ REGENERATE UPLINK ]</button>
+                            </div>
                         </div>
                     </div>`;
         html += `<div style="padding: 10px 20px 20px 20px; width: 100%; display: flex; flex-direction: column;">`;
@@ -1461,7 +1626,7 @@
             html += `<div class="grid-row ${stripe} data-row free-mode-row" draggable="true" style="display: flex; width: 100%; margin-bottom: 12px; border-left: 3px solid var(--cyan); background: rgba(0,0,0,0.4); padding: 15px; align-items: center; box-shadow: -5px 0 15px rgba(0,243,255,0.4), inset 0 0 15px rgba(0,0,0,0.6);">`;
             
             html += `<div style="flex: 0 0 150px; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); padding-right: 15px; margin-right: 20px;">`;
-            html += `<div class="block-id-label" style="color:var(--cyan); font-family:var(--font-en); font-weight:900; font-size:1.6rem; letter-spacing:2px; text-shadow: 0 0 8px var(--cyan);">BLOCK ${b.id}</div>`;
+            html += `<div class="block-name-disp" data-custom="false" style="color:var(--cyan); font-family:var(--font-en); font-weight:900; font-size:1.6rem; letter-spacing:2px; text-shadow: 0 0 8px var(--cyan);">BLOCK ${b.id}</div>`;
             html += `<div class="point-count-label" style="color:var(--gold); font-family:var(--font-mono); font-size:0.85rem; font-weight:bold; text-shadow:0 0 8px rgba(255,234,0,0.3);">[ ${b.points.length} POINTS ]</div>`;
             html += `</div>`;
             
@@ -1471,13 +1636,15 @@
                 let colorStyle = determineColor(pt, false, "Point " + (pIdx+1));
                 
                 html += `<div class="free-point-cell" draggable="true" style="background: rgba(0,0,0,0.6); padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; border-left: 2px solid var(--violet); box-shadow: -3px 0 10px rgba(157,0,255,0.6), inset 0 0 10px rgba(157,0,255,0.1); transition: 0.2s;">`;
-                html += `<span class="point-idx-label" style="color:var(--text-muted); font-size:0.75rem; font-family:var(--font-mono); font-weight:bold; letter-spacing:1px;">PT ${pIdx+1}</span>`;
+                html += `<span class="point-name-disp" data-custom="false" style="color:var(--text-muted); font-size:0.75rem; font-family:var(--font-mono); font-weight:bold; letter-spacing:1px;">PT ${pIdx+1}</span>`;
                 html += `<span class="point-val" data-val="${pt}" style="font-size:1.2rem; font-weight:900; font-family:var(--font-en); ${colorStyle}">${pt}</span>`;
                 html += `</div>`;
             });
             
             html += `</div></div>`; 
         });
+        
+        html += `<div class="void-zone" id="voidZone">« DRAG ANOMALIES HERE TO PURGE »</div>`;
         html += `</div>`;
 
         document.getElementById('bodyFree').innerHTML = `<div class="matrix-stretch-anim">${html}</div>`;
@@ -1485,10 +1652,8 @@
         document.getElementById('idleScreen').classList.add('hidden');
         switchMatrixTab('free');
         
-        // Re-apply hover glitch cipher to the new button
-        applyCipherEffect(document.querySelectorAll('#btnRegenerateFree'));
-        
         updateGlobalStatus("[ UPLOAD SUCCESSFUL ]", "success");
+	document.getElementById('btnDropZoneEdit').style.display = 'block';
         generateHiddenQRAndFinishMorph();
     }
 
@@ -1940,6 +2105,7 @@
         document.getElementById('qrWrapper').style.display = 'none';
         document.getElementById('qrCanvas').style.opacity = '0';
         document.getElementById('dropZone').classList.remove('shrunk');
+	if (document.getElementById('btnDropZoneEdit')) document.getElementById('btnDropZoneEdit').style.display = 'none';
         
         let st = document.getElementById('qrStatusText');
         st.classList.remove('status-ready');
@@ -2255,46 +2421,153 @@
     // Safely wait for UI to unhide before building the compass layout
     setTimeout(buildCompassStrip, 500);
 
-	// --- FREE MODE DRAG & DROP ENGINE ---
+// --- FREE MODE ENGINES (BULK EDIT, DRAG-SCROLL, PURGE) ---
     let draggedEl = null;
 
+    window.manifestRegenerateBtn = function() {
+        const regenBtn = document.getElementById('btnRegenerateFree');
+        if (regenBtn && regenBtn.style.display === 'none') {
+            regenBtn.style.display = 'block';
+            regenBtn.classList.add('shock');
+            setTimeout(() => regenBtn.classList.remove('shock'), 300);
+        }
+    };
+
+    // Bulk Edit Modal Functions
+    window.openEditLabelsModal = function() {
+        const blocks = document.querySelectorAll('#bodyFree .free-mode-row');
+        let maxPts = 0;
+        blocks.forEach(b => { const pts = b.querySelectorAll('.free-point-cell').length; if(pts > maxPts) maxPts = pts; });
+        
+        const ptContainer = document.getElementById('bulkPointContainer');
+        ptContainer.innerHTML = '';
+        for(let i=0; i<maxPts; i++) {
+            ptContainer.innerHTML += `<div style="display:flex; align-items:center; gap:5px;"><span style="color:var(--text-muted); font-family:var(--font-mono); font-size:0.8rem; width:40px;">PT ${i+1}</span><input type="text" class="review-input bulk-pt-input" style="flex:1; text-align:left; padding:6px;" data-idx="${i}" placeholder="e.g. Length"></div>`;
+        }
+        document.getElementById('editLabelsModal').style.display = 'flex';
+    };
+
+   window.applyBulkBlock = function() {
+        const base = document.getElementById('bulkBlockName').value.trim();
+        if(!base) return;
+        const blocks = document.querySelectorAll('#bodyFree .free-mode-row');
+        blocks.forEach((b) => {
+            const disp = b.querySelector('.block-name-disp');
+            disp.dataset.custom = "true";
+            disp.innerText = base;
+        });
+        updateGlobalStatus("[ BLOCKS FILLED DOWN ]", "success");
+    };
+
+    window.applySequentialNumbers = function() {
+        const blocks = document.querySelectorAll('#bodyFree .free-mode-row');
+        blocks.forEach((b, i) => {
+            const disp = b.querySelector('.block-name-disp');
+            disp.dataset.custom = "true";
+            // Strip existing trailing numbers so they don't stack (e.g., "Sample 1 2")
+            let currentText = disp.innerText.replace(/\s*\d+$/, '').trim(); 
+            disp.innerText = `${currentText} ${i+1}`;
+        });
+        updateGlobalStatus("[ SEQUENTIAL APPLIED ]", "success");
+    };
+
+    window.resetBulkBlock = function() {
+        const blocks = document.querySelectorAll('#bodyFree .free-mode-row');
+        blocks.forEach((b, i) => {
+            const disp = b.querySelector('.block-name-disp');
+            disp.dataset.custom = "false";
+            disp.innerText = `BLOCK ${i+1}`;
+        });
+        document.getElementById('bulkBlockName').value = "";
+        updateGlobalStatus("[ BLOCKS RESET ]", "success");
+    };
+
+    window.applyBulkPoints = function() {
+        const inputs = document.querySelectorAll('.bulk-pt-input');
+        const customNames = Array.from(inputs).map(inp => inp.value.trim());
+        
+        const blocks = document.querySelectorAll('#bodyFree .free-mode-row');
+        blocks.forEach(b => {
+            const pts = b.querySelectorAll('.point-name-disp');
+            pts.forEach((p, i) => {
+                if(customNames[i]) { p.dataset.custom = "true"; p.innerText = customNames[i]; }
+            });
+        });
+        updateGlobalStatus("[ POINTS RENAMED ]", "success");
+    };
+
+    window.resetBulkPoints = function() {
+        const blocks = document.querySelectorAll('#bodyFree .free-mode-row');
+        blocks.forEach(b => {
+            const pts = b.querySelectorAll('.point-name-disp');
+            pts.forEach((p, i) => { p.dataset.custom = "false"; p.innerText = `PT ${i+1}`; });
+        });
+        document.querySelectorAll('.bulk-pt-input').forEach(inp => inp.value = "");
+        updateGlobalStatus("[ POINTS RESET ]", "success");
+    };
+
+    window.saveCustomLabels = function() {
+        document.getElementById('editLabelsModal').style.display = 'none';
+        regenerateFreeModeQR();
+    };
+
+    // Drag, Drop, and Auto-Scroll
     document.getElementById('bodyFree').addEventListener('dragstart', function(e) {
         if (e.target.classList.contains('free-mode-row') || e.target.classList.contains('free-point-cell')) {
             draggedEl = e.target;
             e.target.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', ''); // Fixes Firefox drag issue
+            e.dataTransfer.setData('text/plain', ''); 
         }
     });
 
     document.getElementById('bodyFree').addEventListener('dragover', function(e) {
         e.preventDefault(); 
         if (!draggedEl) return;
+
+        // Auto-scroll mechanics
+        const wrapper = document.getElementById('tableFree'); 
+        const rect = wrapper.getBoundingClientRect();
+        const threshold = 60;
+        if (e.clientY > rect.bottom - threshold) wrapper.scrollTop += 15;
+        else if (e.clientY < rect.top + threshold) wrapper.scrollTop -= 15;
+
+        // Void Hover Detection
+        const voidZone = document.getElementById('voidZone');
+        if (e.target.closest('#voidZone')) { voidZone.classList.add('dragover'); return; }
+        else { voidZone.classList.remove('dragover'); }
         
+        // Element Reordering
         const isBlock = draggedEl.classList.contains('free-mode-row');
-        const selector = isBlock ? '.free-mode-row' : '.free-point-cell';
-        const targetContainer = e.target.closest(selector);
+        const targetContainer = e.target.closest(isBlock ? '.free-mode-row' : '.free-point-cell');
         
         if (targetContainer && targetContainer !== draggedEl) {
+            const bounding = targetContainer.getBoundingClientRect();
             if (!isBlock) {
-                // Dragging a Point horizontally
-                const parentGrid = targetContainer.parentNode;
-                const bounding = targetContainer.getBoundingClientRect();
                 const offset = e.clientX - bounding.left;
-                if (offset > bounding.width / 2) parentGrid.insertBefore(draggedEl, targetContainer.nextSibling);
-                else parentGrid.insertBefore(draggedEl, targetContainer);
+                if (offset > bounding.width / 2) targetContainer.parentNode.insertBefore(draggedEl, targetContainer.nextSibling);
+                else targetContainer.parentNode.insertBefore(draggedEl, targetContainer);
             } else {
-                // Dragging a Block vertically
-                const parentGrid = targetContainer.parentNode;
-                const bounding = targetContainer.getBoundingClientRect();
                 const offset = e.clientY - bounding.top;
-                if (offset > bounding.height / 2) parentGrid.insertBefore(draggedEl, targetContainer.nextSibling);
-                else parentGrid.insertBefore(draggedEl, targetContainer);
+                if (offset > bounding.height / 2) targetContainer.parentNode.insertBefore(draggedEl, targetContainer.nextSibling);
+                else targetContainer.parentNode.insertBefore(draggedEl, targetContainer);
             }
         } else if (!isBlock && e.target.closest('.point-grid')) {
-            // Allow dropping a point into an empty block or the end of a block
             const grid = e.target.closest('.point-grid');
             if (grid !== draggedEl.parentNode) grid.appendChild(draggedEl);
+        }
+    });
+
+    document.getElementById('bodyFree').addEventListener('dragleave', function(e) {
+        if (e.target.closest('#voidZone')) document.getElementById('voidZone').classList.remove('dragover');
+    });
+
+    document.getElementById('bodyFree').addEventListener('drop', function(e) {
+        e.preventDefault();
+        if (draggedEl && e.target.closest('#voidZone')) {
+            draggedEl.remove();
+            document.getElementById('voidZone').classList.remove('dragover');
+            updateGlobalStatus("[ ANOMALY PURGED ]", "success");
         }
     });
 
@@ -2302,43 +2575,69 @@
         if (draggedEl) {
             draggedEl.classList.remove('dragging');
             draggedEl = null;
-            
-            // Manifest the REGENERATE button
-            const regenBtn = document.getElementById('btnRegenerateFree');
-            if (regenBtn && regenBtn.style.display === 'none') {
-                regenBtn.style.display = 'block';
-                regenBtn.classList.add('shock');
-                setTimeout(() => regenBtn.classList.remove('shock'), 300);
-            }
+            document.getElementById('voidZone').classList.remove('dragover');
+            manifestRegenerateBtn();
         }
     });
 
+    // The Ultimate Customizable Vertical Compiler
     window.regenerateFreeModeQR = function() {
         const blocks = document.querySelectorAll('#bodyFree .free-mode-row');
         let pb = "";
-        let newBlockCount = 1;
+        let visualBlockIdx = 1;
         
+        // Read Export Preferences
+        const exportBlock = document.getElementById('exportOptBlock') ? document.getElementById('exportOptBlock').checked : true;
+        const exportPoint = document.getElementById('exportOptPoint') ? document.getElementById('exportOptPoint').checked : true;
+        const exportData = document.getElementById('exportOptData') ? document.getElementById('exportOptData').checked : true;
+
+        if (!exportBlock && !exportPoint && !exportData) {
+            updateGlobalStatus("[ ERROR: EMPTY PAYLOAD SELECTED ]", "error");
+            return;
+        }
+
         blocks.forEach(block => {
-            const points = block.querySelectorAll('.point-val');
-            if (points.length > 0) {
-                // Recompile Payload String
-                pb += newBlockCount + "\t" + points[0].innerText + "\r\n";
-                for (let i = 1; i < points.length; i++) {
-                    pb += "\t" + points[i].innerText + "\r\n";
-                }
-                pb += "\r\n";
+            const blockDisp = block.querySelector('.block-name-disp');
+            const pointRows = block.querySelectorAll('.free-point-cell');
+            
+            if (pointRows.length > 0) {
+                if (blockDisp.dataset.custom !== "true") blockDisp.innerText = `BLOCK ${visualBlockIdx}`;
+                const bLabel = blockDisp.dataset.custom === "true" ? blockDisp.innerText : visualBlockIdx;
                 
-                // Dynamically rename the Block IDs sequentially
-                block.querySelector('.block-id-label').innerText = "BLOCK " + newBlockCount;
-                block.querySelector('.point-count-label').innerText = "[ " + points.length + " POINTS ]";
+                pointRows.forEach((pt, pIdx) => {
+                    const ptDisp = pt.querySelector('.point-name-disp');
+                    const ptVal = pt.querySelector('.point-val').innerText;
+                    
+                    if (ptDisp.dataset.custom !== "true") ptDisp.innerText = `PT ${pIdx+1}`;
+                    const pLabel = ptDisp.innerText; 
+                    
+                    let rowArr = [];
+                    
+                    // Conditionally build the columns based on user settings
+                    if (exportBlock) {
+                        if (pIdx === 0) rowArr.push(bLabel);
+                        else rowArr.push(""); // Blank first column for subsequent rows
+                    }
+                    if (exportPoint) {
+                        // If points are default (not custom) AND the user didn't explicitly customize them, we can hide them if they just want raw data. But standard behavior is to print them if checked.
+                        if (ptDisp.dataset.custom === "true" || exportBlock) {
+                            rowArr.push(pLabel);
+                        } else if (!exportBlock && ptDisp.dataset.custom !== "true") {
+                            // If they turn off Blocks but leave Points on, just print the point.
+                            rowArr.push(pLabel);
+                        }
+                    }
+                    if (exportData) {
+                        rowArr.push(ptVal);
+                    }
+                    
+                    pb += rowArr.join("\t") + "\r\n";
+                });
                 
-                // Dynamically rename the Point IDs sequentially
-                const pointLabels = block.querySelectorAll('.point-idx-label');
-                pointLabels.forEach((lbl, idx) => { lbl.innerText = "PT " + (idx + 1); });
-                
-                newBlockCount++;
+                pb += "\r\n"; // Empty row to separate blocks
+                block.querySelector('.point-count-label').innerText = `[ ${pointRows.length} POINTS ]`;
+                visualBlockIdx++;
             } else {
-                // If a user dragged all points out of a block, delete the empty block
                 block.remove(); 
             }
         });
@@ -2351,9 +2650,16 @@
         document.getElementById('btnRegenerateFree').style.display = 'none';
         updateGlobalStatus("[ MATRIX RE-ALIGNED ]", "success");
         
-        // Trigger QR regen morph
         startCsvMorph();
         setTimeout(() => { generateHiddenQRAndFinishMorph(); }, 50);
+    };
+
+	// --- IPAD PANEL TOGGLE ENGINE ---
+    window.toggleIpadView = function() {
+        const forgePanel = document.getElementById('forgePanel');
+        if (forgePanel) {
+            forgePanel.classList.toggle('ipad-active');
+        }
     };
 
 </script>
