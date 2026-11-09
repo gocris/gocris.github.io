@@ -362,15 +362,12 @@
         </div>
     </div>
 
-    <button class="menu-btn cipher-btn" data-cipher="[ CIPHER BYPASS ]" onclick="window.location.href='qrtrans.html'">
+<button class="menu-btn cipher-btn" data-cipher="[ CIPHER BYPASS ]" onclick="window.location.href='qrtrans.html'">
         <span class="btn-title">[ CIPHER BYPASS ]</span>
         <span class="btn-jp">QR TRANSLATOR // 暗号解読</span>
     </button>
 
-    <button class="menu-btn btn-cmm cipher-btn" data-cipher="[ OMNI EXTRACT ]" onclick="window.location.href='omni_extractor.html'">
-        <span class="btn-title" style="color: #ffffff; text-shadow: 0 0 10px rgba(255, 0, 170, 0.4);">[ OMNI EXTRACT ]</span>
-        <span class="btn-jp" style="color: var(--neon-magenta);">AIR-GAP MATRIX // 抽出器</span>
-    </button>
+    <!-- OMNI EXTRACT BUTTON HAS BEEN COMPLETELY REMOVED FROM HERE -->
 
     <button class="menu-btn btn-lab cipher-btn" data-cipher="[ BLACK LAB ]" onclick="toggleLabRoutine()">
         <span class="btn-title">[ BLACK LAB ]</span>
@@ -379,13 +376,25 @@
 
     <div class="submenu-wrapper" id="labWrapper">
         <div id="labSubMenu" class="sub-menu-container">
-            <button class="sub-menu-btn cipher-sub" data-cipher="PROTOCOL T1: Tg MATCH" onclick="window.location.href='black_lab_DSC.html'">
+            
+            <!-- DSC THERMAL ANALYSIS BUTTON -->
+            <button class="sub-menu-btn cipher-sub" data-cipher="DSC: THERMAL ANALYSIS" onclick="window.location.href='black_lab_DSC.html'">
                 <div class="sub-btn-content">
-                    <span class="sub-title">PROTOCOL T1: Tg MATCH</span>
+                    <span class="sub-title">DSC: THERMAL ANALYSIS</span>
                     <span class="sub-btn-jp">熱特性 // THERMAL</span>
                 </div>
                 <span class="icon-arrow">»</span>
             </button>
+
+            <!-- KEYENCE PCT & BRAZE ANALYSIS BUTTON -->
+            <button class="sub-menu-btn cipher-sub" data-cipher="KEYENCE: PCT & BRAZE" onclick="window.location.href='black_lab_keyence.html'">
+                <div class="sub-btn-content">
+                    <span class="sub-title">KEYENCE: PCT & BRAZE ANALYSIS</span>
+                    <span class="sub-btn-jp">抽出器 // EXTRACTOR</span>
+                </div>
+                <span class="icon-arrow">»</span>
+            </button>
+
         </div>
     </div>
 
