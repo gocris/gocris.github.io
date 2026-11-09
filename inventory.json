@@ -1,0 +1,184 @@
+[
+    {
+        "id": "V-001",
+        "name": "Thermal Sensor Mk.IV",
+        "category": "DSC",
+        "type": "Box",
+        "qty": 142,
+        "threshold": 50
+    },
+    {
+        "id": "X-001",
+        "name": "80 Grit Abrasive Paper",
+        "group": "Grit Paper",
+        "category": "X-Section",
+        "type": "Pack",
+        "qty": 100,
+        "threshold": 25
+    },
+    {
+        "id": "X-002",
+        "name": "180 Grit Abrasive Paper",
+        "group": "Grit Paper",
+        "category": "X-Section",
+        "type": "Pack",
+        "qty": 80,
+        "threshold": 25
+    },
+    {
+        "id": "X-003",
+        "name": "320 Grit Abrasive Paper",
+        "group": "Grit Paper",
+        "category": "X-Section",
+        "type": "Pack",
+        "qty": 75,
+        "threshold": 25
+    },
+    {
+        "id": "X-004",
+        "name": "500 Grit Abrasive Paper",
+        "group": "Grit Paper",
+        "category": "X-Section",
+        "type": "Pack",
+        "qty": 60,
+        "threshold": 25
+    },
+    {
+        "id": "X-005",
+        "name": "600 Grit Abrasive Paper",
+        "group": "Grit Paper",
+        "category": "X-Section",
+        "type": "Pack",
+        "qty": 55,
+        "threshold": 25
+    },
+    {
+        "id": "X-006",
+        "name": "1000 Grit Abrasive Paper",
+        "group": "Grit Paper",
+        "category": "X-Section",
+        "type": "Pack",
+        "qty": 40,
+        "threshold": 25
+    },
+    {
+        "id": "X-007",
+        "name": "Textmet C Polishing Pad",
+        "group": "Polishing Pads",
+        "category": "X-Section",
+        "type": "Pack",
+        "qty": 20,
+        "threshold": 10
+    },
+    {
+        "id": "X-008",
+        "name": "Trident Polishing Pad",
+        "group": "Polishing Pads",
+        "category": "X-Section",
+        "type": "Pack",
+        "qty": 15,
+        "threshold": 10
+    },
+    {
+        "id": "X-009",
+        "name": "Micro Cloth Polishing Pad",
+        "group": "Polishing Pads",
+        "category": "X-Section",
+        "type": "Pack",
+        "qty": 18,
+        "threshold": 10
+    },
+    {
+        "id": "X-010",
+        "name": "Chemomet Polishing Pad",
+        "group": "Polishing Pads",
+        "category": "X-Section",
+        "type": "Pack",
+        "qty": 12,
+        "threshold": 10
+    },
+    {
+        "id": "X-011",
+        "name": "9\u00b5m Diamond Suspension",
+        "group": "Diamond Suspension",
+        "category": "X-Section",
+        "type": "Bottle",
+        "qty": 5,
+        "threshold": 2
+    },
+    {
+        "id": "X-012",
+        "name": "6\u00b5m Diamond Suspension",
+        "group": "Diamond Suspension",
+        "category": "X-Section",
+        "type": "Bottle",
+        "qty": 4,
+        "threshold": 2
+    },
+    {
+        "id": "X-013",
+        "name": "3\u00b5m Diamond Suspension",
+        "group": "Diamond Suspension",
+        "category": "X-Section",
+        "type": "Bottle",
+        "qty": 6,
+        "threshold": 2
+    },
+    {
+        "id": "X-014",
+        "name": "1\u00b5m Diamond Suspension",
+        "group": "Diamond Suspension",
+        "category": "X-Section",
+        "type": "Bottle",
+        "qty": 3,
+        "threshold": 2
+    },
+    {
+        "id": "X-015",
+        "name": "Colloidal Silica Fluid",
+        "category": "X-Section",
+        "type": "Bottle",
+        "qty": 8,
+        "threshold": 3
+    },
+    {
+        "id": "X-016",
+        "name": "Keller's Reagent",
+        "category": "X-Section",
+        "type": "Bottle",
+        "qty": 2,
+        "threshold": 1
+    },
+    {
+        "id": "X-017",
+        "name": "SamplKwick Liquid (Fast Cure)",
+        "category": "X-Section",
+        "type": "Bottle",
+        "qty": 10,
+        "threshold": 4
+    },
+    {
+        "id": "X-018",
+        "name": "SamplKwick Powder (Fast Cure)",
+        "category": "X-Section",
+        "type": "Pack",
+        "qty": 9,
+        "threshold": 4
+    },
+    {
+        "id": "Q-001",
+        "name": "Keyence Micrometer Lens",
+        "category": "Quality",
+        "type": "Box",
+        "qty": 4,
+        "threshold": 10
+    },
+    {
+        "id": "C-001",
+        "name": "Epoxy Resin (Part A)",
+        "category": "Clean-Up",
+        "type": "Bottle",
+        "qty": 2,
+        "threshold": 5
+    }
+]
