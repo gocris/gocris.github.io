@@ -65,7 +65,8 @@
             z-index: 1; transition: 0.3s; text-transform: uppercase;
         }
 
-        .system-online { width: 250px; font-family: var(--font-mono); color: var(--mint); font-weight: bold; text-shadow: 0 0 15px var(--mint); text-align: right; }
+        .system-online { width: 250px; font-family: var(--font-mono); color: var(--mint); font-weight: bold; text-shadow: 0 0 15px var(--mint); text-align: right; display:flex; flex-direction: column; align-items: flex-end;}
+        .scanner-status { font-size: 0.8rem; color: var(--gold); text-shadow: 0 0 8px var(--gold); letter-spacing: 2px; margin-top: 4px; animation: blinker 2s infinite alternate;}
 
         /* --- CATEGORY KINETIC NAVIGATION --- */
         .category-nav { display: flex; gap: 15px; padding: 25px 25px 15px 25px; overflow-x: auto; perspective: 1000px; }
@@ -80,8 +81,6 @@
             display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
             padding: 0 25px; text-align: left; transform-style: preserve-3d;
             box-shadow: none; 
-            
-            /* Simultaneous pulse animation (Removed delays) */
             animation: cat-pulse 4s infinite alternate ease-in-out;
         }
 
@@ -90,7 +89,6 @@
             100% { filter: brightness(1.4); box-shadow: inset 0 0 25px rgba(255,255,255,0.08); }
         }
 
-        /* 5-Minute Hack Glitch Effect */
         .hacked-glitch { animation: glitch-snap 0.15s infinite alternate !important; filter: hue-rotate(90deg) contrast(2) !important; border-color: var(--crimson) !important; }
         @keyframes glitch-snap {
             0% { transform: translate(0) skew(0deg); }
@@ -303,7 +301,8 @@
         </div>
 
         <div class="system-online">
-            SYSTEM ONLINE // LOCAL DB
+            <div>SYSTEM ONLINE // LOCAL DB</div>
+            <div class="scanner-status">[ SCANNER READY ]</div>
         </div>
     </header>
 
@@ -460,40 +459,98 @@
     // --- STATE MANAGEMENT ---
     let currentFilter = "ALL";
     let openFolders = new Set(); 
-    
-    // FULL PRE-LOADED INVENTORY DATABASE
-    let inventory = [
-        { id: "V-001", name: "Thermal Sensor Mk.IV", category: "DSC", type: "Box", qty: 142, threshold: 50 },
+    let inventory = []; 
+
+    // --- JSON FETCH ENGINE (FOR ESP32 SD CARD) ---
+    async function loadInventory() {
+        try {
+            // This attempts to load from the ESP32 server endpoint
+            const response = await fetch('/inventory.json');
+            if (response.ok) {
+                inventory = await response.json();
+                triggerStatus("NEXUS SYNC COMPLETE", "success");
+            } else {
+                throw new Error("Local test mode");
+            }
+        } catch (error) {
+            console.log("Failed to load from ESP32. Loading Fallback Local Database.");
+            // Fallback Database for local desktop testing
+            inventory = [
+                { id: "V-001", name: "Thermal Sensor Mk.IV", category: "DSC", type: "Box", qty: 142, threshold: 50 },
+                { id: "X-001", name: "80 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 100, threshold: 25 },
+                { id: "X-002", name: "180 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 80, threshold: 25 },
+                { id: "X-003", name: "320 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 75, threshold: 25 },
+                { id: "X-004", name: "500 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 60, threshold: 25 },
+                { id: "X-005", name: "600 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 55, threshold: 25 },
+                { id: "X-006", name: "1000 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 40, threshold: 25 },
+                { id: "X-007", name: "Textmet C Polishing Pad", group: "Polishing Pads", category: "X-Section", type: "Pack", qty: 20, threshold: 10 },
+                { id: "X-008", name: "Trident Polishing Pad", group: "Polishing Pads", category: "X-Section", type: "Pack", qty: 15, threshold: 10 },
+                { id: "X-009", name: "Micro Cloth Polishing Pad", group: "Polishing Pads", category: "X-Section", type: "Pack", qty: 18, threshold: 10 },
+                { id: "X-010", name: "Chemomet Polishing Pad", group: "Polishing Pads", category: "X-Section", type: "Pack", qty: 12, threshold: 10 },
+                { id: "X-011", name: "9µm Diamond Suspension", group: "Diamond Suspension", category: "X-Section", type: "Bottle", qty: 5, threshold: 2 },
+                { id: "X-012", name: "6µm Diamond Suspension", group: "Diamond Suspension", category: "X-Section", type: "Bottle", qty: 4, threshold: 2 },
+                { id: "X-013", name: "3µm Diamond Suspension", group: "Diamond Suspension", category: "X-Section", type: "Bottle", qty: 6, threshold: 2 },
+                { id: "X-014", name: "1µm Diamond Suspension", group: "Diamond Suspension", category: "X-Section", type: "Bottle", qty: 3, threshold: 2 },
+                { id: "X-015", name: "Colloidal Silica Fluid", category: "X-Section", type: "Bottle", qty: 8, threshold: 3 },
+                { id: "X-016", name: "Keller's Reagent", category: "X-Section", type: "Bottle", qty: 2, threshold: 1 },
+                { id: "X-017", name: "SamplKwick Liquid (Fast Cure)", category: "X-Section", type: "Bottle", qty: 10, threshold: 4 },
+                { id: "X-018", name: "SamplKwick Powder (Fast Cure)", category: "X-Section", type: "Pack", qty: 9, threshold: 4 },
+                { id: "Q-001", name: "Keyence Micrometer Lens", category: "Quality", type: "Box", qty: 4, threshold: 10 },
+                { id: "C-001", name: "Epoxy Resin (Part A)", category: "Clean-Up", type: "Bottle", qty: 2, threshold: 5 }
+            ];
+        }
+        renderGrid();
+    }
+
+    // --- POST TO ESP32 ---
+    async function saveToESP32() {
+        try {
+            await fetch('/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(inventory)
+            });
+        } catch(e) {
+            console.log("Local Test: Save to ESP32 skipped.");
+        }
+    }
+
+    // --- QR CODE SCANNER LISTENER (HID KEYBOARD EMULATION) ---
+    let scanBuffer = "";
+    let scanTimeout;
+
+    window.addEventListener('keydown', (e) => {
+        if (isLockedDown) return; 
         
-        // GRIT PAPER FOLDER
-        { id: "X-001", name: "80 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 100, threshold: 25 },
-        { id: "X-002", name: "180 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 80, threshold: 25 },
-        { id: "X-003", name: "320 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 75, threshold: 25 },
-        { id: "X-004", name: "500 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 60, threshold: 25 },
-        { id: "X-005", name: "600 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 55, threshold: 25 },
-        { id: "X-006", name: "1000 Grit Abrasive Paper", group: "Grit Paper", category: "X-Section", type: "Pack", qty: 40, threshold: 25 },
-        
-        // POLISHING PADS FOLDER
-        { id: "X-007", name: "Textmet C Polishing Pad", group: "Polishing Pads", category: "X-Section", type: "Pack", qty: 20, threshold: 10 },
-        { id: "X-008", name: "Trident Polishing Pad", group: "Polishing Pads", category: "X-Section", type: "Pack", qty: 15, threshold: 10 },
-        { id: "X-009", name: "Micro Cloth Polishing Pad", group: "Polishing Pads", category: "X-Section", type: "Pack", qty: 18, threshold: 10 },
-        { id: "X-010", name: "Chemomet Polishing Pad", group: "Polishing Pads", category: "X-Section", type: "Pack", qty: 12, threshold: 10 },
-        
-        // DIAMOND SUSPENSION FOLDER
-        { id: "X-011", name: "9µm Diamond Suspension", group: "Diamond Suspension", category: "X-Section", type: "Bottle", qty: 5, threshold: 2 },
-        { id: "X-012", name: "6µm Diamond Suspension", group: "Diamond Suspension", category: "X-Section", type: "Bottle", qty: 4, threshold: 2 },
-        { id: "X-013", name: "3µm Diamond Suspension", group: "Diamond Suspension", category: "X-Section", type: "Bottle", qty: 6, threshold: 2 },
-        { id: "X-014", name: "1µm Diamond Suspension", group: "Diamond Suspension", category: "X-Section", type: "Bottle", qty: 3, threshold: 2 },
-        
-        // STANDALONE X-SECTION ITEMS
-        { id: "X-015", name: "Colloidal Silica Fluid", category: "X-Section", type: "Bottle", qty: 8, threshold: 3 },
-        { id: "X-016", name: "Keller's Reagent", category: "X-Section", type: "Bottle", qty: 2, threshold: 1 },
-        { id: "X-017", name: "SamplKwick Liquid (Fast Cure)", category: "X-Section", type: "Bottle", qty: 10, threshold: 4 },
-        { id: "X-018", name: "SamplKwick Powder (Fast Cure)", category: "X-Section", type: "Pack", qty: 9, threshold: 4 },
-        
-        { id: "Q-001", name: "Keyence Micrometer Lens", category: "Quality", type: "Box", qty: 4, threshold: 10 },
-        { id: "C-001", name: "Epoxy Resin (Part A)", category: "Clean-Up", type: "Bottle", qty: 2, threshold: 5 }
-    ];
+        // Prevent scanner from overriding if user is manually typing in the Forge Modal
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        if (e.key === "Enter") {
+            if (scanBuffer.length > 0) {
+                processScan(scanBuffer.trim().toUpperCase());
+                scanBuffer = ""; 
+            }
+        } else {
+            // Accept standard alphanumeric characters
+            if (e.key.length === 1) {
+                scanBuffer += e.key;
+            }
+            // Scanners type fast (usually <30ms per char). If no input for 100ms, clear the buffer (prevents manual random typing from firing)
+            clearTimeout(scanTimeout);
+            scanTimeout = setTimeout(() => { scanBuffer = ""; }, 100);
+        }
+    });
+
+    function processScan(scannedId) {
+        let idx = inventory.findIndex(i => i.id === scannedId);
+        if (idx > -1) {
+            // Scanner found the item, deduct 1
+            updateQty(scannedId, -1);
+            triggerStatus(`[ QR SCAN ] DECREMENTED: ${scannedId}`, "success");
+        } else {
+            triggerStatus(`[ QR SCAN ] ERROR: ID [ ${scannedId} ] NOT FOUND`, "critical");
+        }
+    }
 
     // --- ALIEN ORGANISM CANVAS LOGIC ---
     const canvas = document.getElementById('alienCanvas');
@@ -630,7 +687,6 @@
         btn.addEventListener('mouseenter', () => runCipher(btn, '.btn-title'));
     });
 
-    // 5-Minute Ghost Hack Loop
     setInterval(() => {
         triggerStatus("SYS_WARNING: ROGUE UPLINK DETECTED", "critical");
         document.querySelectorAll('.category-nav .menu-btn').forEach(btn => {
@@ -765,11 +821,9 @@
         let { catColor, catTextShadow } = getCategoryColorInfo(item.category);
         
         const childClass = isChild ? `child-of-${parentId} group-child` : '';
-        
         const childStyle = isChild && !openFolders.has(parentId) ? `style="display: none;"` : '';
         const idPrefix = isChild ? `<span class="tree-branch">└─ </span>` : '';
 
-        // REFACTORED TO USE ID FOR CRUD INSTEAD OF INDEX
         return `
             <tr class="${statusClass} ${childClass}" ${childStyle}>
                 <td class="cell-id">${idPrefix}${item.id}</td>
@@ -806,12 +860,10 @@
         let normalGroups = {};
         let standaloneNormal = [];
 
-        // Route items
         inventory.forEach((item) => {
             if (currentFilter !== "ALL" && item.category !== currentFilter) return;
 
             if (item.qty <= item.threshold) {
-                // Ripped from folder and placed globally in Critical zone
                 criticalHtml += renderRowHtml(item, true);
                 hasCritical = true;
             } else {
@@ -824,17 +876,14 @@
             }
         });
 
-        // Compute total quantities for Folders to sort them
         let sortedFolders = Object.keys(normalGroups).map(groupName => {
             let items = normalGroups[groupName];
             let totalQty = items.reduce((sum, i) => sum + i.qty, 0);
             return { groupName, items, totalQty };
         });
 
-        // Sort Folders by total quantity (Least stock gets priority)
         sortedFolders.sort((a, b) => a.totalQty - b.totalQty);
 
-        // Build HTML for Folders
         sortedFolders.forEach(folder => {
             const headerId = folder.groupName.replace(/\s+/g, '-').toLowerCase();
             const isOpen = openFolders.has(headerId);
@@ -859,12 +908,10 @@
             });
         });
 
-        // Build HTML for Normal Standalone Items
         standaloneNormal.forEach(item => {
             normalHtml += renderRowHtml(item, false, false, "");
         });
         
-        // Single DOM Inject
         tbodyNormal.innerHTML = normalHtml;
         tbodyCritical.innerHTML = criticalHtml;
         criticalSection.style.display = hasCritical ? 'block' : 'none';
@@ -874,7 +921,6 @@
     window.updateQty = function(id, delta) {
         if (isLockedDown) return;
 
-        // Anti-Spam Check
         const now = Date.now();
         if (now - lastClickTime < 600) { 
             rapidClickCount++;
@@ -887,7 +933,6 @@
         }
         lastClickTime = now;
 
-        // Find by ID, avoiding array index shifting issues
         let idx = inventory.findIndex(i => i.id === id);
         if (idx === -1) return;
 
@@ -897,6 +942,7 @@
         
         triggerStatus(`UPDATED > ${inventory[idx].id}`, "success");
         renderGrid(); 
+        saveToESP32();
     };
 
     window.deleteItem = function(id) {
@@ -906,6 +952,7 @@
             let idx = inventory.findIndex(i => i.id === id);
             if (idx > -1) inventory.splice(idx, 1);
             renderGrid();
+            saveToESP32();
         }
     };
 
@@ -974,9 +1021,13 @@
         }
         closeModal();
         renderGrid();
+        saveToESP32();
     };
 
-    window.onload = () => { renderGrid(); };
+    // BOOT SEQUENCE
+    window.onload = () => { 
+        loadInventory(); 
+    };
 </script>
 </body>
 </html>
