@@ -10,7 +10,7 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --crimson: #ff1e46; 
+            --crimson: #ff3b30; /* red-forward red-orange alert, complements cyan */ 
             --violet: #9d00ff; 
             --gold: #ffea00; 
             --cyan: #00f3ff; 
@@ -65,8 +65,8 @@
             z-index: 1; transition: 0.3s; text-transform: uppercase;
         }
 
-        .system-online { width: 250px; font-family: var(--font-mono); color: var(--mint); font-weight: bold; text-shadow: 0 0 15px var(--mint); text-align: right; display:flex; flex-direction: column; align-items: flex-end;}
-        .scanner-status { font-size: 0.8rem; color: var(--gold); text-shadow: 0 0 8px var(--gold); letter-spacing: 2px; margin-top: 4px; animation: blinker 2s infinite alternate;}
+        /* Keep the central beeper centered after removing the right-side system text. */
+        .header::after { content: ''; display:block; width:250px; flex:0 0 250px; }
 
         /* --- CATEGORY KINETIC NAVIGATION --- */
         .category-nav { display: flex; gap: 15px; padding: 25px 25px 15px 25px; overflow-x: auto; perspective: 1000px; }
@@ -106,7 +106,7 @@
         }
         
         .btn-dsc::before { background: var(--crimson); box-shadow: 0 0 20px var(--crimson); }
-        .btn-dsc::after { background: radial-gradient(circle at left center, rgba(255, 30, 70, 0.15) 0%, transparent 70%); }
+        .btn-dsc::after { background: radial-gradient(circle at left center, rgba(255, 59, 48, 0.15) 0%, transparent 70%); }
         .btn-xsec::before { background: var(--violet); box-shadow: 0 0 20px var(--violet); border-right-color: rgba(157, 0, 255, 0.2); }
         .btn-xsec::after { background: radial-gradient(circle at left center, rgba(157, 0, 255, 0.15) 0%, transparent 70%); }
         .btn-qual::before { background: var(--cyan); box-shadow: 0 0 20px var(--cyan); border-right-color: rgba(0, 243, 255, 0.2); }
@@ -126,9 +126,102 @@
         .btn-all .btn-jp { color: var(--text-muted); }
 
         /* ACTION ROW (FORGE BUTTON) */
-        .action-row { padding: 0 25px 15px 25px; display: flex; justify-content: flex-start; }
+        .action-row { padding: 0 25px 15px 25px; display: flex; justify-content: flex-start; align-items: center; gap: 12px; flex-wrap: nowrap; width: 100%; }
+        .action-row > .action-btn { flex: 0 0 auto; height: 42px; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; }
+        .inventory-search { flex: 1 1 auto; width: 100%; max-width: none; min-width: 84px; height: 42px; border: 1px solid rgba(0,243,255,0.55); background: rgba(0, 17, 25, 0.8); color: #fff; padding: 0 15px; font-family: var(--font-mono); font-size: 0.95rem; outline: none; box-shadow: inset 0 0 12px rgba(0,243,255,0.08); }
+        .inventory-search::placeholder { color: var(--text-muted); }
+        .inventory-search:focus { border-color: var(--cyan); box-shadow: 0 0 14px rgba(0,243,255,0.3); }
+        @media (max-width: 740px) {
+            .header { padding: 10px 12px; flex-wrap: wrap; gap: 8px; }
+            .header-brand { width: auto; flex: 1; }
+            .header::after { display: none; }
+            .status-panel { order: 3; width: 100%; flex: auto; height: 40px; }
+            .status-text { font-size: 1.5rem; letter-spacing: 1px; }
+            .category-nav { padding: 12px; gap: 8px; }
+            .menu-btn { min-width: 135px; height: 66px; padding: 0 12px; }
+            .btn-title { font-size: 1rem; letter-spacing: 1px; }
+            .action-row { padding: 0 12px 12px; gap: 9px; }
+            .action-btn { padding: 9px 12px; }
+            .inventory-search { flex-basis: auto; min-width: 75px; }
+            .action-row { gap: 7px; }
+            .action-row > .action-btn { flex: 0 0 auto; white-space: nowrap; font-size: .74rem; padding: 9px 8px; }
+            .action-row > .search-open-btn { flex: 0 0 46px; min-width: 46px; padding: 0; }
+            .grid-wrapper { padding: 0 12px 12px; }
+            .data-table { min-width: 970px; }
+            .data-table th, .data-table td { padding: 10px; }
+            .action-group { gap: 7px; }
+            .btn-mini { padding: 8px 11px; }
+            .modal-content { width: min(500px, 96vw); max-height: 95vh; overflow-y: auto; }
+        }
         .action-btn { background: rgba(0,243,255,0.1); border: 1px solid var(--cyan); color: var(--cyan); font-family: var(--font-mono); font-weight: bold; font-size: 0.9rem; padding: 10px 20px; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 15px var(--cyan), inset 0 0 10px rgba(0,243,255,0.2); text-shadow: 0 0 5px var(--cyan); }
         .action-btn:hover { background: var(--cyan); color: #000; box-shadow: 0 0 25px var(--cyan), inset 0 0 15px #fff; transform: translateY(-2px); text-shadow: none; }
+
+        /* TOUCH SEARCH WORKSPACE: keyboard to the right, readable quick-adjust cards to the left. */
+        .inventory-workspace { display: flex; flex: 1; min-height: 0; min-width: 0; width: 100%; }
+        .inventory-workspace .grid-wrapper { min-width: 0; }
+        .inventory-workspace.keyboard-open .scroll-container, .inventory-workspace.search-results-active .scroll-container { display: none; }
+        .quick-results { display: none; height: 100%; overflow: auto; padding-right: 5px; }
+        .inventory-workspace.keyboard-open .quick-results, .inventory-workspace.search-results-active .quick-results { display: block; }
+        .quick-results-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 2px 14px; border-bottom: 1px solid rgba(0,243,255,.24); margin-bottom: 14px; font-family: var(--font-mono); color: var(--cyan); letter-spacing: .4px; }
+        .quick-result-count { font-weight: bold; }
+        .quick-hint { font-size: 12px; color: var(--text-muted); }
+        .quick-list { display: grid; gap: 12px; }
+        .quick-card { display: grid; grid-template-columns: minmax(0,1fr) minmax(165px,auto); gap: 14px; padding: 18px; border: 1px solid rgba(0,243,255,.23); background: linear-gradient(110deg,rgba(4,17,24,.96),rgba(17,9,26,.94)); box-shadow: inset 3px 0 var(--mint),0 9px 24px rgba(0,0,0,.25); border-radius: 6px; }
+        .quick-card.is-critical { box-shadow: inset 3px 0 var(--crimson),0 9px 24px rgba(0,0,0,.25); }
+        .quick-info { min-width: 0; }
+        .quick-name { color: white; font-size: clamp(1.3rem,1.8vw,1.8rem); font-weight: 900; line-height: 1.2; overflow-wrap: anywhere; }
+        .quick-id { color: var(--cyan); font: 700 13px var(--font-mono); margin: 8px 0; overflow-wrap: anywhere; }
+        .quick-meta { display: flex; flex-wrap: wrap; gap: 6px; font: 12px var(--font-mono); color: #c8c3d7; }
+        .quick-meta span { border: 1px solid rgba(255,255,255,.15); padding: 4px 6px; max-width: 100%; overflow-wrap: anywhere; }
+        .quick-controls { display: flex; flex-direction: column; justify-content: center; gap: 10px; min-width: 0; }
+        .quick-qty { display: flex; align-items: baseline; justify-content: center; gap: 8px; text-align: center; }
+        .quick-qty strong { color: var(--gold); font: 700 clamp(2rem,3vw,2.7rem) var(--font-mono); }
+        .quick-qty small { color: var(--text-muted); font: 12px var(--font-mono); }
+        .quick-adjust { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .quick-adjust .btn-mini { width: 100%; min-width: 65px; min-height: 62px; font-size: 2rem; padding: 6px; touch-action: manipulation; }
+        .quick-adjust .btn-mini:disabled { opacity: .35; cursor: not-allowed; }
+        .quick-tools { display: flex; justify-content: center; gap: 8px; }
+        .quick-tools .btn-mini { padding: 5px 9px; font-size: 12px; min-height: 33px; }
+        .quick-empty { padding: 35px 18px; color: var(--text-muted); text-align: center; border: 1px dashed rgba(0,243,255,.3); line-height: 1.5; }
+        .keyboard-panel { display: none; flex: 0 0 clamp(310px,30vw,410px); width: clamp(310px,30vw,410px); min-width: 0; margin: 0 25px 20px 0; padding: 16px; border: 1px solid rgba(0,243,255,.6); border-top: 3px solid var(--cyan); background: linear-gradient(160deg,rgba(7,20,29,.99),rgba(13,5,21,.99)); box-shadow: 0 0 24px rgba(0,243,255,.16),inset 0 0 24px rgba(157,0,255,.08); border-radius: 6px; flex-direction: column; overflow-y: auto; }
+        .inventory-workspace.keyboard-open .keyboard-panel { display: flex; }
+        .keyboard-top { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+        .keyboard-heading { font-weight: 900; color: white; letter-spacing: 1px; font-size: 1.2rem; }
+        .keyboard-label { color: var(--mint); font: 11px var(--font-mono); letter-spacing: 1px; }
+        .keyboard-close { min-width: 46px; min-height: 43px; border: 1px solid var(--cyan); background: rgba(0,243,255,.1); color: var(--cyan); font: bold 1.3rem var(--font-mono); cursor: pointer; border-radius: 4px; }
+        .keyboard-subtitle { color: #b9accb; font: 12px/1.5 var(--font-mono); margin: 10px 0 12px; }
+        .keyboard-keys { margin-top: 2px; }
+        .keyboard-row { display: flex; justify-content: center; gap: 5px; margin-bottom: 7px; }
+        .keyboard-key { flex: 1 1 0; min-width: 0; height: 48px; border: 1px solid rgba(0,243,255,.35); background: rgba(22,37,45,.95); color: white; border-radius: 4px; font: 900 clamp(.86rem,1.35vw,1.15rem) var(--font-en); cursor: pointer; touch-action: manipulation; user-select:none; -webkit-user-select:none; }
+        .keyboard-key:active, .keyboard-key:hover { background: rgba(0,243,255,.32); border-color: var(--cyan); }
+        .keyboard-key.wide { flex: 2.3 1 0; }
+        .keyboard-key.space { flex: 3 1 0; }
+        .keyboard-key.special { background: rgba(157,0,255,.2); border-color: rgba(157,0,255,.75); font-size: .85rem; }
+        .keyboard-key.clear { background: rgba(255,59,48,.17); border-color: var(--crimson); }
+        .keyboard-footer { color: var(--text-muted); font: 11px/1.5 var(--font-mono); padding-top: 6px; }
+        .keyboard-tip { border-top: 1px solid rgba(0,243,255,.2); padding-top: 13px; margin-top: auto; color: var(--mint); font: 12px/1.5 var(--font-mono); }
+        .search-open-btn { height: 42px; min-width: 52px; flex: 0 0 52px; margin-left: auto; padding: 0 11px; border: 1px solid rgba(0,243,255,.55); background: rgba(0,243,255,.09); color: var(--cyan); cursor: pointer; border-radius: 4px; font-weight: bold; }
+        .search-open-btn:hover, .search-open-btn[aria-pressed="true"] { background: rgba(0,243,255,.25); box-shadow: inset 0 0 12px rgba(0,243,255,.2); }
+        .inventory-search { max-width: none; min-width: 75px; }
+        @media (max-width: 1050px) {
+            .keyboard-panel { flex-basis: 310px; width: 310px; margin-right: 12px; }
+            .quick-card { grid-template-columns: minmax(0,1fr); }
+            .quick-controls { flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+            .quick-qty { justify-content: flex-start; }
+            .quick-adjust { min-width: 156px; }
+            .quick-tools { width: 100%; justify-content: flex-start; }
+        }
+        @media (max-width: 670px) {
+            .inventory-workspace.keyboard-open { flex-direction: column; }
+            .inventory-workspace.keyboard-open .grid-wrapper { flex: 1; min-height: 0; padding-bottom: 8px; }
+            .keyboard-panel { width: auto; flex: 0 0 auto; max-height: min(38vh,300px); overflow: auto; margin: 0 12px 12px; padding: 10px; }
+            .keyboard-heading { font-size: 1rem; }
+            .keyboard-subtitle, .keyboard-tip, .keyboard-footer { display: none; }
+            .keyboard-key { height: 39px; }
+            .keyboard-row { margin-bottom: 4px; }
+            .quick-card { padding: 12px; }
+            .quick-adjust .btn-mini { min-height: 50px; }
+        }
 
         /* MATRIX DATA GRID */
         .grid-wrapper { flex: 1; overflow: hidden; padding: 0 25px 20px 25px; position: relative; }
@@ -151,7 +244,7 @@
             100% { left: 100%; transform: translateX(-100%); width: 80px; }
         }
 
-        .scan-critical { background: rgba(255, 30, 70, 0.2); }
+        .scan-critical { background: rgba(255, 59, 48, 0.2); }
         .scan-critical::after { 
             width: 100%; left: 0; border-radius: 0; background: var(--crimson); 
             box-shadow: 0 0 15px var(--crimson), 0 0 30px var(--crimson); 
@@ -179,9 +272,9 @@
         .group-child:hover td { background: rgba(0,243,255,0.05) !important; }
         .tree-branch { color: var(--text-muted); padding-right: 8px; font-weight: normal; }
 
-        .critical-table th { color: var(--crimson); text-shadow: 0 0 10px rgba(255,30,70,0.4); }
+        .critical-table th { color: var(--crimson); text-shadow: 0 0 10px rgba(255,59,48,0.4); }
         .status-nominal { border-left-color: var(--mint) !important; }
-        .status-critical { border-left-color: var(--crimson) !important; background: rgba(255,30,70,0.15) !important; }
+        .status-critical { border-left-color: var(--crimson) !important; background: rgba(255,59,48,0.15) !important; }
         
         .cell-id { color: var(--cyan); font-weight: bold; text-shadow: 0 0 5px var(--cyan); }
         .status-critical .cell-id { color: var(--crimson); text-shadow: 0 0 5px var(--crimson); }
@@ -209,7 +302,7 @@
         
         .btn-mini.sub { background: var(--crimson); color: #fff; border-color: var(--crimson); text-shadow: none; font-size: 1.4rem; padding: 10px 24px; }
         .btn-mini.sub::before { display: none; }
-        .btn-mini.sub:hover { background: #ff4d6d; box-shadow: 0 5px 15px rgba(255,30,70,0.6); transform: translateY(-2px); border-color: #ff4d6d; }
+        .btn-mini.sub:hover { background: #ff6659; box-shadow: 0 5px 15px rgba(255,59,48,0.6); transform: translateY(-2px); border-color: #ff6659; }
         
         .btn-mini.add { background: var(--mint); color: #000; border-color: var(--mint); text-shadow: none; font-size: 1.4rem; padding: 10px 24px; }
         .btn-mini.add::before { display: none; }
@@ -218,7 +311,120 @@
         .btn-mini.edit::before { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
         .btn-mini.edit:hover { border-color: rgba(0, 243, 255, 0.4); }
         .btn-mini.del::before { background: var(--crimson); box-shadow: 0 0 10px var(--crimson); }
-        .btn-mini.del:hover { border-color: rgba(255, 30, 70, 0.4); }
+        .btn-mini.del:hover { border-color: rgba(255, 59, 48, 0.4); }
+
+        /* NOV 2026: SEVEN-COLUMN TABLE + TOUCH-SIZED ACTION BUTTONS */
+        /* Both normal and critical tables use precisely the same column grid. */
+        .data-table {
+            width: 100%;
+            min-width: 1180px;
+            table-layout: fixed;
+        }
+        /* All seven original columns, same widths in both tables. */
+        .data-table th:nth-child(1) { width: 12%; }
+        .data-table th:nth-child(2) { width: 11%; }
+        .data-table th:nth-child(3) { width: 23%; }
+        .data-table th:nth-child(4) { width: 8%; }
+        .data-table th:nth-child(5) { width: 8%; }
+        .data-table th:nth-child(6) { width: 9%; }
+        .data-table th:nth-child(7) { width: 29%; }
+
+        .data-table tbody tr:not(.group-header) { height: 68px; }
+        .data-table tbody td { padding: 7px 10px; }
+        .data-table tbody td:last-child { padding: 7px 8px; }
+        .data-table .cell-name,
+        .data-table .barcode-value {
+            display: block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .data-table .group-header td { height: 64px; }
+        /* A folder row contains only its label and a clear, bracket-free +/- toggle. */
+        .data-table .group-header .folder-icon {
+            display:inline-flex; align-items:center; justify-content:center;
+            width:30px; height:30px; margin-right:14px;
+            font-family:var(--font-en); font-size:1.7rem; font-weight:900;
+            line-height:1; color:var(--mint); vertical-align:middle;
+        }
+        .data-table .group-header .folder-label {
+            vertical-align:middle; font-size:1.17rem; font-weight:800;
+            letter-spacing:.7px; color:var(--cyan);
+        }
+
+        /* Fill the entire Manual Override cell with four finger-friendly buttons. */
+        .data-table .action-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.12fr 1fr;
+            align-items: center;
+            width: 100%;
+            gap: 10px;
+        }
+        .data-table .action-group .btn-mini {
+            width: 100%;
+            min-width: 0;
+            max-width: none;
+            height: 52px;
+            min-height: 52px;
+            padding: 0 3px;
+            font-size: 1.05rem;
+            letter-spacing: 0;
+            line-height: 1;
+            white-space: nowrap;
+            border-radius: 5px;
+            touch-action: manipulation;
+        }
+        .data-table .action-group .btn-mini.sub,
+        .data-table .action-group .btn-mini.add {
+            width: 100%;
+            padding: 0;
+            font-size: 1.85rem;
+        }
+
+        /* Red-forward CRITICAL ALERT: aligned to the true header border.
+           Pulses gently to draw attention while keeping the table still. */
+        .table-scan-line.scan-critical { display: none; }
+        .critical-table thead th {
+            /* Preserve column alignment; the animated line belongs to each sticky TH. */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, .8);
+        }
+        .critical-table thead th::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 4px;
+            background: var(--crimson);
+            pointer-events: none;
+            animation: critical-border-breathe 1.8s ease-in-out infinite;
+        }
+        @keyframes critical-border-breathe {
+            0%, 100% {
+                opacity: .34;
+                box-shadow: 0 0 5px rgba(255, 59, 48, .32), 0 1px 9px rgba(255, 59, 48, .22);
+            }
+            50% {
+                opacity: 1;
+                box-shadow: 0 0 11px rgba(255, 59, 48, .95), 0 0 25px rgba(255, 59, 48, .74), 0 0 38px rgba(255, 59, 48, .28);
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .critical-table thead th::after {
+                animation: none;
+                opacity: 1;
+                box-shadow: 0 0 10px rgba(255, 59, 48, .70);
+            }
+        }
+        .table-scan-line:not(.scan-critical) {
+            position: relative;
+            top: auto;
+            left: auto;
+            width: 100%;
+            min-width: 1180px;
+            z-index: 1;
+        }
+        .table-scan-line:not(.scan-critical)::after { top: -1px; }
 
         /* MODAL OVERLAY (THE FORGE) */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; }
@@ -232,6 +438,16 @@
         .input-label { color: var(--cyan); font-family: var(--font-mono); font-size: 0.85rem; font-weight: bold; }
         .forge-input { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px; font-family: var(--font-mono); font-size: 1rem; outline: none; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
         .forge-input:focus { border-color: var(--cyan); box-shadow: 0 0 15px rgba(0,243,255,0.4), inset 0 0 10px rgba(0,243,255,0.1); background: rgba(0,243,255,0.05); }
+        /* Manufacturer barcode capture is part of Add/Edit, not a separate inventory. */
+        .modal-content { max-height: 94vh; overflow-y: auto; }
+        .barcode-entry { display: flex; align-items: stretch; gap: 8px; }
+        .barcode-entry .forge-input { flex: 1; min-width: 0; }
+        .barcode-capture-btn { cursor: pointer; padding: 8px 12px; color: var(--mint); background: rgba(29,242,186,.1); border: 1px solid var(--mint); font: 700 .8rem var(--font-mono); }
+        .barcode-capture-btn:hover, .barcode-capture-btn:focus-visible { background: rgba(29,242,186,.23); }
+        .barcode-help { color: var(--text-muted); font: 12px/1.4 var(--font-mono); }
+        textarea.forge-input { min-height: 62px; max-height: 135px; resize: vertical; }
+        .barcode-value { overflow-wrap: anywhere; font-size: .8em; color: var(--cyan); }
+        @media (max-width: 550px) { .barcode-entry { flex-direction: column; } }
         .modal-footer { padding: 20px; border-top: 1px dashed rgba(0,243,255,0.3); display: flex; justify-content: flex-end; gap: 15px; background: rgba(0,0,0,0.4); }
 
         /* ========================================================
@@ -251,8 +467,8 @@
         .lockdown-sub { font-size: 3rem; text-shadow: 0 0 10px currentColor; margin: 0; margin-bottom: 20px; }
         
         .dispatch-message {
-            font-family: var(--font-mono); font-size: 1.6rem; color: #fff; text-align: left; background: rgba(255, 30, 70, 0.15);
-            border-left: 4px solid var(--crimson); padding: 20px 30px; box-shadow: 0 0 30px rgba(255,30,70,0.2), inset 0 0 20px rgba(0,0,0,0.8);
+            font-family: var(--font-mono); font-size: 1.6rem; color: #fff; text-align: left; background: rgba(255, 59, 48, 0.15);
+            border-left: 4px solid var(--crimson); padding: 20px 30px; box-shadow: 0 0 30px rgba(255,59,48,0.2), inset 0 0 20px rgba(0,0,0,0.8);
             line-height: 1.6; text-shadow: 0 0 10px var(--crimson); max-width: 800px; width: 90%;
         }
         .dispatch-message span { display: block; margin-bottom: 10px; }
@@ -300,10 +516,7 @@
             <div class="status-text" id="sysStatus">VALEO LAB INVENTORY NEXUS</div>
         </div>
 
-        <div class="system-online">
-            <div>SYSTEM ONLINE // LOCAL DB</div>
-            <div class="scanner-status">[ SCANNER READY ]</div>
-        </div>
+
     </header>
 
     <!-- HORIZONTAL CATEGORY NAVIGATION -->
@@ -332,9 +545,18 @@
 
     <!-- ACTION ROW -->
     <div class="action-row">
-        <button class="action-btn" onclick="openModal('new')">[ + FORGE NEW ITEM ]</button>
+        <button class="action-btn" style="text-transform:none" onclick="openModal('new')">Add New Item</button>
+        <input id="inventorySearch" class="inventory-search" type="search" inputmode="search"
+               placeholder="Smart Search: try 1thousa, grit, ID..."
+               aria-label="Search inventory" autocomplete="off" spellcheck="false"
+               onpointerdown="rememberSearchPointer(event)" oninput="onSearchInput()">
+        <button type="button" id="searchKeyboardToggle" class="search-open-btn" onclick="toggleSearchKeyboard()"
+                aria-label="Show on-screen keyboard" aria-pressed="false" aria-controls="touchKeyboard"
+                title="Show or hide touch keyboard">⌨</button>
     </div>
 
+    <!-- RESPONSIVE WORKSPACE: the keyboard docks on the right when Search is active. -->
+    <div class="inventory-workspace" id="inventoryWorkspace">
     <!-- DATA GRID SCROLL AREA -->
     <div class="grid-wrapper">
         <div class="scroll-container">
@@ -345,13 +567,13 @@
                 <table class="data-table critical-table">
                     <thead>
                         <tr>
-                            <th>CRITICAL PART ID</th>
+                            <th>ID</th>
                             <th>CATEGORY</th>
-                            <th>NOMENCLATURE</th>
-                            <th>STOCK QTY</th>
+                            <th>NAME</th>
+                            <th>STOCK</th>
                             <th>TYPE</th>
                             <th>STATUS</th>
-                            <th>MANUAL OVERRIDE</th>
+                            <th>OVERRIDE</th>
                         </tr>
                     </thead>
                     <tbody id="criticalGridBody">
@@ -365,13 +587,13 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>PART ID</th>
+                        <th>ID</th>
                         <th>CATEGORY</th>
-                        <th>NOMENCLATURE</th>
-                        <th>STOCK QTY</th>
+                        <th>NAME</th>
+                        <th>STOCK</th>
                         <th>TYPE</th>
                         <th>STATUS</th>
-                        <th>MANUAL OVERRIDE</th>
+                        <th>OVERRIDE</th>
                     </tr>
                 </thead>
                 <tbody id="inventoryGridBody">
@@ -380,6 +602,24 @@
             </table>
 
         </div>
+        <section class="quick-results" id="quickResults" aria-label="Search results with inventory controls">
+            <div class="quick-results-header">
+                <span class="quick-result-count" id="quickResultCount">INVENTORY</span>
+                <span class="quick-hint">LIVE STOCK • TAP − OR +</span>
+            </div>
+            <div class="quick-list" id="quickResultList"></div>
+        </section>
+    </div>
+    <aside class="keyboard-panel" id="touchKeyboard" aria-label="On-screen search keyboard">
+        <div class="keyboard-top">
+            <div><div class="keyboard-label">VALEO // SEARCH INPUT</div><div class="keyboard-heading">TOUCH KEYBOARD</div></div>
+            <button class="keyboard-close" onclick="closeSearchKeyboard()" aria-label="Close keyboard">×</button>
+        </div>
+        <p class="keyboard-subtitle">Type part numbers or names. Spelling, hyphens and number words don't need to match exactly.</p>
+        <div class="keyboard-keys" id="keyboardKeys"></div>
+        <div class="keyboard-footer">This keyboard can be closed with the ⌨ button. Physical typing automatically hides it.</div>
+        <div class="keyboard-tip">SMART EXAMPLE: 1thousa → one-thousand<br>Every + / − tap changes stock by exactly one.</div>
+    </aside>
     </div>
 
 </div>
@@ -388,17 +628,33 @@
 <div class="modal-overlay" id="forgeModal">
     <div class="modal-content">
         <div class="modal-header">
-            <span id="modalTitle">FORGE NEW ITEM</span>
+            <span id="modalTitle">ADD NEW ITEM</span>
             <button class="btn-mini del" style="border:none;" onclick="closeModal()">[ X ]</button>
         </div>
         <div class="modal-body">
             <input type="hidden" id="editId" value="">
             
             <div class="input-block">
-                <label class="input-label">PART ID / BARCODE</label>
+                <label class="input-label">INTERNAL PART ID</label>
                 <input type="text" id="inputId" class="forge-input" placeholder="e.g. V-001">
             </div>
             
+            <div class="input-block">
+                <label for="inputManufacturerBarcode" class="input-label">MANUFACTURER BARCODE / QR (OPTIONAL)</label>
+                <div class="barcode-entry">
+                    <input type="text" id="inputManufacturerBarcode" class="forge-input" maxlength="180"
+                           placeholder="Scan UPC, EAN, or QR payload" autocomplete="off" spellcheck="false">
+                    <button type="button" class="barcode-capture-btn" onclick="prepareBarcodeCapture()">SCAN TO FILL</button>
+                </div>
+                <small class="barcode-help">Scan the package label into this field once. Keep leading zeros; configure the scanner to send Enter after the code.</small>
+            </div>
+
+            <div class="input-block">
+                <label for="inputManufacturerBarcodes" class="input-label">ADDITIONAL MANUFACTURER BARCODES (OPTIONAL)</label>
+                <textarea id="inputManufacturerBarcodes" class="forge-input" rows="2" maxlength="1500" placeholder="One alternate barcode per line (up to 8)"></textarea>
+                <small class="barcode-help">Use when one inventory item has several valid package labels. Do not enter the internal Part ID again.</small>
+            </div>
+
             <div class="input-block">
                 <label class="input-label">NOMENCLATURE</label>
                 <input type="text" id="inputName" class="forge-input" placeholder="e.g. 9µm Polishing Pads">
@@ -449,7 +705,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="action-btn" style="border-color:var(--crimson); color:var(--crimson); box-shadow:0 0 15px rgba(255,30,70,0.3);" onclick="closeModal()">CANCEL</button>
+            <button class="action-btn" style="border-color:var(--crimson); color:var(--crimson); box-shadow:0 0 15px rgba(255,59,48,0.3);" onclick="closeModal()">CANCEL</button>
             <button class="action-btn" style="border-color:var(--mint); color:var(--mint); box-shadow:0 0 15px rgba(29,242,186,0.3);" onclick="saveItem()">[ COMMIT TO CORE ]</button>
         </div>
     </div>
@@ -461,72 +717,128 @@
     let openFolders = new Set(); 
     let inventory = []; 
 
-    // --- JSON FETCH ENGINE (FOR ESP32 SD CARD) ---
-    async function loadInventory() {
+    // --- ESP32 MICROSD DATABASE AND ATOMIC STOCK OPERATIONS ---
+    let loadSerial = 0;
+    async function loadInventory(silent = false) {
+        const serial = ++loadSerial;
         try {
-            const response = await fetch('/inventory.json');
-            if (response.ok) {
-                inventory = await response.json();
-                triggerStatus("NEXUS SYNC COMPLETE", "success");
-            } else {
-                throw new Error("Local test mode");
-            }
+            const response = await fetch('/inventory.json', { cache: 'no-store' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (!Array.isArray(data)) throw new Error('Inventory JSON must be an array');
+            if (serial !== loadSerial) return;
+            inventory = data;
+            renderGrid();
+            if (!silent) triggerStatus('NEXUS SYNC COMPLETE', 'success');
         } catch (error) {
-            triggerStatus("SYS_ERROR: DB CONNECTION FAILED", "critical");
-            console.log("Failed to load inventory.json. Initializing empty database.");
-            inventory = []; 
+            if (!silent) triggerStatus(`DB CONNECTION FAILED: ${error.message}`, 'critical');
+            console.error('Unable to read /inventory.json from ESP32:', error);
+            // Never replace known inventory with [] after a network/storage error.
         }
-        renderGrid();
     }
 
-    // --- POST TO ESP32 ---
-    async function saveToESP32() {
-        try {
-            await fetch('/update', {
+    // Serialize browser requests: every POST edits the authoritative SD database.
+    // This prevents simultaneous scans/clicks from overwriting stock totals.
+    let actionQueue = Promise.resolve();
+    function sendAction(action, successMessage, kind = 'success') {
+        const task = async () => {
+            const response = await fetch('/api/action', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(inventory)
+                body: JSON.stringify(action)
             });
-        } catch(e) {
-            console.log("Local Test: Save to ESP32 skipped.");
-        }
+            const result = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+            if (!response.ok || !result.ok) {
+                throw new Error(result.error || `HTTP ${response.status}`);
+            }
+            await loadInventory(true);
+            triggerStatus(typeof successMessage === 'function' ? successMessage(result) : successMessage, kind);
+            return result;
+        };
+        const run = actionQueue.then(task, task);
+        actionQueue = run.catch(error => {
+            console.error('ESP32 did not confirm inventory update:', error);
+            triggerStatus(`SAVE FAILED: ${error.message}`, 'critical');
+        });
+        return run;
     }
 
-    // --- QR CODE SCANNER LISTENER (HID KEYBOARD EMULATION) ---
-    let scanBuffer = "";
+    // --- HID BARCODE / QR SCANNER ---
+    // Scanners pair to the browser device and type a code plus Enter.
+    // Only the ESP32 decides which item matches. Fuzzy search NEVER deducts stock.
+    let scanBuffer = '';
     let scanTimeout;
-
+    let scanStartedAt = 0;
+    let scanLastKeyAt = 0;
+    let searchBeforeScanner = '';
+    function scanCodeMatchesKnownItem(raw) {
+        const code = String(raw).trim().toUpperCase();
+        return code.length > 0 && inventory.some(item =>
+            [item.id, item.manufacturerBarcode, ...(Array.isArray(item.manufacturerBarcodes) ? item.manufacturerBarcodes : [])]
+                .some(value => String(value || '').trim().toUpperCase() === code));
+    }
     window.addEventListener('keydown', (e) => {
-        if (isLockedDown) return; 
-        
-        // Prevent scanner from overriding if user is manually typing in the Forge Modal
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-        if (e.key === "Enter") {
-            if (scanBuffer.length > 0) {
-                processScan(scanBuffer.trim().toUpperCase());
-                scanBuffer = ""; 
+        if (isLockedDown || e.ctrlKey || e.altKey || e.metaKey) return;
+        if (e.key.length === 1 || ['Backspace','Enter','Delete','ArrowLeft','ArrowRight'].includes(e.key)) {
+            hardwareKeyboardUsed = true;
+            keyboardPreference = 'hidden';
+            clearTimeout(autoKeyboardTimer);
+            if (document.getElementById('inventoryWorkspace').classList.contains('keyboard-open')) {
+                closeSearchKeyboard({preserveFocus:true, rememberChoice:false});
             }
-        } else {
-            // Accept standard alphanumeric characters
-            if (e.key.length === 1) {
-                scanBuffer += e.key;
+        }
+        const searchInput = document.getElementById('inventorySearch');
+        const inSearch = e.target === searchInput;
+        if (e.key === 'Escape' && inSearch) {
+            closeSearchKeyboard();
+            searchInput.blur();
+            return;
+        }
+        // While Add/Edit is open, scanner keystrokes may populate its focused
+        // barcode input, but must NEVER deduct inventory.
+        if (document.getElementById('forgeModal').classList.contains('active')) return;
+        if (!inSearch && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+        const now = performance.now();
+        if (e.key === 'Enter') {
+            const code = scanBuffer.trim(); // Preserve UPC leading zeros and raw QR content.
+            const fastScanner = code.length >= 4 &&
+                (now - scanStartedAt) <= (code.length + 1) * 48;
+            // Only recognize rapid *known* scans while the user is editing Search.
+            // This prevents accidental deductions when someone types a search query.
+            if (inSearch && fastScanner && scanCodeMatchesKnownItem(code)) {
+                e.preventDefault();
+                searchInput.value = searchBeforeScanner;
+                onSearchInput();
+                processScan(code);
+            } else if (!inSearch && code) {
+                e.preventDefault();
+                processScan(code);
             }
-            // Scanners type fast (usually <30ms per char). If no input for 100ms, clear the buffer (prevents manual random typing from firing)
+            scanBuffer = '';
             clearTimeout(scanTimeout);
-            scanTimeout = setTimeout(() => { scanBuffer = ""; }, 100);
+        } else if (e.key.length === 1) {
+            if (!scanBuffer || now - scanLastKeyAt > 120) {
+                scanBuffer = '';
+                scanStartedAt = now;
+                if (inSearch) searchBeforeScanner = searchInput.value;
+            }
+            scanBuffer += e.key;
+            scanLastKeyAt = now;
+            clearTimeout(scanTimeout);
+            scanTimeout = setTimeout(() => { scanBuffer = ''; }, 160);
         }
     });
 
-    function processScan(scannedId) {
-        let idx = inventory.findIndex(i => i.id === scannedId);
-        if (idx > -1) {
-            // Scanner found the item, deduct 1
-            updateQty(scannedId, -1);
-            triggerStatus(`[ QR SCAN ] DECREMENTED: ${scannedId}`, "success");
-        } else {
-            triggerStatus(`[ QR SCAN ] ERROR: ID [ ${scannedId} ] NOT FOUND`, "critical");
+    function processScan(rawCode) {
+        const code = String(rawCode).trim();
+        if (!code) return;
+        if (code.length > 180) {
+            triggerStatus('BARCODE ERROR: MAX 180 CHARACTERS', 'critical');
+            return;
         }
+        sendAction({action: 'scan', code}, response =>
+            `SCAN -1: ${response.name} / ${response.itemId} | STOCK ${response.qty}`
+        ).catch(() => {});
     }
 
     // --- ALIEN ORGANISM CANVAS LOGIC ---
@@ -550,7 +862,7 @@
             this.size = Math.random() * 2.5 + 1.2; 
             this.speedX = Math.random() * 0.4 - 0.2; 
             this.speedY = Math.random() * -0.8 - 0.2; 
-            const colors = ['rgba(255, 30, 70,', 'rgba(157, 0, 255,', 'rgba(0, 243, 255,']; 
+            const colors = ['rgba(255, 59, 48,', 'rgba(157, 0, 255,', 'rgba(0, 243, 255,']; 
             this.colorBase = colors[Math.floor(Math.random() * colors.length)]; 
             
             this.opacity = Math.random() * 0.5 + 0.35;
@@ -790,32 +1102,256 @@
         renderGrid();
     }
 
+    // Escape user-defined names and IDs before inserting them into table HTML.
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, ch => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[ch]);
+    }
+
+    // --- FUZZY, NUMBER-AWARE INVENTORY SEARCH ---
+    // Convert basic number words to digits: one-thousand -> 1thousand.
+    // Also index "1000" for one-thousand. This supports 1thousa, 1000, etc.
+    const numberWords = Object.freeze({zero:'0',one:'1',two:'2',three:'3',four:'4',five:'5',six:'6',seven:'7',eight:'8',nine:'9',ten:'10'});
+    function compactSearch(value) {
+        return String(value ?? '').toLowerCase().normalize('NFKD')
+            .replace(/[\u0300-\u036f]/g, '').replace(/[µμ]/g,'u')
+            .replace(/\b(zero|one|two|three|four|five|six|seven|eight|nine|ten)\b/g,
+                word => numberWords[word])
+            .replace(/[^a-z0-9]/g,'');
+    }
+    function searchVariants(value) {
+        const raw = String(value ?? '');
+        const variants = new Set([compactSearch(raw)]);
+        // Natural numeric variant, e.g. "one-thousand" -> "1000".
+        const numeric = raw.replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten|[1-9])[-\s_]*thousand\b/gi,
+            (_, number) => `${Number(numberWords[number.toLowerCase()] || number) * 1000}`);
+        variants.add(compactSearch(numeric));
+        raw.split(/[\s\-_/()]+/).forEach(part => variants.add(compactSearch(part)));
+        return [...variants].filter(Boolean);
+    }
+    function editDistanceWithin(a, b, limit) {
+        if (Math.abs(a.length - b.length) > limit) return limit + 1;
+        let last = Array.from({length:b.length + 1}, (_,i) => i);
+        for (let i = 1; i <= a.length; i++) {
+            const next = [i];
+            let rowMin = next[0];
+            for (let j = 1; j <= b.length; j++) {
+                next[j] = Math.min(last[j] + 1, next[j - 1] + 1,
+                    last[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+                rowMin = Math.min(rowMin,next[j]);
+            }
+            if (rowMin > limit) return limit + 1;
+            last = next;
+        }
+        return last[b.length];
+    }
+    function scoreTerm(query, value) {
+        if (!query || !value) return 0;
+        if (query === value) return 120;
+        if (value.startsWith(query)) return 110;
+        if (value.includes(query)) return 96;
+        if (query.length < 4) return 0; // Avoid noisy typo matches for short searches.
+        const tolerance = query.length >= 10 ? 3 : query.length >= 6 ? 2 : 1;
+        const minLen = Math.max(1, query.length - tolerance);
+        const maxLen = Math.min(value.length, query.length + tolerance);
+        let best = 0;
+        // Try the start of each word/normalized field, plus partial substrings.
+        // Search database is capped at 500 items by the ESP32 firmware.
+        for (let i = 0; i < value.length; i++) {
+            if (value.length - i < minLen) break;
+            for (let length = minLen; length <= maxLen && i + length <= value.length; length++) {
+                const distance = editDistanceWithin(query,value.slice(i,i+length),tolerance);
+                if (distance <= tolerance) best = Math.max(best, 80 - 16 * distance);
+            }
+            if (best >= 64) break;
+        }
+        return best;
+    }
+    function smartSearchScore(item, text) {
+        const terms = String(text).trim().split(/\s+/).map(compactSearch).filter(Boolean);
+        if (!terms.length) return 1;
+        const variants = [item.id,item.name,item.category,item.type,item.group,
+            item.manufacturerBarcode,...(Array.isArray(item.manufacturerBarcodes) ? item.manufacturerBarcodes : [])]
+            .flatMap(searchVariants);
+        let total = 0;
+        for (const term of terms) {
+            let best = 0;
+            for (const variant of variants) best = Math.max(best,scoreTerm(term,variant));
+            if (!best) return 0; // All terms must match some inventory field.
+            total += best;
+        }
+        return total / terms.length;
+    }
+    function visibleItems() {
+        const query = document.getElementById('inventorySearch').value.trim();
+        return inventory.filter(item => currentFilter === 'ALL' || item.category === currentFilter)
+            .map(item => ({item,score:smartSearchScore(item,query)}))
+            .filter(result => result.score > 0)
+            .sort((a,b) => query ? b.score - a.score || a.item.qty - b.item.qty : a.item.qty - b.item.qty)
+            .map(result => result.item);
+    }
+
+    // --- OPTIONAL ON-SCREEN KEYBOARD + TOUCH-FRIENDLY STOCK CARDS ---
+    // Browsers do not offer a dependable way to detect a connected physical keyboard.
+    // Prioritize ordinary typing; use a conservative touch/viewport heuristic on desktop
+    // touchscreens, plus an always-visible manual keyboard toggle at the right of Search.
+    let hardwareKeyboardUsed = false;
+    let keyboardPreference = 'auto'; // 'auto', 'touch' (manually shown), or 'hidden'
+    let autoKeyboardTimer = null;
+    function nativeKeyboardVisible(beforeHeight) {
+        const visibleHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        const nativeRect = navigator.virtualKeyboard?.boundingRect;
+        return (beforeHeight - visibleHeight > 110) || (nativeRect && nativeRect.height > 110);
+    }
+    function rememberSearchPointer(event) {
+        clearTimeout(autoKeyboardTimer);
+        // Mouse and keyboard users get the normal text field; nothing pops out.
+        if (!['touch', 'pen'].includes(event.pointerType)) return;
+        // Phones/tablets normally have their own system keyboard. Let the OS provide it.
+        const usesNativeTouchKeyboard = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (usesNativeTouchKeyboard || hardwareKeyboardUsed || keyboardPreference !== 'auto') return;
+        const startHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        autoKeyboardTimer = setTimeout(() => {
+            const input = document.getElementById('inventorySearch');
+            if (document.activeElement !== input || hardwareKeyboardUsed || keyboardPreference !== 'auto') return;
+            if (!nativeKeyboardVisible(startHeight)) openSearchKeyboard(true);
+        }, 350);
+    }
+    function openSearchKeyboard(automatic = false) {
+        clearTimeout(autoKeyboardTimer);
+        if (!automatic) keyboardPreference = 'touch';
+        const input = document.getElementById('inventorySearch');
+        // Suppress a second OS keyboard while the custom right-hand keyboard is in use.
+        input.inputMode = 'none';
+        document.getElementById('inventoryWorkspace').classList.add('keyboard-open');
+        const toggle = document.getElementById('searchKeyboardToggle');
+        toggle.setAttribute('aria-pressed', 'true');
+        toggle.setAttribute('aria-label', 'Hide on-screen keyboard');
+        input.setAttribute('aria-expanded','true');
+        input.blur();
+        input.focus({preventScroll:true});
+        renderGrid();
+    }
+    function closeSearchKeyboard({preserveFocus = false, rememberChoice = true} = {}) {
+        clearTimeout(autoKeyboardTimer);
+        if (rememberChoice) keyboardPreference = 'hidden';
+        document.getElementById('inventoryWorkspace').classList.remove('keyboard-open');
+        const input = document.getElementById('inventorySearch');
+        input.inputMode = 'search';
+        input.setAttribute('aria-expanded','false');
+        const toggle = document.getElementById('searchKeyboardToggle');
+        toggle.setAttribute('aria-pressed', 'false');
+        toggle.setAttribute('aria-label', 'Show on-screen keyboard');
+        if (!preserveFocus) input.blur();
+        renderGrid();
+    }
+    function toggleSearchKeyboard() {
+        if (document.getElementById('inventoryWorkspace').classList.contains('keyboard-open')) {
+            closeSearchKeyboard();
+        } else {
+            openSearchKeyboard();
+        }
+    }
+    function onSearchInput() { renderGrid(); }
+    function virtualKeyPress(key) {
+        const input = document.getElementById('inventorySearch');
+        let start = input.selectionStart ?? input.value.length;
+        let end = input.selectionEnd ?? input.value.length;
+        if (key === 'CLEAR') {
+            input.value = '';
+            start = 0;
+        } else if (key === 'BACKSPACE') {
+            if (start === end && start > 0) start--;
+            input.setRangeText('',start,end,'start');
+        } else {
+            input.setRangeText(key === 'SPACE' ? ' ' : key.toLowerCase(),start,end,'end');
+        }
+        scanBuffer = '';
+        // inputmode=none asks mobile devices not to raise their native keyboard.
+        input.focus({preventScroll:true});
+        input.setSelectionRange(key === 'CLEAR' ? 0 : input.selectionStart,
+                                key === 'CLEAR' ? 0 : input.selectionEnd);
+        onSearchInput();
+    }
+    function buildTouchKeyboard() {
+        const rows = ['1234567890','QWERTYUIOP','ASDFGHJKL','ZXCVBNM'];
+        const element = document.getElementById('keyboardKeys');
+        const keyButton = (character, cls = '') => `<button type="button" class="keyboard-key ${cls}" data-key="${character}" aria-label="${character}">${character}</button>`;
+        element.innerHTML = rows.map(row => `<div class="keyboard-row">${[...row].map(key => keyButton(key)).join('')}</div>`).join('') +
+            '<div class="keyboard-row">' + keyButton('-') + keyButton('SPACE','space special').replace('>SPACE<','>SPACE<') + keyButton('BACKSPACE','wide special').replace('>BACKSPACE<','>⌫<') + '</div>' +
+            '<div class="keyboard-row">' + keyButton('CLEAR','wide clear').replace('>CLEAR<','>CLEAR SEARCH<') + '</div>';
+        element.addEventListener('pointerdown', e => {
+            // Keep the caret in Search when tapping virtual keys.
+            if (e.target.closest('[data-key]')) e.preventDefault();
+        });
+        element.addEventListener('click', e => {
+            const button = e.target.closest('[data-key]');
+            if (button) virtualKeyPress(button.dataset.key);
+        });
+    }
+    function renderQuickResults(items, query) {
+        const count = document.getElementById('quickResultCount');
+        const host = document.getElementById('quickResultList');
+        count.textContent = `${items.length} MATCH${items.length === 1 ? '' : 'ES'}`;
+        const shown = items.slice(0,100);
+        if (!shown.length) {
+            host.innerHTML = `<div class="quick-empty">NO MATCHES FOR <strong>${escapeHtml(query)}</strong><br>Try fewer letters, a part ID, or another spelling.</div>`;
+            return;
+        }
+        host.innerHTML = shown.map(item => {
+            const critical = item.qty <= item.threshold;
+            const label = critical ? 'CRITICAL' : 'IN STOCK';
+            return `<article class="quick-card ${critical ? 'is-critical' : ''}">
+                <div class="quick-info">
+                    <div class="quick-name">${escapeHtml(item.name)}</div>
+                    <div class="quick-id">PART ID: ${escapeHtml(item.id)}</div>
+                    <div class="quick-meta">
+                        <span>${escapeHtml(item.category || 'Uncategorized')}</span>
+                        <span>${escapeHtml(item.type || 'Unit')}</span>
+                        ${item.group ? `<span>Folder: ${escapeHtml(item.group)}</span>` : ''}
+                        ${item.manufacturerBarcode ? `<span class="barcode-value">BARCODE: ${escapeHtml(item.manufacturerBarcode)}</span>` : ''}
+                        ${Array.isArray(item.manufacturerBarcodes) && item.manufacturerBarcodes.length ? `<span>${item.manufacturerBarcodes.length} alternate label(s)</span>` : ''}
+                        <span style="color:${critical ? 'var(--crimson)' : 'var(--mint)'}">${label}</span>
+                    </div>
+                </div>
+                <div class="quick-controls">
+                    <div class="quick-qty"><strong>${Number(item.qty)}</strong><small>UNITS</small></div>
+                    <div class="quick-adjust">
+                        <button class="btn-mini sub" data-action="sub" data-id="${escapeHtml(item.id)}" ${item.qty <= 0 ? 'disabled' : ''} aria-label="Remove one ${escapeHtml(item.name)}">−</button>
+                        <button class="btn-mini add" data-action="add" data-id="${escapeHtml(item.id)}" aria-label="Add one ${escapeHtml(item.name)}">+</button>
+                    </div>
+                    <div class="quick-tools"><button class="btn-mini edit" data-action="edit" data-id="${escapeHtml(item.id)}">EDIT</button></div>
+                </div>
+            </article>`;
+        }).join('') + (items.length > 100 ? `<div class="quick-empty">Showing first 100 of ${items.length} results. Type more to narrow down.</div>` : '');
+    }
+    buildTouchKeyboard();
+
     function renderRowHtml(item, isChild = false, parentId = "") {
         const isCritical = item.qty <= item.threshold;
         const statusClass = isCritical ? 'status-critical' : 'status-nominal';
         const statusText = isCritical ? 'CRITICAL' : 'NOMINAL';
         const statusColor = isCritical ? 'var(--crimson)' : 'var(--mint)';
-        
-        let { catColor, catTextShadow } = getCategoryColorInfo(item.category);
-        
-        const childClass = isChild ? `child-of-${parentId} group-child` : '';
-        const childStyle = isChild && !openFolders.has(parentId) ? `style="display: none;"` : '';
-        const idPrefix = isChild ? `<span class="tree-branch">└─ </span>` : '';
-
+        const { catColor, catTextShadow } = getCategoryColorInfo(item.category);
+        const searching = !!document.getElementById('inventorySearch').value.trim();
+        const childClass = isChild ? 'group-child' : '';
+        const childStyle = isChild && !searching && !openFolders.has(parentId) ? 'style="display: none;"' : '';
+        const idPrefix = isChild ? '<span class="tree-branch">└─ </span>' : '';
         return `
             <tr class="${statusClass} ${childClass}" ${childStyle}>
-                <td class="cell-id">${idPrefix}${item.id}</td>
-                <td class="cell-category" style="color:${catColor}; text-shadow:${catTextShadow}; font-weight:bold;">${(item.category || "").toUpperCase()}</td>
-                <td><div class="cell-name">${item.name}</div></td>
+                <td class="cell-id">${idPrefix}${escapeHtml(item.id)}</td>
+                <td class="cell-category" style="color:${catColor}; text-shadow:${catTextShadow}; font-weight:bold;">${escapeHtml((item.category || '').toUpperCase())}</td>
+                <td><div class="cell-name">${escapeHtml(item.name)}</div>${item.manufacturerBarcode ? `<small class="barcode-value">BARCODE: ${escapeHtml(item.manufacturerBarcode)}</small>` : ''}</td>
                 <td class="cell-qty">${item.qty}</td>
-                <td class="cell-type">[ ${item.type ? item.type.toUpperCase() : 'UNIT'} ]</td>
+                <td class="cell-type">[ ${escapeHtml(item.type ? item.type.toUpperCase() : 'UNIT')} ]</td>
                 <td><span class="cell-badge" style="color:${statusColor}; border-color:${statusColor};">${statusText}</span></td>
                 <td>
                     <div class="action-group">
-                        <button class="btn-mini sub" onclick="updateQty('${item.id}', -1)">[ - ]</button>
-                        <button class="btn-mini add" onclick="updateQty('${item.id}', 1)">[ + ]</button>
-                        <button class="btn-mini edit" onclick="openModal('edit', '${item.id}')">[ EDIT ]</button>
-                        <button class="btn-mini del" onclick="deleteItem('${item.id}')">[ DEL ]</button>
+                        <button class="btn-mini sub" data-action="sub" data-id="${escapeHtml(item.id)}">−</button>
+                        <button class="btn-mini add" data-action="add" data-id="${escapeHtml(item.id)}">+</button>
+                        <button class="btn-mini edit" data-action="edit" data-id="${escapeHtml(item.id)}">EDIT</button>
+                        <button class="btn-mini del" data-action="delete" data-id="${escapeHtml(item.id)}">DEL</button>
                     </div>
                 </td>
             </tr>
@@ -823,114 +1359,75 @@
     }
 
     function renderGrid() {
-        if (isLockedDown) return; 
-
-        // LIVE SORT GLOBALLY BY QUANTITY (Least stock gets priority)
-        inventory.sort((a, b) => a.qty - b.qty);
-
+        if (isLockedDown) return;
+        const query = document.getElementById('inventorySearch').value.trim();
+        document.getElementById('inventoryWorkspace').classList.toggle('search-results-active', !!query);
+        const results = visibleItems();
+        // The same filtered results drive both normal table and large-button touch cards.
+        renderQuickResults(results,query);
         const tbodyNormal = document.getElementById('inventoryGridBody');
         const tbodyCritical = document.getElementById('criticalGridBody');
         const criticalSection = document.getElementById('criticalSection');
-        
         let normalHtml = '';
         let criticalHtml = '';
-        let hasCritical = false;
-        let normalGroups = {};
-        let standaloneNormal = [];
-
-        inventory.forEach((item) => {
-            if (currentFilter !== "ALL" && item.category !== currentFilter) return;
-
+        const normalGroups = Object.create(null);
+        const standaloneNormal = [];
+        results.forEach(item => {
             if (item.qty <= item.threshold) {
-                criticalHtml += renderRowHtml(item, false, "");
-                hasCritical = true;
+                criticalHtml += renderRowHtml(item);
+            } else if (item.group) {
+                (normalGroups[item.group] ||= []).push(item);
             } else {
-                if (item.group) {
-                    if (!normalGroups[item.group]) normalGroups[item.group] = [];
-                    normalGroups[item.group].push(item);
-                } else {
-                    standaloneNormal.push(item);
-                }
+                standaloneNormal.push(item);
             }
         });
-
-        let sortedFolders = Object.keys(normalGroups).map(groupName => {
-            let items = normalGroups[groupName];
-            let totalQty = items.reduce((sum, i) => sum + i.qty, 0);
-            return { groupName, items, totalQty };
-        });
-
-        sortedFolders.sort((a, b) => a.totalQty - b.totalQty);
-
+        const sortedFolders = Object.entries(normalGroups).map(([groupName, items]) => ({
+            groupName,items,totalQty:items.reduce((sum,item) => sum + item.qty,0)
+        })).sort((a,b) => a.totalQty - b.totalQty);
         sortedFolders.forEach(folder => {
-            const headerId = folder.groupName.replace(/\s+/g, '-').toLowerCase();
-            const isOpen = openFolders.has(headerId);
-            const iconText = isOpen ? '[ - ]' : '[ + ]';
-            
-            normalHtml += `
-                <tr class="group-header status-nominal" style="cursor: pointer;" onclick="toggleGroup('${headerId}')">
-                    <td colspan="2" style="color:var(--cyan); font-weight:bold; font-size:1.1rem; text-shadow:0 0 5px var(--cyan);">
-                        <span class="folder-icon" style="color:var(--mint); margin-right: 8px;">${iconText}</span> 
-                        ${folder.groupName.toUpperCase()} FOLDER
-                    </td>
-                    <td><div class="cell-name">${folder.items.length} ITEMS INSIDE</div></td>
-                    <td class="cell-qty" style="color:var(--text-main); text-shadow:none;">${folder.totalQty} <span style="font-size:1rem;color:var(--text-muted)">TOTAL UNITS</span></td>
-                    <td>-</td>
-                    <td><span class="cell-badge" style="color:var(--mint); border-color:var(--mint);">NOMINAL</span></td>
-                    <td>-</td>
-                </tr>
-            `;
-
-            folder.items.forEach(item => {
-                normalHtml += renderRowHtml(item, true, headerId);
-            });
+            const headerId = encodeURIComponent(folder.groupName);
+            const isOpen = !!query || openFolders.has(headerId);
+            const iconText = isOpen ? '−' : '+';
+            normalHtml += `<tr class="group-header status-nominal" style="cursor:pointer" data-folder-id="${escapeHtml(headerId)}" aria-expanded="${isOpen}">
+                <td colspan="7">
+                    <span class="folder-icon" aria-hidden="true">${iconText}</span><span class="folder-label">${escapeHtml(folder.groupName.toUpperCase())} FOLDER</span>
+                </td>
+            </tr>`;
+            folder.items.forEach(item => normalHtml += renderRowHtml(item,true,headerId));
         });
-
-        standaloneNormal.forEach(item => {
-            normalHtml += renderRowHtml(item, false, "");
-        });
-        
-        tbodyNormal.innerHTML = normalHtml;
+        standaloneNormal.forEach(item => normalHtml += renderRowHtml(item));
+        tbodyNormal.innerHTML = normalHtml || (!criticalHtml && query ? '<tr><td colspan="7" style="text-align:center;color:var(--text-muted)">NO MATCHING ITEMS</td></tr>' : '');
         tbodyCritical.innerHTML = criticalHtml;
-        criticalSection.style.display = hasCritical ? 'block' : 'none';
+        criticalSection.style.display = criticalHtml ? 'block' : 'none';
     }
 
-    // --- CRUD OPERATIONS BY STRING ID ---
-    window.updateQty = function(id, delta) {
-        if (isLockedDown) return;
-
-        const now = Date.now();
-        if (now - lastClickTime < 600) { 
-            rapidClickCount++;
-            if (rapidClickCount >= 6) { 
-                triggerLockdown();
-                return;
-            }
-        } else {
-            rapidClickCount = 1; 
+    // Event delegation avoids putting arbitrary item IDs into inline JavaScript.
+    document.addEventListener('click', e => {
+        const btn = e.target.closest('[data-action][data-id]');
+        if (btn) {
+            const id = btn.dataset.id;
+            if (btn.dataset.action === 'sub') updateQty(id, -1);
+            if (btn.dataset.action === 'add') updateQty(id, 1);
+            if (btn.dataset.action === 'edit') openModal('edit', id);
+            if (btn.dataset.action === 'delete') deleteItem(id);
+            return;
         }
-        lastClickTime = now;
+        const folder = e.target.closest('[data-folder-id]');
+        if (folder) toggleGroup(folder.dataset.folderId);
+    });
 
-        let idx = inventory.findIndex(i => i.id === id);
-        if (idx === -1) return;
-
-        let newQty = inventory[idx].qty + delta;
-        if (newQty < 0) newQty = 0;
-        inventory[idx].qty = newQty;
-        
-        triggerStatus(`UPDATED > ${inventory[idx].id}`, "success");
-        renderGrid(); 
-        saveToESP32();
+    // --- INVENTORY ACTIONS ---
+    window.updateQty = function(id, delta, source = 'manual') {
+        if (isLockedDown || ![-1,1].includes(delta)) return;
+        // Quick-adjust controls are intended for repeated taps. Never lock out valid inventory operations.
+        const desc = source === 'scan' ? `[ QR SCAN ] -1 UNIT: ${id}` : `UPDATED > ${id}`;
+        sendAction({ action: 'stock', id, delta }, desc).catch(() => {});
     };
 
     window.deleteItem = function(id) {
         if (isLockedDown) return;
         if (confirm(`PURGE ITEM [ ${id} ] FROM CORE MEMORY?`)) {
-            triggerStatus(`PURGED > ${id}`, "warning");
-            let idx = inventory.findIndex(i => i.id === id);
-            if (idx > -1) inventory.splice(idx, 1);
-            renderGrid();
-            saveToESP32();
+            sendAction({ action: 'delete', id }, `PURGED > ${id}`, 'warning').catch(() => {});
         }
     };
 
@@ -951,17 +1448,21 @@
             idInput.value = item.id;
             idInput.disabled = true; idInput.style.opacity = '0.5';
             document.getElementById('inputName').value = item.name;
+            document.getElementById('inputManufacturerBarcode').value = item.manufacturerBarcode || '';
+            document.getElementById('inputManufacturerBarcodes').value = Array.isArray(item.manufacturerBarcodes) ? item.manufacturerBarcodes.join('\n') : '';
             document.getElementById('inputGroup').value = item.group || '';
             document.getElementById('inputCategory').value = item.category;
             document.getElementById('inputType').value = item.type || '';
             document.getElementById('inputQty').value = item.qty;
             document.getElementById('inputThreshold').value = item.threshold;
         } else {
-            title.innerText = "FORGE NEW ITEM";
+            title.innerText = "ADD NEW ITEM";
             document.getElementById('editId').value = "";
             idInput.disabled = false; idInput.style.opacity = '1';
             idInput.value = '';
             document.getElementById('inputName').value = '';
+            document.getElementById('inputManufacturerBarcode').value = '';
+            document.getElementById('inputManufacturerBarcodes').value = '';
             document.getElementById('inputGroup').value = '';
             document.getElementById('inputCategory').value = currentFilter !== 'ALL' ? currentFilter : '';
             document.getElementById('inputType').value = '';
@@ -973,38 +1474,59 @@
     };
 
     window.closeModal = function() { document.getElementById('forgeModal').classList.remove('active'); };
+    window.prepareBarcodeCapture = function() {
+        const field = document.getElementById('inputManufacturerBarcode');
+        field.focus();
+        field.select(); // Subsequent capture replaces the old code, not concatenates it.
+        triggerStatus('READY: SCAN PACKAGE LABEL INTO FIELD', 'info');
+    };
 
-    window.saveItem = function() {
+    let itemSavePending = false;
+    window.saveItem = async function() {
+        if (itemSavePending || isLockedDown) return;
         const editId = document.getElementById('editId').value;
-        const id = document.getElementById('inputId').value.trim().toUpperCase();
-        const name = document.getElementById('inputName').value.trim();
-        const group = document.getElementById('inputGroup').value.trim();
-        const category = document.getElementById('inputCategory').value.trim() || "Uncategorized";
-        const type = document.getElementById('inputType').value.trim() || "Unit";
-        const qty = parseInt(document.getElementById('inputQty').value) || 0;
-        const threshold = parseInt(document.getElementById('inputThreshold').value) || 0;
-
-        if (!id || !name) { alert("SYS_ERROR: PART ID and NOMENCLATURE are required parameters."); return; }
-
-        if (editId) {
-            let idx = inventory.findIndex(i => i.id === editId);
-            if (idx > -1) {
-                inventory[idx] = { id, name, group, category, type, qty, threshold };
-                triggerStatus(`EDITED > ${id}`, "success");
-            }
-        } else {
-            if (inventory.some(i => i.id === id)) { alert(`SYS_ERROR: PART ID [ ${id} ] already exists.`); return; }
-            inventory.push({ id, name, group, category, type, qty, threshold });
-            triggerStatus(`FORGED > ${id}`, "success");
+        const item = {
+            id: document.getElementById('inputId').value.trim().toUpperCase(),
+            name: document.getElementById('inputName').value.trim(),
+            manufacturerBarcode: document.getElementById('inputManufacturerBarcode').value.trim(),
+            manufacturerBarcodes: document.getElementById('inputManufacturerBarcodes').value.split(/\r?\n/).map(v => v.trim()).filter(Boolean),
+            group: document.getElementById('inputGroup').value.trim(),
+            category: document.getElementById('inputCategory').value.trim() || 'Uncategorized',
+            type: document.getElementById('inputType').value.trim() || 'Unit',
+            qty: Number(document.getElementById('inputQty').value),
+            threshold: Number(document.getElementById('inputThreshold').value)
+        };
+        if (!item.id || !item.name) {
+            alert('PART ID and NOMENCLATURE are required.'); return;
         }
-        closeModal();
-        renderGrid();
-        saveToESP32();
+        if (![item.qty, item.threshold].every(n => Number.isInteger(n) && n >= 0 && n <= 1000000)) {
+            alert('Quantity and threshold must be whole numbers between 0 and 1,000,000.'); return;
+        }
+        const allCodes = [item.id, item.manufacturerBarcode, ...item.manufacturerBarcodes]
+            .filter(Boolean).map(v => v.toUpperCase());
+        if (item.manufacturerBarcodes.length > 8 || [item.manufacturerBarcode, ...item.manufacturerBarcodes].some(code => code.length > 180)) {
+            alert('Use one primary barcode and up to 8 additional labels (180 characters maximum per code).'); return;
+        }
+        if (new Set(allCodes).size !== allCodes.length) {
+            alert('The same barcode cannot appear twice, or be identical to the internal Part ID.'); return;
+        }
+        itemSavePending = true;
+        try {
+            await sendAction({ action: editId ? 'edit' : 'add', id: editId || item.id, item },
+                `${editId ? 'EDITED' : 'ADDED'} > ${item.id}`);
+            closeModal();
+        } catch (error) {
+            alert(`ESP32 could not save item: ${error.message}`);
+        } finally {
+            itemSavePending = false;
+        }
     };
 
     // BOOT SEQUENCE
-    window.onload = () => { 
-        loadInventory(); 
+    window.onload = () => {
+        loadInventory();
+        // Keep additional browser terminals updated without replacing the user's search.
+        setInterval(() => { if (!document.hidden) loadInventory(true); }, 12000);
     };
 </script>
 </body>
