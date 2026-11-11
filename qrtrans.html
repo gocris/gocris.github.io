@@ -589,6 +589,293 @@ html.ios-mode .rail-toggle{display:none!important}
 .tab-btn[data-profile="DSC"]::after{background:radial-gradient(circle at left center,rgba(248,215,119,.11),transparent 73%)}
 .tab-btn[data-profile="XSECTION"]::after{background:radial-gradient(circle at left center,rgba(95,231,253,.12),transparent 73%)}
 .tab-btn[data-profile="PTC"]::after{background:radial-gradient(circle at left center,rgba(104,240,166,.12),transparent 73%)}
+
+/* 2026-11-10: Purple Matrix glow / transparent black Archive / clearer smart search */
+.archive-panel {
+  background:rgba(0,0,0,.28)!important;
+  border-color:rgba(178,148,224,.20);
+  box-shadow:inset 0 0 50px rgba(0,0,0,.16),0 9px 31px rgba(0,0,0,.13);
+  backdrop-filter:blur(1px);
+}
+.measurement-scroll {background:rgba(0,0,0,.32);border-color:rgba(174,126,225,.24)}
+.lab-matrix .metric-label {background:rgba(3,3,12,.81)}
+.lab-matrix .measure-value {background:rgba(0,0,0,.40)}
+.lab-matrix .measure-row:nth-of-type(2n) .measure-value {background:rgba(12,7,22,.43)}
+.lab-matrix .measure-row:hover .metric-label,.lab-matrix .measure-row:hover .measure-value {background:rgba(51,27,72,.71)}
+/* Bright violet matrix heading with its own moving light sweep, no sizing divider. */
+.lab-matrix thead th {
+  color:#e0b8ff;
+  background:linear-gradient(105deg,rgba(21,7,37,.93) 0%,rgba(55,18,86,.90) 36%,rgba(120,49,168,.93) 49%,rgba(55,18,86,.90) 62%,rgba(21,7,37,.93) 100%)!important;
+  background-size:250% 100%!important;
+  animation:matrix-head-sweep 5.5s ease-in-out infinite alternate;
+  border-bottom:2px solid rgba(177,94,253,.88)!important;
+  box-shadow:inset 0 -7px 15px rgba(115,37,185,.16),0 3px 14px rgba(170,63,252,.20);
+}
+.lab-matrix .metric-heading {
+  color:#e5a7ff!important;
+  text-shadow:0 0 9px rgba(185,91,255,.95),0 0 20px rgba(152,49,230,.50);
+  letter-spacing:.10em;
+}
+.lab-matrix .sample-heading .sample-filename {
+  color:#ecd2ff;
+  text-shadow:0 0 9px rgba(189,112,255,.62);
+}
+@keyframes matrix-head-sweep {
+  from {background-position:100% 0;filter:brightness(.94)}
+  to {background-position:0% 0;filter:brightness(1.15)}
+}
+/* Zone bands are deliberately softer than the bright matrix header. */
+.lab-matrix .zone-row th {
+  color:#c9b6e8!important;
+  background:rgba(48,30,69,.73)!important;
+  text-shadow:0 0 6px rgba(162,137,218,.27);
+  border-top:1px solid rgba(176,136,206,.25);
+  border-bottom:1px solid rgba(176,136,206,.19);
+}
+/* Delta Tg receives a separate, unambiguous mint treatment on the left. */
+.lab-matrix .measure-row.delta-tg .metric-label {
+  color:#98fbd3!important;
+  text-shadow:0 0 8px rgba(89,243,178,.42),0 0 17px rgba(89,243,178,.12);
+  font-weight:700;
+  box-shadow:inset 3px 0 0 rgba(101,253,187,.66);
+}
+/* Search: clearer purple glow, legible placeholder and a pointing arrow. */
+.archive-search-shell {
+  flex:1 1 auto;
+  min-width:155px;
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+.archive-search-shell .archive-search {
+  display:block;
+  width:100%;
+  flex:1;
+  min-width:0;
+  height:46px;
+  border-radius:5px;
+  border:1px solid rgba(186,109,255,.72);
+  background:rgba(5,2,13,.79);
+  padding:0 47px 0 16px;
+  font-size:.85rem;
+  color:#f3e8ff;
+  box-shadow:0 0 10px rgba(174,75,255,.20),inset 0 0 18px rgba(119,40,179,.16);
+  transition:box-shadow .2s,border-color .2s,background .2s;
+}
+.archive-search-shell .archive-search::placeholder {
+  color:#d8b7fb;
+  opacity:1;
+  font:700 .88rem var(--mono);
+  letter-spacing:.008em;
+  text-shadow:0 0 7px rgba(195,123,255,.35);
+}
+.archive-search-shell .archive-search:focus {
+  outline:none;
+  background:rgba(7,3,21,.93);
+  border-color:#dcabff;
+  box-shadow:0 0 0 1px rgba(194,123,255,.38),0 0 22px rgba(168,68,246,.42),inset 0 0 20px rgba(119,40,179,.18);
+}
+.search-entry-arrow {
+  position:absolute;right:14px;top:50%;transform:translateY(-54%);
+  color:#e1b1ff;font:700 1.65rem var(--font);line-height:1;
+  text-shadow:0 0 11px rgba(201,117,255,.95);
+  pointer-events:none;transition:opacity .16s;
+  animation:search-arrow-glow 1.7s ease-in-out infinite alternate;
+}
+.archive-search-shell .archive-search:not(:placeholder-shown) + .search-entry-arrow {opacity:0;animation:none}
+@keyframes search-arrow-glow {from{opacity:.62;filter:brightness(.95)}to{opacity:1;filter:brightness(1.23)}}
+@media(max-width:1380px) and (min-width:1024px){
+  .archive-search-shell{flex-basis:100%;min-width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  .lab-matrix thead th,.search-entry-arrow{animation:none!important}
+}
+
+
+/* Mint LCD search / restrained joint boundaries — November 2026 */
+.archive-search-shell .archive-search{
+  border:1px solid rgba(119,253,191,.76);
+  background:rgba(1,15,12,.84);
+  color:#e6fff0;
+  padding:0 15px;
+  caret-color:#93ffd0;
+  font-weight:650;
+  box-shadow:0 0 10px rgba(97,255,170,.24),0 0 24px rgba(83,249,171,.12),inset 0 0 22px rgba(41,160,113,.12);
+}
+.archive-search-shell .archive-search::placeholder{
+  color:#a7fbd1;
+  opacity:1;
+  font:800 .96rem var(--mono);
+  letter-spacing:.095em;
+  text-shadow:0 0 9px rgba(102,255,184,.58);
+}
+.archive-search-shell .archive-search:focus{
+  border-color:#baffdf;
+  background:rgba(3,23,17,.94);
+  box-shadow:0 0 0 1px rgba(161,255,205,.44),0 0 24px rgba(96,255,177,.43),inset 0 0 24px rgba(33,181,110,.18);
+}
+/* XSECTION measuring points: reserve the joint code (A1, B2, etc.) in a
+   narrow gutter. All names begin at the same X coordinate as Braze. */
+.lab-matrix .xsection-metric-label .joint-row-layout{
+ display:grid;
+ grid-template-columns:31px minmax(0,1fr);
+ column-gap:9px;
+ align-items:baseline;
+ width:100%;
+}
+.lab-matrix .xsection-metric-label .joint-code{
+ color:#dbbbf5;
+ font-weight:800;
+ text-shadow:0 0 6px rgba(203,160,251,.28);
+ white-space:nowrap;
+}
+.lab-matrix .xsection-metric-label .joint-metric{
+ color:#c9c2d7;
+ min-width:0;
+}
+.lab-matrix .xsection-metric-label.joint-label .joint-metric{
+ color:#e8d1ff;
+ font-weight:800;
+ text-shadow:0 0 6px rgba(212,178,250,.18);
+}
+/* Faint lavender line at each new joint, with restrained breathing glow.
+   No added element and no change to measurements or table width. */
+.lab-matrix .measure-row.joint-start > .metric-label,
+.lab-matrix .measure-row.joint-start > .measure-value{
+ border-top:1px solid rgba(223,194,251,.28)!important;
+ box-shadow:inset 0 2px 6px rgba(183,137,224,.025),0 -1px 4px rgba(202,168,241,.05);
+ animation:joint-lavender-pulse 3.3s ease-in-out infinite;
+}
+.lab-matrix .measure-row.joint-start > .metric-label{
+ border-left:2px solid rgba(230,202,255,.20);
+ padding-left:13px;
+}
+.lab-matrix .measure-row.joint-start:hover > .metric-label,
+.lab-matrix .measure-row.joint-start:hover > .measure-value{
+ animation-duration:2.2s;
+}
+@keyframes joint-lavender-pulse{
+ 0%,100% {box-shadow:inset 0 2px 6px rgba(183,137,224,.025),0 -1px 4px rgba(202,168,241,.05);}
+ 50% {box-shadow:inset 0 3px 7px rgba(206,168,252,.075),0 -1px 7px rgba(224,193,255,.19);}
+}
+/* Category buttons: no outside frame, but preserve colored left light strip,
+   individual tab tints, and the bright active-state illumination. */
+.tab-btn,
+.tab-btn:hover,
+.tab-btn.active,
+.tab-btn:focus-visible{
+  border:1px solid transparent!important;
+}
+.tab-btn:focus-visible{
+  outline:2px solid rgba(224,197,255,.50);
+  outline-offset:2px;
+}
+@media(prefers-reduced-motion:reduce){
+  .lab-matrix .measure-row.joint-start > .metric-label,
+  .lab-matrix .measure-row.joint-start > .measure-value{animation:none!important;}
+}
+
+
+/* Archive file finder — list first, measurements only after an explicit file click. */
+#archiveResults[hidden],#archiveDetailToolbar[hidden],#measurementScroll[hidden]{display:none!important}
+.archive-results{min-height:0;flex:1;overflow-y:auto;scrollbar-color:rgba(187,145,225,.52) transparent;padding:4px 8px 12px 0;outline:none}
+.archive-results-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 7px 14px;border-bottom:1px solid rgba(192,151,238,.15);margin-bottom:7px}
+.archive-results-title{display:flex;align-items:center;gap:12px;min-width:0}
+.archive-results-name{font:800 1.04rem var(--font);letter-spacing:.17em;color:#e9bcff;text-shadow:0 0 12px rgba(181,96,249,.43)}
+.archive-results-total{font:700 .61rem var(--mono);color:#ac98bd;letter-spacing:.07em}
+.archive-result-list{display:flex;flex-direction:column;gap:10px;padding:2px 4px 12px}
+.archive-result-row{display:flex;gap:8px;align-items:stretch;min-width:0;border:1px solid rgba(200,173,236,.13);border-left:3px solid rgba(193,138,246,.48);border-radius:6px;background:rgba(4,5,13,.67);box-shadow:inset 0 1px 0 rgba(214,192,244,.04);transition:background .18s,border-color .18s,box-shadow .18s}
+.archive-result-row:hover,.archive-result-row:focus-within{background:rgba(23,15,34,.86);border-color:rgba(195,151,241,.40);box-shadow:inset 0 0 13px rgba(133,76,179,.14),0 0 10px rgba(126,67,186,.10)}
+.archive-result-row.selected{border-left-color:#7df5b8;box-shadow:inset 3px 0 12px rgba(57,175,121,.10)}
+.archive-result-main{border:0;cursor:pointer;background:transparent;color:inherit;text-align:left;width:100%;min-width:0;padding:13px 12px 14px 16px;display:grid;grid-template-columns:minmax(165px,1.1fr) minmax(220px,1.3fr) 17px;align-items:center;gap:15px}
+.result-identity{display:flex;flex-direction:column;gap:7px;min-width:0}
+.result-name{font:800 .83rem var(--mono);color:#f6e9ff;overflow-wrap:anywhere;letter-spacing:.025em}
+.result-qr{color:#a6eddd;font:600 .64rem/1.45 var(--mono);overflow-wrap:anywhere}
+.result-metadata{display:flex;flex-wrap:wrap;gap:7px 13px;align-items:center;min-width:0}
+.result-field{display:flex;flex-direction:column;gap:5px;min-width:40px}
+.result-field-key{font:700 .52rem var(--mono);letter-spacing:.1em;color:#a49ab5}
+.result-field-value{font:800 .76rem var(--mono);color:#e9d9ff;white-space:nowrap}
+.result-field:first-child .result-field-value{color:#f3d682}
+.result-open-indicator{font:700 1.35rem var(--font);color:#d9a9ff;text-align:center}
+.result-compare{align-self:center;margin-right:9px;min-width:30px;height:30px;cursor:pointer;border-radius:4px;border:1px solid rgba(172,123,219,.38);background:rgba(63,32,90,.42);color:#dfbbff;font:bold 1.1rem var(--font);transition:.18s}
+.result-compare:hover,.result-compare.active{border-color:rgba(106,255,188,.76);background:rgba(16,76,53,.57);color:#a2ffd1;box-shadow:0 0 10px rgba(71,231,160,.17)}
+.view-comparison,.back-to-results{cursor:pointer;color:#b8f8d6;border-color:rgba(94,241,170,.43);padding:10px 12px;font:800 .64rem var(--mono);letter-spacing:.045em}
+.archive-no-results{padding:65px 10px;text-align:center;font:700 .72rem/1.7 var(--mono);color:#c6b6d6;letter-spacing:.05em}
+.archive-detail-toolbar{display:flex;align-items:center;gap:18px;justify-content:space-between;border-bottom:1px solid rgba(196,164,225,.23);padding:8px 6px 12px;flex-shrink:0}
+.archive-detail-count{color:#bcb0ca;font:700 .62rem var(--mono);letter-spacing:.06em}
+.archive-panel .measurement-scroll:not([hidden]){flex:1;min-height:0;overflow:auto}
+@media(min-width:1024px) and (max-width:1380px){.archive-result-main{grid-template-columns:minmax(130px,1fr) 17px;gap:10px}.result-metadata{grid-column:1;grid-row:2}.result-open-indicator{grid-column:2;grid-row:1 / span 2}}
+@media(max-width:1023px){.archive-results,.archive-detail-toolbar{display:none!important}}
+@media(prefers-reduced-motion:reduce){.archive-result-row{transition:none}}
+
+
+/* --- PRECISION MEASUREMENT VIEW: responsive widths + draggable first divider --- */
+.lab-matrix{--metric-width:258px;--sample-width:159px;}
+.lab-matrix .metric-heading,
+.lab-matrix .metric-label{box-sizing:border-box;width:var(--metric-width)!important;min-width:var(--metric-width)!important;max-width:var(--metric-width)!important;}
+.lab-matrix .sample-heading,
+.lab-matrix .measure-value{box-sizing:border-box;width:var(--sample-width)!important;min-width:var(--sample-width)!important;max-width:var(--sample-width)!important;}
+.lab-matrix .metric-heading{position:sticky;overflow:visible;}
+.metric-divider-grip{position:absolute;top:1px;right:-7px;bottom:1px;width:14px;z-index:25;cursor:col-resize;touch-action:none;user-select:none;outline:none;display:flex;align-items:center;justify-content:center;}
+.metric-divider-grip::before{content:"";height:52%;width:3px;border-radius:4px;background:#a888da;box-shadow:0 0 8px rgba(197,151,255,.38);opacity:.5;transition:opacity .2s,background .2s,box-shadow .2s;}
+.metric-divider-grip:hover::before,.metric-divider-grip:focus-visible::before,.metric-divider-grip.resizing::before{opacity:1;background:#cdb2ff;box-shadow:0 0 13px rgba(211,175,255,.9);}
+.metric-divider-grip:focus-visible{outline:2px solid #b8f8d6;outline-offset:2px;}
+body.matrix-resizing,body.matrix-resizing *{cursor:col-resize!important;user-select:none!important;}
+/* Delta Tg is a permanent measurement status, not a theme accent. */
+.lab-matrix .measure-row.delta-tg .measure-value{font-size:1.32rem!important;font-weight:900!important;letter-spacing:.02em;line-height:1.4;font-variant-numeric:tabular-nums;}
+.lab-matrix .measure-row.delta-tg .measure-value.delta-in-range{
+ color:#56f5b8!important;text-shadow:0 0 10px rgba(86,245,184,.58),0 0 21px rgba(86,245,184,.22)!important;
+}
+.lab-matrix .measure-row.delta-tg .measure-value.delta-out-of-range{
+ color:#ff365f!important;text-shadow:0 0 10px rgba(255,54,95,.58),0 0 21px rgba(255,54,95,.22)!important;
+}
+.lab-matrix .measure-row.delta-tg .metric-label{font-size:.82rem;font-weight:800;}
+.lab-matrix .measure-row.delta-tg .measure-value.delta-unavailable{color:#b2abc5!important;text-shadow:none!important;}
+@media(prefers-reduced-motion:reduce){.metric-divider-grip::before{transition:none;}}
+
+/* Fixed laboratory quality colors (independent of cosmetic themes). */
+.lab-matrix .measure-value.qc-pass{color:#56f5b8!important;text-shadow:0 0 10px rgba(86,245,184,.43)!important;font-weight:800;}
+.lab-matrix .measure-value.qc-fail{color:#ff365f!important;text-shadow:0 0 10px rgba(255,54,95,.50)!important;font-weight:900;}
+.lab-matrix .measure-value.qc-unchecked{color:#c4bad2!important;text-shadow:none!important;}
+.archive-result-main{grid-template-columns:minmax(155px,1.05fr) minmax(198px,1.3fr) auto 17px;gap:11px;}
+.result-qc{display:inline-flex;align-self:center;align-items:center;justify-content:center;min-width:79px;padding:7px 9px;border-radius:4px;font:900 .65rem var(--mono);letter-spacing:.06em;white-space:nowrap;border:1px solid rgba(177,161,190,.25);background:rgba(41,29,55,.6);color:#cbbdd7;}
+.result-qc.qc-PASS,.sample-qc.qc-PASS{color:#56f5b8;border-color:rgba(86,245,184,.35);background:rgba(13,65,46,.34);text-shadow:0 0 8px rgba(86,245,184,.32)}
+.result-qc.qc-FAIL,.sample-qc.qc-FAIL{color:#ff365f;border-color:rgba(255,54,95,.47);background:rgba(83,17,38,.36);text-shadow:0 0 8px rgba(255,54,95,.38)}
+.result-qc.qc-INCOMPLETE,.sample-qc.qc-INCOMPLETE{color:#ebc78c;border-color:rgba(235,199,140,.32);background:rgba(66,46,22,.33)}
+.sample-qc{display:block;margin-top:4px;padding:4px;border:1px solid rgba(177,161,190,.25);border-radius:3px;font:900 .62rem var(--mono);letter-spacing:.05em;}
+@media(min-width:1024px) and (max-width:1380px){.archive-result-main{grid-template-columns:minmax(115px,1fr) auto 17px;gap:10px}.result-metadata{grid-column:1;grid-row:2}.result-qc{grid-column:2;grid-row:2}.result-open-indicator{grid-column:3;grid-row:1 / span 2}}
+/* File quality has its own centered lane after WEEK and before the open arrow. */
+.archive-result-main{
+ grid-template-columns:minmax(160px,1.05fr) minmax(200px,.7fr) minmax(135px,.85fr) 18px!important;
+ column-gap:10px;
+}
+.archive-result-main .result-qc{justify-self:center;min-width:83px;}
+@media (min-width:1024px) and (max-width:1380px){
+ .archive-result-main{grid-template-columns:minmax(130px,1fr) minmax(175px,.9fr) minmax(95px,.7fr) 16px!important;column-gap:7px;}
+ .archive-result-main .result-metadata{grid-column:auto;grid-row:auto;}
+ .archive-result-main .result-open-indicator{grid-column:auto;grid-row:auto;}
+}
+
+/* Cross-test Smart Search and production-week priority */
+.tab-btn[data-profile="ALL"]{--tab-glow:192,142,242;--tab-color:#eed0ff;color:#e9caff;background:rgba(112,65,151,.16)}
+.tab-btn[data-profile="ALL"]::before,
+.tab-btn[data-profile="ALL"]:hover::before,
+.tab-btn[data-profile="ALL"].active::before{background:#e5b3ff!important;box-shadow:0 0 15px rgba(189,129,238,.7)!important}
+.tab-btn[data-profile="ALL"]::after{background:radial-gradient(circle at left center,rgba(185,128,239,.12),transparent 73%)}
+.archive-tools{flex-wrap:wrap!important;row-gap:11px!important}
+.archive-search-shell{flex:1 1 210px}
+.week-sort{display:inline-flex;align-items:stretch;gap:2px;padding:3px;border:1px solid rgba(187,156,214,.22);border-radius:7px;background:rgba(3,5,13,.66);flex:0 0 auto}
+.week-sort-btn{border:1px solid transparent;border-radius:4px;padding:9px 9px;background:transparent;color:#bfb3d0;font:800 .63rem var(--mono);letter-spacing:.035em;white-space:nowrap;cursor:pointer;transition:color .2s,background .2s,box-shadow .2s}
+.week-sort-btn:hover{color:#ecddff;background:rgba(150,100,200,.13)}
+.week-sort-btn.active{color:#e8c6ff;border-color:rgba(206,157,252,.40);background:rgba(148,89,204,.19);box-shadow:inset 0 0 9px rgba(186,106,243,.16),0 0 9px rgba(186,106,243,.10);text-shadow:0 0 7px rgba(194,132,248,.3)}
+.matrix-navigation[hidden]{display:none!important}
+.archive-result-row[data-profile="DSC"]{border-left-color:rgba(255,222,145,.72)}
+.archive-result-row[data-profile="XSECTION"]{border-left-color:rgba(112,228,252,.75)}
+.archive-result-row[data-profile="PTC"]{border-left-color:rgba(125,242,168,.75)}
+.archive-result-row .result-field:first-child .result-field-value{color:#eacaff}
+.archive-results-heading{position:sticky;top:0;z-index:3;background:rgba(9,7,20,.96);backdrop-filter:blur(5px)}
+@media(max-width:1300px) and (min-width:1024px){.week-sort{order:3}.archive-search-shell{flex-basis:100%;min-width:100%}.tab-bar{gap:9px}.tab-btn{font-size:.93rem;letter-spacing:.06em;padding:11px 7px}}
+@media(max-width:1023px){.week-sort{display:none!important}}
 </style></head>
 <body>
 <div class="boot-screen" id="bootScreen" role="status" aria-label="VALEO system loading">
@@ -604,22 +891,32 @@ html.ios-mode .rail-toggle{display:none!important}
 </header>
 <div class="workspace">
 <main class="archive-panel" aria-label="Measurement archive">
- <div class="tab-bar" role="tablist" aria-label="Measurement family">
-  <button class="tab-btn active" type="button" data-profile="DSC" role="tab" aria-selected="true" onclick="setProfile('DSC')"><span class="tab-signal"></span>DSC</button>
+ <div class="tab-bar" role="tablist" aria-label="Filter archive by measurement type">
+  <button class="tab-btn active" type="button" data-profile="ALL" role="tab" aria-selected="true" onclick="setProfile('ALL')"><span class="tab-signal"></span>ALL FILES</button>
+  <button class="tab-btn" type="button" data-profile="DSC" role="tab" aria-selected="false" onclick="setProfile('DSC')"><span class="tab-signal"></span>DSC</button>
   <button class="tab-btn" type="button" data-profile="XSECTION" role="tab" aria-selected="false" onclick="setProfile('XSECTION')"><span class="tab-signal"></span>XSECTION</button>
   <button class="tab-btn" type="button" data-profile="PTC" role="tab" aria-selected="false" onclick="setProfile('PTC')"><span class="tab-signal"></span>PTC</button>
  </div>
  <div class="moving-rule archive-tab-rule"></div>
  <div class="archive-tools">
   <label class="visually-hidden" for="archiveSearch">Search measurement files</label>
-  <input id="archiveSearch" class="archive-search" type="search" placeholder="SMART SEARCH · OSE 4 · WEEK 40 · CAVITY 2 · QR CODE" autocomplete="off" spellcheck="false" oninput="onArchiveSearch()">
+  <div class="archive-search-shell"><input id="archiveSearch" class="archive-search" type="search" placeholder="> SMART SEARCH . . ." autocomplete="off" spellcheck="false" onfocus="showAllArchiveFiles()" oninput="onArchiveSearch()" aria-label="Search across all DSC, XSECTION and PTC files"></div>
+  <div class="week-sort" role="group" aria-label="Production week sort order">
+    <button type="button" class="week-sort-btn active" data-sort="newest" aria-pressed="true" onclick="setWeekSort('newest')" title="Newest production year and week first">↓ NEWEST</button>
+    <button type="button" class="week-sort-btn" data-sort="oldest" aria-pressed="false" onclick="setWeekSort('oldest')" title="Oldest production year and week first">↑ OLDEST</button>
+  </div>
   <label class="column-count-wrap" for="columnCount"><span>COLUMNS</span><select id="columnCount" class="archive-directory" onchange="onColumnCountChange()" aria-label="Number of sample columns per page"><option value="1">1</option><option value="5" selected>5</option><option value="10">10</option><option value="20">20</option></select></label>
   <button type="button" class="ghost-btn archive-refresh" id="refreshFilesBtn" onclick="refreshFolder()" title="Refresh CSV files, including archived year subfolders">↻ REFRESH</button>
   <button type="button" class="ghost-btn archive-open" onclick="document.getElementById('localCsvInput').click()" title="Open CSV files without linking a folder">+ OPEN CSV</button>
-  <div class="matrix-navigation"><button type="button" class="nav-small" id="prevPage" onclick="changePage(-1)" aria-label="Previous samples">‹</button><span id="pageInfo">NO SAMPLES</span><button type="button" class="nav-small" id="nextPage" onclick="changePage(1)" aria-label="Next samples">›</button></div>
+  <div class="matrix-navigation" hidden aria-hidden="true"><button type="button" class="nav-small" id="prevPage" onclick="changePage(-1)" aria-label="Previous samples">‹</button><span id="pageInfo">NO FILES</span><button type="button" class="nav-small" id="nextPage" onclick="changePage(1)" aria-label="Next samples">›</button></div>
   <input type="file" id="localCsvInput" multiple accept=".csv,text/csv" hidden onchange="loadLocalCSVs(event)">
  </div>
- <div class="measurement-scroll" id="measurementScroll"><div id="measurementMatrix" class="measurement-matrix" role="region" aria-label="Measurement points and sample values"></div></div>
+ <div id="archiveResults" class="archive-results" aria-label="Matching CSV files" aria-live="polite"></div>
+ <div id="archiveDetailToolbar" class="archive-detail-toolbar" hidden>
+  <button id="backToArchiveResults" type="button" class="ghost-btn back-to-results" onclick="backToArchiveResults()">‹ BACK TO FILES</button>
+  <span id="archiveDetailCount" class="archive-detail-count"></span>
+ </div>
+ <div class="measurement-scroll" id="measurementScroll" hidden><div id="measurementMatrix" class="measurement-matrix" role="region" aria-label="Measurement points and sample values"></div></div>
  <div class="matrix-footer"><span id="matrixFootnote">Sync DSC_KEYENCE to browse CSVs in its 2025, 2026 and other subfolders, or OPEN CSV locally.</span><span class="matrix-legend"><span class="legend-dot"></span>LIVE FOLDER VIEW</span></div>
 </main>
  <button id="railToggle" class="rail-toggle" type="button" onclick="toggleToolsPanel()" aria-controls="rightRail" aria-expanded="true" aria-label="Hide CSV Forge and QR Translator"><span class="rail-toggle-icon">›</span><span class="rail-toggle-label">TOOLS</span></button>
@@ -666,18 +963,57 @@ const DSC_GROUPS=[
  {zone:'S7/8',side:'QR_Code_Side',start:29,count:7},
  {zone:'S7/8',side:'NO_QR_Code_Side',start:36,count:7}
 ];
-let activeProfile='DSC',targetDirHandle=null,allFiles=[],localFiles=[],selectedFileNameByProfile={},selectedFileName=null;
+let activeProfile='DSC',archiveFilter='ALL',weekSort='newest',targetDirHandle=null,allFiles=[],localFiles=[],selectedFileNameByProfile={},selectedFileName=null;
 let folderRefreshBusy=false,exportBusy=false,selectionSerial=0,viewPage=0;
 const COLUMN_CHOICES=[1,5,10,20];
 let pageSize=5,manualFilename=false,lastPastedQR='';
-function onColumnCountChange(){const select=document.getElementById('columnCount');const proposed=Number(select.value);pageSize=COLUMN_CHOICES.includes(proposed)?proposed:5;viewPage=0;try{localStorage.setItem('valeo_archive_columns',String(pageSize));}catch(e){}displayProfileFiles();}
+let archiveViewMode='results',selectedEntries=[];
+// Search uses a single continuously scrollable page, not batches of 30.
+// The quality checks on visible result cards are loaded on demand.
+let qualityRowObserver=null;
+const MODEL_TUBES={"819":"MEDIUM","816":"LONG","814":"LONG","815":"LONG","817":"MEDIUM","818":"MEDIUM","070":"ENERGY PLATE","852":"SMALL","853":"SMALL","851":"SMALL"};
+function tubeFromModel(model){return MODEL_TUBES[String(model||'').padStart(3,'0')]||'—';}
+function tubeLetter(model){const tube=tubeFromModel(model);return tube==='LONG'?'L':tube==='MEDIUM'?'M':'';}
+function onColumnCountChange(){const select=document.getElementById('columnCount');const proposed=Number(select.value);pageSize=COLUMN_CHOICES.includes(proposed)?proposed:5;selectedEntries=selectedEntries.slice(0,pageSize);try{localStorage.setItem('valeo_archive_columns',String(pageSize));}catch(e){}displayProfileFiles();}
 function toggleToolsPanel(){const main=document.querySelector('.workspace'),button=document.getElementById('railToggle');const hidden=main.classList.toggle('rail-collapsed');button.setAttribute('aria-expanded',String(!hidden));button.setAttribute('aria-label',hidden?'Show CSV Forge and QR Translator':'Hide CSV Forge and QR Translator');button.querySelector('.rail-toggle-icon').textContent=hidden?'‹':'›';try{localStorage.setItem('valeo_tools_hidden',String(hidden));}catch(e){}}
-function restoreConsolePrefs(){try{const oldChoice=Number(localStorage.getItem('valeo_archive_columns'));const saved=COLUMN_CHOICES.includes(oldChoice)?oldChoice:5;pageSize=saved;document.getElementById('columnCount').value=String(saved);if(localStorage.getItem('valeo_tools_hidden')==='true'&&!document.querySelector('.workspace').classList.contains('rail-collapsed'))toggleToolsPanel();}catch(e){}}
+function restoreConsolePrefs(){try{const oldChoice=Number(localStorage.getItem('valeo_archive_columns'));const saved=COLUMN_CHOICES.includes(oldChoice)?oldChoice:5;pageSize=saved;document.getElementById('columnCount').value=String(saved);if(localStorage.getItem('valeo_tools_hidden')==='true'&&!document.querySelector('.workspace').classList.contains('rail-collapsed'))toggleToolsPanel();const oldSort=localStorage.getItem('valeo_week_sort');if(oldSort==='oldest')setWeekSort('oldest');}catch(e){}}
 function setProfile(profile){
- if(!PROFILE_NAMES[profile])return;
- activeProfile=profile;viewPage=0;
+ if(profile!=='ALL'&&!PROFILE_NAMES[profile])return;
+ archiveFilter=profile;viewPage=0;archiveViewMode='results';selectedEntries=[];
+ // ALL is only an Archive filter. CSV Forge keeps its last concrete test profile.
+ if(profile!=='ALL'){activeProfile=profile;updateFilename();updateForgeFilenamePreview();}
  document.querySelectorAll('.tab-btn').forEach(btn=>{const on=btn.dataset.profile===profile;btn.classList.toggle('active',on);btn.setAttribute('aria-selected',String(on));});
- updateFilename();updateForgeFilenamePreview();displayProfileFiles();
+ displayProfileFiles();
+}
+function showAllArchiveFiles(){
+ // Clicking Smart Search is a quick way to view the complete cross-test archive.
+ if(archiveFilter!=='ALL'||archiveViewMode!=='results')setProfile('ALL');
+}
+function setWeekSort(order){
+ if(order!=='newest'&&order!=='oldest')return;
+ weekSort=order;document.querySelectorAll('.week-sort-btn').forEach(btn=>{
+  const on=btn.dataset.sort===order;btn.classList.toggle('active',on);btn.setAttribute('aria-pressed',String(on));
+ });
+ try{localStorage.setItem('valeo_week_sort',order);}catch(e){}
+ // Preserve typed search and selected category when switching the week priority.
+ displayProfileFiles();
+}
+function productionWeekKey(entry){
+ const m=entry.meta||parseEntryMeta(entry),week=Number(m.week)||0;
+ // QR includes the actual production year; named archive subfolders can also provide it.
+ const qrYear=(m.qr&&/^\d{2}$/.test(m.qr.slice(18,20)))?2000+Number(m.qr.slice(18,20)):0;
+ const folderYear=Number((String(entry.folder||entry.path||'').match(/(?:^|[\/])((?:19|20)\d{2})(?=[\/]|$)/)||[])[1])||0;
+ const modifiedYear=Number.isFinite(entry.modified)?new Date(entry.modified).getFullYear():0;
+ const year=qrYear||folderYear||modifiedYear||0;
+ return year*60+week;
+}
+function compareProductionWeeks(a,b){
+ const direction=weekSort==='oldest'?1:-1;
+ const diff=productionWeekKey(a)-productionWeekKey(b);
+ if(diff)return direction*diff;
+ const stamp=(a.modified||0)-(b.modified||0);
+ if(stamp)return direction*stamp;
+ return a.name.localeCompare(b.name,undefined,{numeric:true});
 }
 function updateFilename(){
  const dt=new Date(),stamp=[dt.getFullYear(),String(dt.getMonth()+1).padStart(2,'0'),String(dt.getDate()).padStart(2,'0')].join('')+'_'+[dt.getHours(),dt.getMinutes(),dt.getSeconds()].map(v=>String(v).padStart(2,'0')).join('');
@@ -774,10 +1110,14 @@ async function refreshFolder(){
 }
 function buildFolderOptions(){ /* One linked archive folder; no directory filter */ }
 function parseEntryMeta(entry,contents=''){
- const base=entry.name.match(/^(\d{3})_(\d+)_(\d+)_(\d+)_(?:DSC|XSECTION|PTC|PCT)\.csv$/i);
- const meta=base?{model:base[1],ose:base[2],cavity:base[3],week:base[4],qr:''}:{model:'',ose:'',cavity:'',week:'',qr:''};
+ // Accept both old 815_1_4_43_DSC.csv and new 815_L_1_4_43_DSC.csv.
+ // Also tolerate 815L_... for files manually renamed in Explorer.
+ const base=entry.name.match(/^(\d{3})(?:_?([LM]))?_(\d+)_(\d+)_(\d+)_(?:DSC|XSECTION|PTC|PCT)\.csv$/i);
+ const meta=base?{model:base[1],ose:base[3],cavity:base[4],week:base[5],qr:'',tubeLetter:(base[2]||'').toUpperCase()}:{model:'',ose:'',cavity:'',week:'',qr:'',tubeLetter:''};
  const qr=pastedQR(contents);
  if(qr){meta.qr=qr;const info=labFilename(qr,entry.profile||'DSC');if(info){meta.model=info.model;meta.ose=info.ose;meta.cavity=info.cavity;meta.week=String(info.week);}}
+ meta.tube=tubeFromModel(meta.model);
+ if(meta.tube==='—')meta.tube=meta.tubeLetter==='L'?'LONG':meta.tubeLetter==='M'?'MEDIUM':'—';
  return meta;
 }
 async function indexEntryMeta(entry){
@@ -791,12 +1131,12 @@ async function indexAllMetadata(entries){
 function matchesSmartSearch(entry,raw){
  const q=raw.toLowerCase().trim();if(!q)return true;
  const meta=entry.meta||parseEntryMeta(entry);const rules=[];
- const remaining=q.replace(/\b(ose|cavity|cav|week|wk|model|qr_code|qrcode|qr)\s*[:=#-]?\s*([a-z0-9:-]+)/gi,(_,field,val)=>{
-  const k=field.startsWith('ose')?'ose':field.startsWith('cav')?'cavity':field==='week'||field==='wk'?'week':field==='model'?'model':'qr';
+ const remaining=q.replace(/\b(ose|cavity|cav|week|wk|model|tube|qr_code|qrcode|qr)\s*[:=#-]?\s*([a-z0-9:-]+)/gi,(_,field,val)=>{
+  const k=field.startsWith('ose')?'ose':field.startsWith('cav')?'cavity':field==='week'||field==='wk'?'week':field==='model'?'model':field==='tube'?'tube':'qr';
   rules.push([k,val.toLowerCase()]);return ' ';
  });
  if(!rules.every(([k,v])=>{const actual=String(meta[k]||'').toLowerCase();return k==='qr'?actual.includes(v):actual===v;}))return false;
- const hay=[entry.name,entry.path,meta.qr,meta.model,meta.ose,meta.cavity,meta.week].filter(Boolean).join(' ').toLowerCase();
+ const hay=[entry.name,entry.path,meta.qr,meta.model,meta.tube||tubeFromModel(meta.model),meta.ose,meta.cavity,meta.week].filter(Boolean).join(' ').toLowerCase();
  return remaining.trim().split(/[\s,;]+/).filter(Boolean).every(term=>hay.includes(term));
 }
 
@@ -811,21 +1151,199 @@ function loadLocalCSVs(event){
   }catch(err){console.warn(err);}
  })).then(async()=>{await indexAllMetadata(localFiles);buildFolderOptions();displayProfileFiles();triggerStatus(files.length+' CSV FILE(S) OPENED');});
 }
-function getProfileFiles(){
- const q=document.getElementById('archiveSearch').value.trim();
- return [...allFiles,...localFiles].filter(e=>e.profile===activeProfile).filter(e=>matchesSmartSearch(e,q)).sort((a,b)=>b.modified-a.modified);
+// Quality words are independent filters.  They can be combined with tube/QR/metadata searches.
+function qualitySearchQuery(raw){
+ const statuses=new Set();
+ const query=String(raw||'').replace(/(?:^|[\s,;])(?:status\s*[:=#-]?\s*)?(pass|fail|failed|incomplete)(?=$|[\s,;])/gi,(_,state)=>{
+  statuses.add(/^fail/i.test(state)?'FAIL':/^pass/i.test(state)?'PASS':'INCOMPLETE');return ' ';
+ }).trim();
+ return {query,statuses};
 }
-function onArchiveSearch(){viewPage=0;displayProfileFiles();}
-function changePage(shift){viewPage=Math.max(0,viewPage+shift);displayProfileFiles();}
+function getProfileFiles(queryOverride){
+ const q=queryOverride===undefined?document.getElementById('archiveSearch').value.trim():queryOverride;
+ return [...allFiles,...localFiles].filter(e=>PROFILE_NAMES[e.profile]&&(archiveFilter==='ALL'||e.profile===archiveFilter)).filter(e=>matchesSmartSearch(e,q)).sort(compareProductionWeeks);
+}
+// Limit concurrent file reads when a quality search covers large year archives.
+async function filterArchiveByQuality(entries,states,serial){
+ const found=new Array(entries.length).fill(false);let cursor=0,finished=0;
+ await Promise.all(Array.from({length:Math.min(8,entries.length)},async()=>{
+  while(cursor<entries.length){
+   if(serial!==qualityFilterSerial)return;
+   const i=cursor++,q=await getEntryQuality(entries[i]);
+   found[i]=states.has(q.state);finished++;
+   if(finished%30===0&&serial===qualityFilterSerial){
+    document.getElementById('pageInfo').textContent='CHECKING '+finished+' / '+entries.length;
+   }
+  }
+ }));
+ return entries.filter((_,i)=>found[i]);
+}
+let qualityFilterSerial=0;
+function onArchiveSearch(){viewPage=0;archiveViewMode='results';selectedEntries=[];displayProfileFiles();}
+function changePage(shift){viewPage=0;archiveViewMode='results';displayProfileFiles();}
+function openArchiveEntry(entry){
+ selectedEntries=[entry];activeProfile=entry.profile;archiveViewMode='detail';displayProfileFiles();
+ document.getElementById('measurementScroll').scrollTop=0;
+}
+function backToArchiveResults(){archiveViewMode='results';displayProfileFiles();document.getElementById('archiveResults').focus({preventScroll:true});}
+function toggleCompareEntry(entry){
+ const index=selectedEntries.indexOf(entry);
+ if(index>=0)selectedEntries.splice(index,1);
+ else if(selectedEntries.length&&selectedEntries[0].profile!==entry.profile){triggerStatus('COMPARE FILES OF THE SAME TEST TYPE','warning');return;}
+ else if(selectedEntries.length<pageSize)selectedEntries.push(entry);
+ else{triggerStatus('MAX '+pageSize+' COLUMNS · CHANGE COLUMNS TO ADD MORE','warning');return;}
+ archiveViewMode='results';displayProfileFiles();
+}
+function viewSelectedEntries(){if(!selectedEntries.length)return;activeProfile=selectedEntries[0].profile;archiveViewMode='detail';displayProfileFiles();document.getElementById('measurementScroll').scrollTop=0;}
+function resultField(k,v){const span=dom('span','result-field');span.append(dom('small','result-field-key',k),dom('strong','result-field-value',v||'—'));return span;}
+// Lab QC rules. One failed required point fails the entire sample; a missing
+// required point is INCOMPLETE unless another point has already failed.
+// Numeric limits are inclusive at their stated boundaries.
+const QC_MINT='#56f5b8',QC_CRIMSON='#ff365f';
+function qcNumber(value){
+ const clean=String(value??'').trim().replace(/\s*(?:%|[º°]\s*C)\s*$/i,'').trim();
+ return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(clean)?Number(clean):null;
+}
+function qcVerdict(profile,index,label,value){
+ const raw=String(value??'').trim();
+ let rule='';
+ if(profile==='DSC'){
+  if(DSC_GROUPS.some(g=>index===g.start+4))rule='delta';
+  else if(DSC_GROUPS.some(g=>index===g.start+5||index===g.start+6))rule='text';
+  else if(label==='BENT'&&raw)rule='text'; // optional, but an explicit BENT failure still counts
+ }else if(profile==='XSECTION'){
+  if(/Poros Rate \[?%?\]?/i.test(label)||/Triple Poros/i.test(label))rule='porosity';
+ }else if(profile==='PTC'&&/Slot 1[67] \((?:QR|NQR)\)/i.test(label))rule='slot';
+ if(!rule)return null;
+ if(!raw||raw==='—'||/^(null|n\/a|missing|na)$/i.test(raw)){
+  // The two XSECTION templates use different measurements. Blank cells are N/A,
+  // not failures or missing requirements; evaluate only results actually present.
+  if(profile==='XSECTION')return null;
+  return {state:'INCOMPLETE',rule,reason:'Missing required reading'};
+ }
+ const n=qcNumber(raw),hasPass=/^pass(?:\b|\s*:)/i.test(raw)||/^no porosity\b/i.test(raw),hasFail=/^(?:fail|failed|not pass|no pass)\b/i.test(raw);
+ let passed=false,reason='';
+ if(rule==='delta'){passed=n!==null&&n>=-5&&n<=5;reason='Delta Tg must be from −5 to +5 °C';}
+ if(rule==='text'){passed=hasPass&&!hasFail;reason='Requires PASS';}
+ if(rule==='porosity'){
+  passed=hasFail?false:hasPass?true:n!==null&&n>=0&&n<25;
+  reason='Porosity must be below 25% (X/Y PASS: No Porosity accepted)';
+ }
+ if(rule==='slot'){passed=n!==null&&n>=0.20&&n<=0.30;reason='Slot 16/17 must be 0.20–0.30';}
+ return {state:passed?'PASS':'FAIL',rule,reason};
+}
+function qualityMetrics(profile){
+ if(profile==='DSC')return DSC_GROUPS.flatMap(g=>{const prefix=g.zone+' / '+g.side+' / ';const a=DSC_POINT_NAMES.map(x=>prefix+x);if(g.count===8)a.push(prefix+'BENT');return a;});
+ return profile==='XSECTION'?LAB_BRAZE_LABELS:LAB_PTC_LABELS;
+}
+function evaluateQuality(profile,values,warning=''){
+ const labels=qualityMetrics(profile),assessments={};const failures=[],incomplete=[];
+ for(let i=0;i<labels.length;i++){
+  const result=qcVerdict(profile,i,labels[i],values[i]);if(!result)continue;
+  assessments[i]=result;
+  if(result.state==='FAIL')failures.push(labels[i]);
+  else if(result.state==='INCOMPLETE')incomplete.push(labels[i]);
+ }
+ const invalidFormat=/^(?:RAW KEYENCE|GENERIC CSV|EMPTY FILE)/i.test(warning||'');
+ if(invalidFormat)incomplete.push(warning);
+ // No XSECTION porosity/X-Y results means no test was evaluable: don't invent a pass.
+ if(profile==='XSECTION'&&Object.keys(assessments).length===0)incomplete.push('No applicable porosity or X/Y results to evaluate');
+ const state=failures.length?'FAIL':incomplete.length?'INCOMPLETE':'PASS';
+ return {state,assessments,failures,incomplete,checked:Object.keys(assessments).length};
+}
+function qualityTooltip(q){
+ const title=q.state==='PASS'?'PASS — all required checks passed':q.state==='FAIL'?'FAIL — at least one test is outside specification':'INCOMPLETE — required readings are missing';
+ return title+(q.failures.length?'\nFAILED: '+q.failures.slice(0,12).join('; '):'')+(q.incomplete.length?'\nMISSING: '+q.incomplete.slice(0,8).join('; '):'');
+}
+function getEntryQuality(entry){
+ if(entry.qualityPromise)return entry.qualityPromise;
+ entry.qualityPromise=(async()=>{
+  try{
+   const f=entry.file||await entry.handle.getFile();
+   if(f.size>12*1024*1024)throw Error('File exceeds 12 MB limit');
+   const text=await f.text(),parsed=parseMeasurementFile(text,entry,entry.profile);
+   return evaluateQuality(entry.profile,parsed.values,parsed.warning);
+  }catch(e){return {state:'INCOMPLETE',assessments:{},failures:[],incomplete:['File unreadable: '+String(e)],checked:0};}
+ })();
+ return entry.qualityPromise;
+}
+function qualityBadge(q,css='result-qc'){
+ const b=dom('span',css+' qc-'+q.state,q.state);b.title=qualityTooltip(q);b.setAttribute('aria-label',qualityTooltip(q));return b;
+}
+
+function renderArchiveResults(entries,total){
+ const host=document.getElementById('archiveResults');host.replaceChildren();host.tabIndex=-1;
+ const head=dom('div','archive-results-heading');const title=dom('div','archive-results-title');
+ title.append(dom('span','archive-results-name','FILES'),dom('span','archive-results-total',total+' MATCH'+(total===1?'':'ES')));
+ head.append(title);
+ if(selectedEntries.length){const compareButton=dom('button','ghost-btn view-comparison','VIEW '+selectedEntries.length+' SELECTED');compareButton.type='button';compareButton.onclick=viewSelectedEntries;head.append(compareButton);}
+ host.append(head);
+ if(!total){const blank=dom('div','archive-no-results',document.getElementById('archiveSearch').value.trim()?'NO MATCHING FILES · TRY ANOTHER TERM':'NO CSV FILES FOUND · SYNC A FOLDER OR OPEN CSV');host.append(blank);return;}
+ const list=dom('div','archive-result-list');
+ entries.forEach(entry=>{
+  const m=entry.meta||parseEntryMeta(entry);const tube=m.tube||tubeFromModel(m.model);
+  const row=dom('div','archive-result-row'+(selectedEntries.includes(entry)?' selected':''));row.dataset.profile=entry.profile;
+  const main=dom('button','archive-result-main');main.type='button';
+  const name=dom('span','result-name',entry.name);
+  const qr=dom('span','result-qr',m.qr||'QR NOT AVAILABLE');
+  const identity=dom('span','result-identity');identity.append(name,qr);
+  const chips=dom('span','result-metadata');
+  chips.append(resultField('TEST',entry.profile),resultField('TUBE',tube),resultField('OSE',m.ose),resultField('CAVITY',m.cavity),resultField('WEEK',m.week));
+  const qc=dom('span','result-qc','CHECKING');qc.title='Evaluating lab measurements';
+  main.append(identity,chips,qc,dom('span','result-open-indicator','›'));
+  // Quality badges load when the row comes into view; this keeps large annual archives responsive.
+  if(qualityRowObserver){row._checkQuality=()=>getEntryQuality(entry).then(result=>{if(qc.isConnected)qc.replaceWith(qualityBadge(result));});qualityRowObserver.observe(row);}
+  else getEntryQuality(entry).then(result=>{if(qc.isConnected)qc.replaceWith(qualityBadge(result));});
+  main.title='OPEN MEASUREMENTS: '+entry.name+'\n'+(m.qr||'QR syntax unavailable')+'\n'+(entry.path||'');
+  main.setAttribute('aria-label','Open '+entry.name+', tube '+tube+', OSE '+(m.ose||'unknown')+', cavity '+(m.cavity||'unknown')+', week '+(m.week||'unknown'));
+  main.onclick=()=>openArchiveEntry(entry);row.append(main);
+  if(pageSize>1){const add=dom('button','result-compare'+(selectedEntries.includes(entry)?' active':''),selectedEntries.includes(entry)?'✓':'+');add.type='button';add.title=selectedEntries.includes(entry)?'Remove from comparison':'Add to comparison (up to '+pageSize+' columns)';add.setAttribute('aria-label',add.title);add.onclick=()=>toggleCompareEntry(entry);row.append(add);}
+  list.append(row);
+ });
+ host.append(list);
+}
+function showArchiveFileList(files){
+ const prev=document.getElementById('prevPage'),next=document.getElementById('nextPage');
+ prev.disabled=true;next.disabled=true;viewPage=0;
+ document.getElementById('pageInfo').textContent=files.length+' FILES';
+ document.getElementById('matrixFootnote').textContent=files.length?
+  'Showing all '+files.length+' matching file'+(files.length===1?'':'s')+' · sorted by '+(weekSort==='newest'?'newest':'oldest')+' production week · click a file to view measurements · use + to compare files of the same test.':
+  'Sync DSC_KEYENCE or OPEN CSV to find DSC, XSECTION and PTC files.';
+ if(qualityRowObserver)qualityRowObserver.disconnect();
+ qualityRowObserver=typeof IntersectionObserver!=='undefined'?new IntersectionObserver(entries=>{
+  entries.forEach(({target,isIntersecting})=>{if(isIntersecting&&target._checkQuality){
+   qualityRowObserver.unobserve(target);target._checkQuality();delete target._checkQuality;
+  }});
+ },{root:document.getElementById('archiveResults'),rootMargin:'180px'}):null;
+ // Render the full list into one vertically scrollable panel (no 30-file paging).
+ renderArchiveResults(files,files.length);
+}
 function displayProfileFiles(){
- const files=getProfileFiles(),pages=Math.max(1,Math.ceil(files.length/pageSize));viewPage=Math.min(viewPage,pages-1);
- const batch=files.slice(viewPage*pageSize,(viewPage+1)*pageSize);
- const prev=document.getElementById('prevPage'),next=document.getElementById('nextPage');prev.disabled=viewPage<=0;next.disabled=viewPage>=pages-1;
- document.getElementById('pageInfo').textContent=files.length?(viewPage+1)+' / '+pages+' · '+files.length+' SAMPLES':'NO SAMPLES';
- const footer=document.getElementById('matrixFootnote');footer.textContent=files.length?
-  'Showing '+(viewPage*pageSize+1)+'–'+Math.min((viewPage+1)*pageSize,files.length)+' of '+files.length+' '+activeProfile+' samples. Scroll to compare; use ‹ › to browse files.':
-  'Sync DSC_KEYENCE to view CSV files in the parent folder and all year subfolders, or OPEN CSV locally.';
- renderMeasurementMatrix(batch);
+ const serial=++qualityFilterSerial;
+ const search=qualitySearchQuery(document.getElementById('archiveSearch').value);
+ const files=getProfileFiles(search.query),detail=archiveViewMode==='detail'&&selectedEntries.length>0;
+ const results=document.getElementById('archiveResults'),matrix=document.getElementById('measurementScroll'),tools=document.getElementById('archiveDetailToolbar');
+ const prev=document.getElementById('prevPage'),next=document.getElementById('nextPage');
+ if(detail){
+  results.hidden=true;matrix.hidden=false;tools.hidden=false;
+  prev.disabled=true;next.disabled=true;
+  document.getElementById('pageInfo').textContent=selectedEntries.length+' OPEN';
+  document.getElementById('archiveDetailCount').textContent=selectedEntries.length+' OF '+pageSize+' COLUMNS';
+  document.getElementById('matrixFootnote').textContent='Viewing '+selectedEntries.length+' '+activeProfile+' sample'+(selectedEntries.length===1?'':'s')+' · drag the measuring-point divider to resize · hover headings for tube, OSE, cavity and week.';
+  renderMeasurementMatrix(selectedEntries);
+ }else{
+  archiveViewMode='results';results.hidden=false;matrix.hidden=true;tools.hidden=true;
+  if(search.statuses.size){
+   prev.disabled=true;next.disabled=true;
+   document.getElementById('pageInfo').textContent='CHECKING '+files.length+' FILES';
+   document.getElementById('matrixFootnote').textContent='Filtering by '+[...search.statuses].join(' / ')+' — only samples with matching quality results will appear.';
+   results.replaceChildren(dom('div','archive-no-results','CHECKING LAB QUALITY RESULTS...'));
+   filterArchiveByQuality(files,search.statuses,serial).then(filtered=>{
+    if(serial!==qualityFilterSerial)return;
+    showArchiveFileList(filtered);
+   }).catch(err=>{if(serial!==qualityFilterSerial)return;console.error('Quality search failed',err);results.replaceChildren(dom('div','archive-no-results','QUALITY SEARCH COULD NOT BE COMPLETED'));});
+  }else showArchiveFileList(files);
+ }
 }
 function dscMetrics(){const result=[];for(const group of DSC_GROUPS){const metrics=[...DSC_POINT_NAMES];if(group.count===8)metrics.push('BENT');result.push({label:group.zone+'  //  '+group.side,side:group.side,zone:group.zone,metrics,offset:group.start});}return result;}
 function keyenceMetrics(){
@@ -872,43 +1390,139 @@ function parseMeasurementFile(text,entry,profile){
  if(unwrapped.length>=needed){return {name,values:unwrapped.slice(0,needed),warning:''};}
  return {name,values:Array.from({length:needed},(_,i)=>unwrapped[i]||''),warning:'PARTIAL · '+unwrapped.length+'/'+needed+' POINTS'};
 }
+// Display XSECTION joint codes only once per joint group.  The underlying
+// LABELS array, measurement index, and CSV mappings are intentionally unchanged.
+function xsectionPresentation(rawLabel,previousJoint){
+ const text=String(rawLabel||'').replace(/^NQR\s+/i,'');
+ const match=text.match(/^(A1|A2|B1|B2|B3|B4|C|D|E1|E2|W|X|Y)\s+(.+)$/i);
+ if(!match)return {label:text,joint:'',start:false};
+ const joint=match[1].toUpperCase();
+ const start=joint!==previousJoint;
+ return {label:start?joint+'  '+match[2]:match[2],metric:match[2],joint,start};
+}
+// The boundary is resizable only in the details matrix. Auto-fit starts fresh when
+// the number of sample columns changes; the manual width stays for a given count.
+const metricLayout={count:-1,manualWidth:null,table:null,grip:null};
+const METRIC_MIN=165;
+function measureGridWidth(){return Math.max(450,document.getElementById('measurementScroll').clientWidth-2);}
+function clampMetricWidth(px){return Math.max(METRIC_MIN,Math.min(Math.max(300,measureGridWidth()-145),Math.round(px)));}
+function fitMeasurementColumns(){
+ const table=metricLayout.table;
+ if(!table||!table.isConnected||document.getElementById('measurementScroll').hidden)return;
+ const n=Math.max(1,metricLayout.count),total=measureGridWidth();
+ const ratio=n===1?.38:n===2?.33:n<=5?.29:.235;
+ const maxAuto=n===1?350:n===2?310:n<=5?265:220;
+ const auto=Math.max(190,Math.min(maxAuto,Math.round(total*ratio)));
+ const metric=clampMetricWidth(metricLayout.manualWidth??auto);
+ const sample=Math.max(138,Math.floor((total-metric-3)/n));
+ const labelWidth=metric+'px',sampleWidth=sample+'px';
+ if(table.style.getPropertyValue('--metric-width')!==labelWidth)table.style.setProperty('--metric-width',labelWidth);
+ if(table.style.getPropertyValue('--sample-width')!==sampleWidth)table.style.setProperty('--sample-width',sampleWidth);
+ const grip=metricLayout.grip;
+ if(grip){grip.setAttribute('aria-valuenow',String(metric));grip.setAttribute('aria-valuemax',String(clampMetricWidth(10000)));}
+}
+function updateManualMetricWidth(px){metricLayout.manualWidth=clampMetricWidth(px);fitMeasurementColumns();}
+function installMeasurementDivider(heading){
+ const grip=dom('span','metric-divider-grip');grip.tabIndex=0;grip.setAttribute('role','separator');
+ grip.setAttribute('aria-orientation','vertical');grip.setAttribute('aria-label','Resize measuring point column');
+ grip.setAttribute('aria-valuemin',String(METRIC_MIN));
+ grip.title='Drag to resize measuring points · Double-click to auto-fit · Use arrow keys';
+ heading.append(grip);metricLayout.grip=grip;
+ let initialX=0,initialWidth=0;
+ grip.addEventListener('pointerdown',e=>{
+  if(e.button!==0)return;e.preventDefault();e.stopPropagation();initialX=e.clientX;
+  initialWidth=parseFloat(metricLayout.table.style.getPropertyValue('--metric-width'))||258;
+  grip.setPointerCapture(e.pointerId);grip.classList.add('resizing');document.body.classList.add('matrix-resizing');
+ });
+ grip.addEventListener('pointermove',e=>{if(!grip.hasPointerCapture(e.pointerId))return;updateManualMetricWidth(initialWidth+e.clientX-initialX);});
+ const finish=e=>{if(grip.hasPointerCapture(e.pointerId))grip.releasePointerCapture(e.pointerId);grip.classList.remove('resizing');document.body.classList.remove('matrix-resizing');};
+ grip.addEventListener('pointerup',finish);grip.addEventListener('pointercancel',finish);
+ grip.addEventListener('lostpointercapture',()=>{grip.classList.remove('resizing');document.body.classList.remove('matrix-resizing');});
+ grip.addEventListener('dblclick',e=>{e.preventDefault();metricLayout.manualWidth=null;fitMeasurementColumns();});
+ grip.addEventListener('keydown',e=>{
+  if(e.key==='Home'){e.preventDefault();metricLayout.manualWidth=null;fitMeasurementColumns();}
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+   e.preventDefault();const w=parseFloat(metricLayout.table.style.getPropertyValue('--metric-width'))||258;
+   updateManualMetricWidth(w+(e.key==='ArrowRight'?1:-1)*(e.shiftKey?30:10));
+  }
+ });
+}
+if(typeof ResizeObserver!=='undefined'){
+ const gridObserver=new ResizeObserver(()=>fitMeasurementColumns());
+ gridObserver.observe(document.getElementById('measurementScroll'));
+}else addEventListener('resize',fitMeasurementColumns);
 function renderMeasurementMatrix(entries){
  const ticket=++selectionSerial,container=document.getElementById('measurementMatrix');container.replaceChildren();
  const groups=activeProfile==='DSC'?dscMetrics():keyenceMetrics();
  const table=dom('table','lab-matrix');const thead=table.createTHead(),tr=thead.insertRow();
  const heading=dom('th','metric-heading','MEASURING POINT / ITEM');heading.scope='col';tr.append(heading);
- entries.forEach(entry=>{const th=dom('th','sample-heading');th.scope='col';const m=entry.meta||parseEntryMeta(entry);th.title='OSE: '+(m.ose||'—')+' / CAVITY: '+(m.cavity||'—')+' / WEEK: '+(m.week||'—')+'\n'+(m.qr||entry.path);
+ if(metricLayout.count!==entries.length){metricLayout.manualWidth=null;metricLayout.count=entries.length;}
+ metricLayout.table=table;installMeasurementDivider(heading);
+ entries.forEach(entry=>{const th=dom('th','sample-heading');th.scope='col';const m=entry.meta||parseEntryMeta(entry);th.title='TUBE: '+(m.tube||tubeFromModel(m.model))+' / OSE: '+(m.ose||'—')+' / CAVITY: '+(m.cavity||'—')+' / WEEK: '+(m.week||'—')+'\n'+(m.qr||entry.path);
   const s=dom('span','sample-filename',entry.name.replace(/\.csv$/i,''));s.title=entry.path;
   const stamp=dom('small','sample-meta',prettyDate(entry.modified));
-  const tooltip=dom('span','column-tooltip','OSE '+(m.ose||'—')+'  ·  CAVITY '+(m.cavity||'—')+'  ·  WEEK '+(m.week||'—')+(entry.folder?'  ·  FOLDER '+entry.folder:''));
+  const tooltip=dom('span','column-tooltip','TUBE '+(m.tube||tubeFromModel(m.model))+'  ·  OSE '+(m.ose||'—')+'  ·  CAVITY '+(m.cavity||'—')+'  ·  WEEK '+(m.week||'—')+(entry.folder?'  ·  FOLDER '+entry.folder:''));
   th.append(s,stamp,tooltip);tr.append(th);
  });
  if(!entries.length){const th=dom('th','sample-heading empty-sample','AWAITING LAB DATA');tr.append(th);}
  const tbody=table.createTBody();const cells=entries.map(()=>[]);
  groups.forEach(g=>{
   const band=tbody.insertRow();band.className='zone-row';const cell=dom('th','zone-title',g.label);cell.scope='rowgroup';cell.colSpan=entries.length+1;band.append(cell);
+  let previousJoint='';
   g.metrics.forEach((metric,i)=>{
-   const row=tbody.insertRow();row.className='measure-row'+(metric.includes('Delta Tg')||metric==='BENT'?' emphasis':'');
-   const lab=dom('th','metric-label',metric);lab.scope='row';row.append(lab);
+   const jointInfo=activeProfile==='XSECTION'?xsectionPresentation(metric,previousJoint):null;
+   if(jointInfo?.joint)previousJoint=jointInfo.joint;
+   const row=tbody.insertRow();row.className='measure-row'+(metric.includes('Delta Tg')||metric==='BENT'?' emphasis':'')+(metric.includes('Delta Tg')?' delta-tg':'')+(jointInfo?.start?' joint-start':'');
+   if(jointInfo?.joint)row.dataset.joint=jointInfo.joint;
+   const lab=dom('th','metric-label',jointInfo?jointInfo.label:metric);lab.scope='row';
+   if(jointInfo){
+    lab.title=metric;
+    // Fixed joint-code gutter: Braze, Poros Len, and Poros Rate share one text edge.
+    if(jointInfo.joint){
+     lab.classList.add('xsection-metric-label');
+     if(jointInfo.start)lab.classList.add('joint-label');
+     const line=dom('span','joint-row-layout');
+     const code=dom('span','joint-code',jointInfo.start?jointInfo.joint:'');
+     code.setAttribute('aria-hidden','true');
+     line.append(code,dom('span','joint-metric',jointInfo.metric));
+     lab.replaceChildren(line);
+     lab.setAttribute('aria-label',(jointInfo.start?jointInfo.joint+' ':'')+jointInfo.metric);
+    }
+   }
+   row.append(lab);
    entries.forEach((_,col)=>{const val=dom('td','measure-value',missing);val.dataset.point=String(g.offset+i);row.append(val);cells[col][g.offset+i]=val;});
    if(!entries.length)row.append(dom('td','measure-value placeholder-value',missing));
   });
  });
  container.append(table);
+ fitMeasurementColumns();
  if(entries.length===0)return;
  entries.forEach(async (entry,col)=>{
   try{
    const f=entry.file||await entry.handle.getFile();if(f.size>12*1024*1024)throw Error('File exceeds 12 MB limit');
    const payload=await f.text();if(ticket!==selectionSerial)return;
    const parsed=parseMeasurementFile(payload,entry,activeProfile);
-   const header=thead.rows[0].cells[col+1];header.querySelector('.sample-filename').textContent=parsed.name;
+   const header=thead.rows[0].cells[col+1];header.querySelector('.sample-filename').textContent=entry.name.replace(/\.csv$/i,'');
    if(parsed.warning){header.classList.add('sample-warning');header.title=entry.path+' — '+parsed.warning;const warning=dom('small','sample-warning-label',parsed.warning);header.append(warning);}
+   const quality=evaluateQuality(activeProfile,parsed.values,parsed.warning);
+   header.append(qualityBadge(quality,'sample-qc'));
+   const deltaIndices=new Set(DSC_GROUPS.map(g=>g.start+4));
    parsed.values.forEach((val,i)=>{const node=cells[col][i];if(!node)return;node.textContent=val||missing;
     if(val&&String(val).toUpperCase()==='FAIL')node.classList.add('fail');
     else if(val&&String(val).toUpperCase()==='PASS')node.classList.add('pass');
-    else if(val&&/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(val))node.classList.add('numeric');
+    else if(val&&/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(String(val).trim()))node.classList.add('numeric');
+    const verdict=quality.assessments[i];
+    if(verdict){node.classList.add(verdict.state==='PASS'?'qc-pass':verdict.state==='FAIL'?'qc-fail':'qc-unchecked');node.title=(verdict.state==='PASS'?'PASS':verdict.state==='FAIL'?'FAIL':'INCOMPLETE')+' · '+verdict.reason;}
+    if(activeProfile==='DSC'&&deltaIndices.has(i)){
+     const raw=String(val??'').trim().replace(/\s*[°º]C$/i,'').trim();
+     if(/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(raw)){
+      const delta=Number(raw);
+      node.classList.add(delta>=-5&&delta<=5?'delta-in-range':'delta-out-of-range');
+      node.title='Delta Tg '+raw+' °C · '+(delta>=-5&&delta<=5?'within −5 to +5 °C':'outside −5 to +5 °C');
+     }else node.classList.add('delta-unavailable');
+    }
    });
-  }catch(err){if(ticket!==selectionSerial)return;console.warn('Could not read measurement file',entry.path,err);const header=thead.rows[0].cells[col+1];header.classList.add('sample-warning');header.title=String(err);header.append(dom('small','sample-warning-label','READ ERROR'));}
+  }catch(err){if(ticket!==selectionSerial)return;console.warn('Could not read measurement file',entry.path,err);const header=thead.rows[0].cells[col+1];header.classList.add('sample-warning');header.title=String(err);header.append(dom('small','sample-warning-label','READ ERROR'));header.append(qualityBadge({state:'INCOMPLETE',failures:[],incomplete:['File could not be read']},'sample-qc'));}
  });
 }
 // Standard comma/quote-aware parser supports newlines in quoted fields.
@@ -933,7 +1547,8 @@ function labFilename(qr,profile){
  if(!Number.isInteger(week)||week<1||week>54)return null;
  const model=qr.slice(5,8),ose=qr[24],cavity=qr[25];
  if(!/^\d{3}$/.test(model)||!/^[0-9]$/.test(ose)||!/^[0-9]$/.test(cavity))return null;
- return {filename:`${model}_${ose}_${cavity}_${week}_${profile}.csv`,model,ose,cavity,week,profile,qr};
+ const letter=tubeLetter(model);
+ return {filename:`${model}${letter?'_'+letter:''}_${ose}_${cavity}_${week}_${profile}.csv`,model,tube:tubeFromModel(model),letter,ose,cavity,week,profile,qr};
 }
 function pastedSourceLines(raw){
  const lines=raw.replace(/\r\n?/g,'\n').split('\n');
@@ -959,7 +1574,7 @@ function updateForgeFilenamePreview(){
  holder.classList.toggle('ready',!!info);
  if(info){if(!manualFilename)document.getElementById('csvFilename').value=info.filename;
   const count=pastedSourceLines(raw).filter(x=>x.trim()).length;
-  meta.textContent=`MODEL ${info.model}  ·  OSE ${info.ose}  ·  CAVITY ${info.cavity}  ·  WK ${info.week}  ·  ${count} VALUES`;
+  meta.textContent=`MODEL ${info.model}  ·  TUBE ${info.tube}${info.letter?' ('+info.letter+')':''}  ·  OSE ${info.ose}  ·  CAVITY ${info.cavity}  ·  WK ${info.week}  ·  ${count} VALUES`;
  }else if(raw.trim()){meta.textContent='NO VALID FIRST-LINE QR · YOU CAN EDIT THE NAME ABOVE';}
  else{if(!manualFilename)document.getElementById('csvFilename').value='';meta.textContent='';}
 }
