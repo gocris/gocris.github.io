@@ -1,0 +1,397 @@
+/* VALEO Shared Design System — applications.css */
+/* Edge-to-edge screen face. The light field travels INSIDE the hero, never widening the viewport. */
+.hero{
+  --screen-highlight:rgba(20,185,197,.19);
+  --screen-beam:rgba(31,205,188,.13);
+  --screen-line:rgba(19,148,176,.06);
+  isolation:isolate;
+  overflow:hidden!important;
+}
+html[data-theme="metroid"] .hero{
+  --screen-highlight:rgba(236,62,143,.15);
+  --screen-beam:rgba(182,65,249,.15);
+  --screen-line:rgba(209,91,237,.075);
+}
+.hero .hero-screen-fx{
+  position:absolute!important;inset:0;z-index:1!important;
+  pointer-events:none!important;overflow:hidden!important;
+  opacity:1;isolation:isolate;
+  background:
+     linear-gradient(180deg,rgba(255,255,255,.17),transparent 19%,transparent 85%,rgba(52,165,185,.05)),
+     repeating-linear-gradient(0deg,transparent 0 5px,var(--screen-line) 5px 6px);
+  animation:valeoScreenBreath 7.5s ease-in-out infinite alternate;
+}
+html[data-theme="metroid"] .hero .hero-screen-fx{
+  background:
+     linear-gradient(180deg,rgba(252,232,255,.07),transparent 19%,transparent 85%,rgba(170,78,210,.04)),
+     repeating-linear-gradient(0deg,transparent 0 5px,var(--screen-line) 5px 6px);
+}
+.hero .hero-screen-beam{
+  position:absolute;top:-35%;left:0;height:170%;width:24%;
+  transform:translateX(-145%) skewX(-17deg);
+  background:linear-gradient(90deg,transparent,var(--screen-beam) 38%,var(--screen-highlight) 52%,var(--screen-beam) 67%,transparent);
+  filter:blur(13px);opacity:.78;
+  animation:valeoHologramSweep 9.5s ease-in-out infinite;
+}
+@keyframes valeoHologramSweep{
+  0%,12%{transform:translateX(-145%) skewX(-17deg);opacity:0}
+  20%{opacity:.74}
+  68%{opacity:.55}
+  83%,100%{transform:translateX(600%) skewX(-17deg);opacity:0}
+}
+@keyframes valeoScreenBreath{from{opacity:.58}to{opacity:1}}
+/* Keep decorative screen layers out of the two-column layout. */
+.hero .hero-screen-fx~:not(.hero-boot-scan):not(.hero-theme-flash){z-index:2!important;position:relative;}
+/* Main cards: first class destinations, clearly separated from the secondary tier. */
+.modules{
+  column-gap:20px!important;
+  row-gap:12px!important;
+  align-items:start!important;
+}
+.modules > a.module--wide{
+  min-height:217px!important;
+}
+/* Secondary master cards act as a gateway to INDENTED, OUTSIDE branch links. */
+.modules > details.module--group{
+  grid-column:span 6!important;
+  display:block!important;
+  min-height:0!important;
+  margin-top:27px!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  isolation:auto!important;
+  transform:none!important;
+}
+.modules > details.module--group::before,
+.modules > details.module--group::after{content:none!important;display:none!important;}
+.modules > details.module--group:hover,
+.modules > details.module--group[open],
+.modules > details.module--group:focus-within{
+  transform:none!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+.module--group > .module-group-trigger{
+  position:relative;isolation:isolate;
+  display:flex!important;flex-direction:column;justify-content:center;
+  min-height:129px!important;
+  padding:16px 21px 15px 23px!important;
+  border:1px solid var(--card-border)!important;
+  border-radius:5px!important;
+  background:var(--card-bg)!important;
+  box-shadow:var(--shadow)!important;
+  transition:transform .24s ease,box-shadow .24s ease,border-color .24s ease;
+  overflow:hidden;
+}
+.module--group > .module-group-trigger::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:var(--accent);box-shadow:0 0 14px var(--accent),0 0 24px var(--glow);
+  pointer-events:none;
+}
+.module--group > .module-group-trigger:hover,
+.module--group > .module-group-trigger:focus-visible{
+  transform:translateY(-2px);
+  border-color:var(--accent)!important;
+  box-shadow:var(--shadow),0 0 13px var(--glow)!important;
+}
+.module--group[open] > .module-group-trigger{border-color:var(--accent)!important;}
+.module--group .module-group-trigger > .module-topline{margin:0 0 5px!important;}
+.module--group .module-group-trigger .module-icon{
+  width:29px;height:29px;flex:0 0 29px;
+}
+.module--group .module-group-trigger .module-icon svg{width:17px;height:17px;}
+.module--group .module-group-trigger .module-title{
+  font-size:clamp(20px,1.7vw,24px)!important;
+  line-height:1.1!important;margin-bottom:5px!important;
+}
+.module--group .module-group-trigger .module-description{
+  font-size:12px!important;line-height:1.35!important;margin:0 0 8px!important;
+}
+.module--group .module-group-trigger .module-footer{
+  margin-top:0!important;font-size:12px!important;
+}
+.module--group > .module-branches{
+  position:relative;z-index:2;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  margin:14px 0 0 17px!important;
+  padding:0 0 1px 27px!important;
+  border:0!important;border-left:1px solid var(--card-border)!important;
+  gap:11px!important;
+  background:transparent!important;
+  animation:branchEnter .23s ease both;
+}
+.module--group .module-branch{
+  background:var(--card-bg)!important;
+  border:1px solid var(--card-border)!important;
+  border-left:3px solid var(--accent)!important;
+  border-radius:4px!important;
+  min-height:66px;
+  padding:12px 14px 12px 16px!important;
+  box-shadow:var(--shadow);
+  transition:transform .22s ease,background .22s ease,box-shadow .22s ease,border-color .22s ease;
+}
+.module--group .module-branch:hover,
+.module--group .module-branch:focus-visible{
+  transform:translateX(4px);
+  background:var(--surface-alt)!important;
+  border-color:var(--accent)!important;
+  box-shadow:0 0 16px var(--glow)!important;
+}
+.module--group .branch-indicator{display:none!important;}
+.module--group .branch-copy strong{
+  font:700 15px/1.25 var(--display-font);
+  letter-spacing:.045em;
+  color:var(--ink)!important;
+}
+.module--group .branch-copy small{font-size:11px!important;}
+.module--group .branch-arrow{font-size:21px!important;}
+/* Responsive: large cards remain primary; secondary gateways retain the branch hierarchy. */
+@media(max-width:720px){
+  .modules{gap:12px!important;}
+  .modules > a.module--wide{min-height:163px!important;}
+  .modules > details.module--group{
+    grid-column:span 12!important;
+    margin-top:16px!important;
+  }
+  .modules > details.module--documents{margin-top:5px!important;}
+  .module--group > .module-group-trigger{min-height:118px!important;padding:14px 18px 13px 21px!important;}
+  .module--group > .module-branches{margin-left:14px!important;padding-left:18px!important;gap:9px!important;}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero .hero-screen-fx,.hero .hero-screen-beam{animation:none!important;}
+  .module--group > .module-branches{animation:none!important;}
+}
+/* === END V4 === */
+
+
+
+/* === OVERRIDES: applications glow line + stronger main cards === */
+.section-header{
+  align-items:center!important;
+}
+.section-header > div{
+  width:100%;
+}
+#workspacesTitle{
+  display:flex!important;
+  align-items:center;
+  gap:14px;
+  width:100%;
+  position:relative;
+  font-weight:760!important;
+}
+#workspacesTitle::before{
+  content:"";
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  flex:0 0 10px;
+  background:var(--tone-two);
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--tone-two) 55%, transparent), 0 0 12px var(--glow), 0 0 24px color-mix(in srgb, var(--tone-two) 52%, transparent);
+}
+#workspacesTitle::after{
+  content:"";
+  flex:1 1 auto;
+  height:1px;
+  margin-left:10px;
+  background:linear-gradient(90deg,
+    color-mix(in srgb, var(--tone-two) 92%, transparent) 0%,
+    color-mix(in srgb, var(--tone-two) 48%, transparent) 35%,
+    color-mix(in srgb, var(--tone-two) 18%, transparent) 72%,
+    transparent 100%);
+  filter:drop-shadow(0 0 7px var(--glow));
+}
+html[data-theme="stella"] #workspacesTitle{
+  color:#8fd8d6!important;
+  text-shadow:0 0 14px rgba(56,206,199,.14),0 0 28px rgba(56,206,199,.06);
+}
+html[data-theme="metroid"] #workspacesTitle{
+  color:#d8bfec!important;
+  text-shadow:0 0 16px rgba(188,73,255,.16),0 0 30px rgba(188,73,255,.08);
+}
+
+/* Make the two primary cards share the same stronger visual weight */
+.modules > a.module.module--wide:not(.module--qr-scanner){
+  --accent:var(--tone-two)!important;
+  --icon-tint:color-mix(in srgb, var(--tone-two) 11%, var(--surface))!important;
+  background:
+    linear-gradient(180deg,color-mix(in srgb, var(--tone-two) 8%, transparent),transparent 34%),
+    var(--surface)!important;
+  border-color:color-mix(in srgb, var(--tone-two) 26%, var(--card-border))!important;
+  box-shadow:var(--shadow),0 0 0 1px color-mix(in srgb, var(--tone-two) 10%, transparent),0 0 24px color-mix(in srgb, var(--tone-two) 10%, transparent)!important;
+}
+.modules > a.module.module--wide:not(.module--qr-scanner) .module-eyebrow,
+.modules > a.module.module--wide:not(.module--qr-scanner) .module-footer,
+.modules > a.module.module--wide:not(.module--qr-scanner) .module-icon{
+  color:var(--tone-two)!important;
+}
+.modules > a.module.module--wide:not(.module--qr-scanner) .module-icon{
+  background:color-mix(in srgb, var(--tone-two) 13%, var(--surface))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 14px color-mix(in srgb, var(--tone-two) 14%, transparent);
+}
+.modules > a.module.module--wide:not(.module--qr-scanner):hover,
+.modules > a.module.module--wide:not(.module--qr-scanner):focus-visible{
+  border-color:color-mix(in srgb, var(--tone-two) 48%, var(--card-border))!important;
+  box-shadow:var(--shadow),0 0 0 1px color-mix(in srgb, var(--tone-two) 20%, transparent),0 0 36px color-mix(in srgb, var(--tone-two) 18%, transparent)!important;
+}
+
+/* Secondary cards stay cleaner and less strong */
+.modules > details.module.module--group{
+  background:color-mix(in srgb, var(--surface) 92%, var(--tone-one) 8%)!important;
+  border-color:color-mix(in srgb, var(--card-border) 86%, var(--tone-one) 14%)!important;
+  box-shadow:var(--shadow)!important;
+}
+.modules > details.module.module--group .module-icon{
+  opacity:.92;
+}
+.modules > details.module.module--group .module-title{
+  opacity:.94;
+}
+.modules > details.module.module--group .module-description{
+  opacity:.88;
+}
+html[data-theme="stella"] .modules > details.module.module--group{
+  background:linear-gradient(180deg,rgba(59,195,186,.05),rgba(255,255,255,.92))!important;
+}
+html[data-theme="metroid"] .modules > details.module.module--group{
+  background:linear-gradient(180deg,rgba(170,66,226,.08),rgba(16,7,23,.92))!important;
+}
+@media (max-width:720px){
+  #workspacesTitle{gap:11px;}
+  #workspacesTitle::before{width:8px;height:8px;flex-basis:8px;}
+  #workspacesTitle::after{margin-left:6px;}
+}
+/* === END OVERRIDES === */
+
+
+/* Restrained separator between primary applications and secondary tools */
+.modules > .module-tier-divider{
+  grid-column:1 / -1;
+  width:100%;
+  min-width:0;
+  height:1px;
+  margin:14px 0 5px;
+  pointer-events:none;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--tone-two) 15%, transparent) 8%,
+    color-mix(in srgb, var(--tone-two) 32%, transparent) 48%,
+    color-mix(in srgb, var(--tone-two) 15%, transparent) 92%,
+    transparent 100%);
+  box-shadow:0 1px 7px color-mix(in srgb, var(--tone-two) 9%, transparent);
+}
+.modules > details.module--group{margin-top:7px!important;}
+@media (max-width:720px){
+  .modules > .module-tier-divider{margin:13px 0 4px;}
+  .modules > details.module--group{margin-top:5px!important;}
+  .modules > details.module--documents{margin-top:5px!important;}
+}
+
+
+/* Compact illuminated card rails. Hover/focus grows each light to the bottom. */
+.modules > a.module.module--wide::before,
+.modules > details.module--group > .module-group-trigger::before {
+  top:0!important;
+  bottom:auto!important;
+  height:32px!important;
+  width:4px!important;
+  border-radius:0 0 3px 0;
+  transition:height .48s cubic-bezier(.22,.85,.25,1), width .25s ease, box-shadow .3s ease!important;
+}
+.modules > a.module.module--wide:hover::before,
+.modules > a.module.module--wide:focus-visible::before,
+.modules > details.module--group > .module-group-trigger:hover::before,
+.modules > details.module--group > .module-group-trigger:focus-visible::before {
+  height:100%!important;
+  width:5px!important;
+  box-shadow:0 0 14px var(--accent),0 0 25px var(--glow)!important;
+}
+/* Each expandable branch uses a shorter, quieter accent that extends on hover. */
+.module--group .module-branch {
+  position:relative!important;
+  overflow:hidden!important;
+  border-left-color:transparent!important;
+}
+.module--group .module-branch::before {
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:auto;
+  width:3px;height:22px;
+  background:var(--accent);
+  box-shadow:0 0 8px var(--glow);
+  transition:height .43s cubic-bezier(.22,.85,.25,1),box-shadow .3s ease;
+  pointer-events:none;
+}
+.module--group .module-branch:hover::before,
+.module--group .module-branch:focus-visible::before{
+  height:100%;
+  box-shadow:0 0 13px var(--accent),0 0 22px var(--glow);
+}
+@media (prefers-reduced-motion:reduce){
+  .modules > a.module.module--wide::before,
+  .modules > details.module--group > .module-group-trigger::before,
+  .module--group .module-branch::before{transition:none!important;}
+}
+
+
+/* Third secondary card and equal-sized secondary tier on desktop */
+@media (min-width:1060px){
+  #modules > details.module--group,
+  #modules > a.module--qr-scanner{grid-column:span 4!important;}
+}
+.module--qr-scanner{
+  --accent:var(--tone-three);
+  --icon-tint:var(--surface-alt);
+  min-height:160px!important;
+  padding-top:18px!important;
+  padding-bottom:18px!important;
+  background:color-mix(in srgb,var(--surface) 92%,var(--tone-one) 8%)!important;
+  border-color:color-mix(in srgb,var(--card-border) 86%,var(--tone-one) 14%)!important;
+  box-shadow:var(--shadow)!important;
+  margin-top:7px!important;
+}
+.module--qr-scanner .module-topline{margin-bottom:12px!important;}
+.module--qr-scanner .module-title{font-size:clamp(21px,2vw,25px)!important;}
+.module--qr-scanner .module-description{font-size:12px!important;}
+.module--qr-scanner::before{background:var(--tone-three)!important;}
+html[data-theme="stella"] .module--qr-scanner{
+  background:linear-gradient(180deg,rgba(59,195,186,.05),rgba(255,255,255,.92))!important;
+}
+html[data-theme="metroid"] .module--qr-scanner{
+  background:linear-gradient(180deg,rgba(170,66,226,.08),rgba(16,7,23,.92))!important;
+}
+@media(max-width:1059px){
+  #modules > a.module--qr-scanner{grid-column:span 12!important;}
+}
+@media(max-width:720px){
+  #modules > a.module--qr-scanner{grid-column:span 12!important;}
+}
+/* Modal uses page theme and does not obscure content until requested */
+.service-desk-dialog{
+  width:min(470px,calc(100vw - 32px));max-height:calc(100vh - 32px);
+  margin:auto;padding:0;border:1px solid var(--card-border);border-radius:12px;
+  color:var(--ink);background:var(--surface);box-shadow:0 28px 80px rgba(0,0,0,.27);
+}
+.service-desk-dialog::backdrop{background:rgba(5,15,25,.54);backdrop-filter:blur(5px)}
+.service-desk-form{padding:26px;display:flex;flex-direction:column;gap:15px;}
+.service-desk-head{display:flex;align-items:center;gap:12px;}
+.service-desk-head h2{font:700 25px/1.15 var(--display-font);letter-spacing:.025em;margin:0;}
+.service-desk-dot{width:10px;height:10px;border-radius:50%;background:var(--tone-two);box-shadow:0 0 11px var(--tone-two);}
+.service-desk-form p{margin:0;color:var(--muted);font-size:13px;line-height:1.5;}
+.service-desk-form label{font-weight:700;font-size:13px;margin-bottom:-8px;}
+.service-desk-form input{padding:12px 14px;min-height:46px;border:1px solid var(--card-border);border-radius:5px;background:var(--surface-alt);color:var(--ink);width:100%;outline-offset:3px;}
+.service-desk-form small{font-size:11px;color:var(--muted);}
+.service-desk-form .service-desk-error{color:var(--red-deep);font-weight:650;}
+.service-desk-actions{display:flex;justify-content:flex-end;gap:9px;}
+.service-desk-actions button{padding:10px 15px;border-radius:6px;border:1px solid var(--card-border);color:var(--ink);background:var(--surface-alt);font-weight:700;}
+.service-desk-actions button[type="submit"]{background:var(--tone-two);color:#04101c;border-color:transparent;}
+html[data-theme="metroid"] .service-desk-actions button[type="submit"]{color:#fff;}
+
+
+/* === VALEO ORB NAVIGATION + PROFESSIONAL EXPAND EFFECT === */

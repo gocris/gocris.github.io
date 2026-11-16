@@ -1,0 +1,204 @@
+/* VALEO Shared Design System — navigation.css */
+.nav-orb-button{
+  display:grid;place-items:center;position:relative;isolation:isolate;
+  flex:0 0 45px;width:45px;height:45px;
+  border:1px solid color-mix(in srgb,var(--tone-two) 37%,var(--line));
+  border-radius:50%;background:var(--surface-alt);color:var(--ink);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 3px color-mix(in srgb,var(--tone-two) 7%,transparent),0 0 13px color-mix(in srgb,var(--tone-two) 12%,transparent);
+  transition:border-color .3s,background .3s,transform .32s,box-shadow .32s;
+}
+.nav-orb-button::before{content:"";position:absolute;inset:5px;border-radius:50%;border:1px solid color-mix(in srgb,var(--tone-two) 14%,transparent);pointer-events:none;}
+.nav-orb-button:hover,.nav-orb-button:focus-visible,[aria-expanded="true"].nav-orb-button{
+  border-color:var(--tone-two);transform:scale(1.045);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--tone-two) 11%,transparent),0 0 19px var(--glow);
+}
+.nav-orb-lines{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:19px;height:19px;}
+.nav-orb-lines i{display:block;width:17px;height:1.6px;border-radius:3px;background:var(--tone-two);box-shadow:0 0 7px var(--glow);transition:width .3s ease,transform .3s ease;}
+.nav-orb-lines i:nth-child(2){width:12px;}
+.nav-orb-button:hover .nav-orb-lines i:nth-child(2){width:17px;}
+.topbar-inner>.identity{margin-right:auto;flex:0 1 auto;}
+
+.nav-side-backdrop{position:fixed;inset:0;z-index:1000;background:rgba(3,10,18,.5);backdrop-filter:blur(0px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .42s ease,visibility .42s,backdrop-filter .42s;}
+.nav-open .nav-side-backdrop{opacity:1;visibility:visible;pointer-events:auto;backdrop-filter:blur(5px);}
+.nav-side-panel{
+  --nav-rail:var(--tone-two);
+  position:fixed;z-index:1001;inset:0 auto 0 0;
+  width:min(370px,calc(100vw - 14px));height:100vh;height:100dvh;
+  background:radial-gradient(ellipse at 2% 2%,color-mix(in srgb,var(--tone-two) 12%,transparent),transparent 53%),var(--surface);
+  border-right:1px solid color-mix(in srgb,var(--tone-two) 32%,var(--line));
+  box-shadow:25px 0 65px rgba(0,0,0,.22),inset -1px 0 0 color-mix(in srgb,var(--tone-two) 14%,transparent);
+  transform:translateX(-104%);opacity:.75;visibility:hidden;
+  transition:transform .56s cubic-bezier(.16,1,.26,1),opacity .4s,visibility .56s;
+  display:flex;flex-direction:column;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;
+  padding:27px 22px 21px 27px;
+}
+.nav-open .nav-side-panel{transform:translateX(0);opacity:1;visibility:visible;}
+.nav-side-edge{position:absolute;top:0;bottom:0;left:0;width:3px;background:linear-gradient(180deg,transparent,var(--tone-two) 12%,var(--tone-three) 46%,transparent 94%);box-shadow:0 0 18px var(--glow);opacity:.8;pointer-events:none;}
+.nav-side-top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-bottom:21px;border-bottom:1px solid var(--line);margin-bottom:24px;}
+.nav-side-title{display:flex;align-items:center;gap:12px;min-width:0;}
+.nav-side-title>span:last-child{display:flex;flex-direction:column;gap:4px;}
+.nav-side-title small{font-size:9px;font-weight:750;letter-spacing:.19em;color:var(--muted);}
+.nav-side-title strong{font:700 24px/1 var(--display-font);letter-spacing:.085em;color:var(--ink);}
+.nav-side-live{display:block;flex:0 0 9px;width:9px;height:9px;border-radius:50%;background:var(--tone-two);box-shadow:0 0 13px var(--tone-two);}
+.nav-side-close{width:39px;height:39px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--line);background:var(--surface-alt);color:var(--muted);transition:transform .24s,color .24s,border-color .24s;flex:0 0 39px;}
+.nav-side-close:hover{transform:rotate(90deg);color:var(--tone-two);border-color:var(--tone-two);}
+.nav-side-close svg{width:19px;height:19px;}
+.nav-side-menu{display:flex;flex-direction:column;gap:8px;}
+.nav-side-caption{font-size:10px;letter-spacing:.185em;font-weight:780;color:var(--muted);margin:0 0 5px 3px;}
+.nav-side-caption--workspace{margin-top:19px;}
+.nav-side-ticket{position:relative;isolation:isolate;display:flex;align-items:center;gap:13px;min-height:83px;padding:14px 12px 14px 15px;text-decoration:none;border-radius:7px;border:1px solid color-mix(in srgb,var(--tone-two) 46%,var(--card-border));overflow:hidden;background:linear-gradient(120deg,color-mix(in srgb,var(--tone-two) 18%,var(--surface)),color-mix(in srgb,var(--tone-two) 5%,var(--surface)));box-shadow:0 0 19px color-mix(in srgb,var(--tone-two) 12%,transparent);transition:transform .25s,border-color .25s,box-shadow .25s;}
+.nav-side-ticket::before{content:"";position:absolute;left:0;top:0;width:4px;height:33px;background:var(--tone-two);box-shadow:0 0 13px var(--tone-two);transition:height .4s cubic-bezier(.2,.85,.2,1);}
+.nav-side-ticket::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 12%,color-mix(in srgb,var(--tone-two) 15%,transparent) 50%,transparent 72%);transform:translateX(-130%);transition:transform .62s ease;z-index:-1;}
+.nav-side-ticket:hover{transform:translateY(-2px);border-color:var(--tone-two);box-shadow:0 0 26px var(--glow);}
+.nav-side-ticket:hover::before,.nav-side-ticket:focus-visible::before{height:100%;}
+.nav-side-ticket:hover::after,.nav-side-ticket:focus-visible::after{transform:translateX(120%);}
+.nav-side-ticket-icon{display:grid;place-items:center;flex:0 0 35px;width:35px;height:35px;border-radius:5px;background:color-mix(in srgb,var(--tone-two) 13%,var(--surface));color:var(--tone-two);}
+.nav-side-ticket-icon svg{width:21px;height:21px;}
+.nav-side-link-text{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;}
+.nav-side-link-text strong{font:740 16px/1.14 var(--display-font);letter-spacing:.045em;color:var(--ink);text-transform:uppercase;}
+.nav-side-link-text small{font-size:11px;line-height:1.25;color:var(--muted);}
+.nav-side-external{width:18px;height:18px;color:var(--tone-two);flex:0 0 18px;}
+.nav-side-link,.nav-side-tools-toggle{position:relative;width:100%;display:flex;align-items:center;gap:12px;min-height:52px;padding:9px 12px;text-decoration:none;border:1px solid transparent;background:transparent;color:var(--ink);border-radius:6px;text-align:left;font:700 17px/1.22 var(--display-font);letter-spacing:.025em;transition:transform .22s,color .22s,background .22s,border-color .22s;}
+.nav-side-link:hover,.nav-side-tools-toggle:hover,.nav-side-link:focus-visible,.nav-side-tools-toggle:focus-visible{transform:translateX(3px);background:var(--surface-alt);border-color:var(--card-border);color:var(--red-deep);}
+.nav-side-link-icon{width:35px;height:35px;flex:0 0 35px;display:grid;place-items:center;color:var(--tone-two);background:color-mix(in srgb,var(--tone-two) 9%,transparent);border-radius:5px;}
+.nav-side-link-icon svg{width:20px;height:20px;}
+.nav-side-end{margin-left:auto;color:var(--tone-two);font-size:20px;}
+.nav-side-tools-toggle{cursor:pointer;}
+.nav-tools-arrow{margin-left:auto;color:var(--tone-two);display:grid;place-items:center;transition:transform .5s cubic-bezier(.16,1,.26,1);}
+.nav-tools-arrow svg{width:20px;height:20px;}
+.nav-tools-group.is-expanded .nav-tools-arrow{transform:rotate(180deg);}
+.nav-tools-collapse{display:grid;grid-template-rows:0fr;opacity:.2;transition:grid-template-rows .53s cubic-bezier(.18,.86,.2,1),opacity .37s ease;}
+.nav-tools-group.is-expanded .nav-tools-collapse{grid-template-rows:1fr;opacity:1;}
+.nav-tools-inner{min-height:0;overflow:hidden;}
+.nav-tools-tree{margin:9px 3px 6px 29px;padding:3px 0 5px 18px;border-left:1px solid color-mix(in srgb,var(--tone-two) 34%,var(--line));display:flex;flex-direction:column;gap:7px;}
+.nav-tools-category{font-size:10px;font-weight:790;letter-spacing:.125em;color:var(--muted);margin:14px 0 1px 9px;}
+.nav-tools-category:first-child{margin-top:6px;}
+.nav-tools-item{display:flex;align-items:center;gap:8px;padding:10px 8px 10px 10px;min-height:42px;border:1px solid color-mix(in srgb,var(--tone-two) 9%,var(--line));border-radius:4px;background:color-mix(in srgb,var(--tone-two) 3%,var(--surface));font-size:12px;font-weight:720;color:var(--ink);text-decoration:none;opacity:0;transform:translateY(-9px);transition:opacity .32s ease,transform .4s cubic-bezier(.16,1,.26,1),border-color .22s,box-shadow .22s;}
+.nav-tools-item>span:last-child{margin-left:auto;color:var(--tone-two);font-size:17px;}
+.nav-tools-group.is-expanded .nav-tools-item{opacity:1;transform:translateY(0);}
+.nav-tools-group.is-expanded .nav-tools-item:nth-child(2){transition-delay:.05s;}
+.nav-tools-group.is-expanded .nav-tools-item:nth-child(3){transition-delay:.095s;}
+.nav-tools-group.is-expanded .nav-tools-item:nth-child(4){transition-delay:.14s;}
+.nav-tools-group.is-expanded .nav-tools-item:nth-child(6){transition-delay:.185s;}
+.nav-tools-group.is-expanded .nav-tools-item:nth-child(7){transition-delay:.22s;}
+.nav-tools-item:hover,.nav-tools-item:focus-visible{border-color:var(--tone-two);box-shadow:0 0 13px var(--glow);}
+.nav-tools-node{display:block;flex:0 0 6px;width:6px;height:6px;border-radius:50%;background:var(--tone-two);box-shadow:0 0 8px var(--glow);}
+.nav-side-footer{margin-top:auto;padding:30px 4px 2px;color:var(--muted);font-size:10px;letter-spacing:.085em;display:flex;align-items:center;gap:7px;white-space:nowrap;}
+.nav-side-footer-dot{display:block;width:6px;height:6px;background:var(--tone-two);border-radius:50%;box-shadow:0 0 8px var(--glow);}
+.nav-side-footer>span:last-child{color:var(--tone-two);}
+body.nav-open{overflow:hidden;}
+
+/* Make the outside-branch cards unfold fluidly, including during close. */
+#modules > details.module--group.is-animating{overflow:hidden!important;will-change:height;}
+#modules > details.module--group.is-opening > .module-branches{animation:valeoBranchPanel .39s cubic-bezier(.17,1,.3,1) both!important;}
+@keyframes valeoBranchPanel{from{opacity:0;filter:blur(5px);transform:translateY(-15px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes valeoBranchItem{from{opacity:0;transform:translateY(-10px) translateX(-5px)}to{opacity:1;transform:translateY(0) translateX(0)}}
+#modules > details.module--group.is-opening .module-branch{animation:valeoBranchItem .41s cubic-bezier(.18,.8,.22,1) both!important;}
+#modules > details.module--group.is-opening .module-branch:nth-child(1){animation-delay:.06s!important;}
+#modules > details.module--group.is-opening .module-branch:nth-child(2){animation-delay:.105s!important;}
+#modules > details.module--group.is-opening .module-branch:nth-child(3){animation-delay:.15s!important;}
+#modules > details.module--group.is-closing > .module-branches{opacity:.2;transform:translateY(-8px);transition:opacity .2s,transform .3s;}
+#modules > details.module--group > .module-group-trigger::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;transform:translateX(-140%);background:linear-gradient(105deg,transparent 25%,color-mix(in srgb,var(--tone-two) 11%,transparent) 50%,transparent 70%);}
+#modules > details.module--group.is-animating > .module-group-trigger::after{animation:valeoBranchScan .65s ease both;}
+@keyframes valeoBranchScan{from{transform:translateX(-140%)}to{transform:translateX(135%)}}
+
+@media(max-width:500px){
+ .topbar-inner{gap:9px!important;}
+ .nav-orb-button{width:40px;height:40px;flex-basis:40px;}
+ .brand-logo-shell{width:108px!important;min-width:108px!important;}
+ .theme-picker{gap:3px!important;padding:3px!important;}
+ .theme-button{padding:8px 9px!important;font-size:11px!important;}
+}
+@media(max-width:380px){
+ .brand-logo-shell{width:96px!important;min-width:96px!important;}
+ .theme-button span:last-child{display:none!important;}
+ .theme-button{min-width:30px!important;padding:9px!important;}
+ .topbar-inner{gap:7px!important;}
+}
+@media(prefers-reduced-motion:reduce){
+ .nav-side-panel,.nav-side-backdrop,.nav-tools-collapse,.nav-tools-item,.nav-side-ticket::after,.nav-orb-lines i{transition:none!important;animation:none!important;}
+ #modules > details.module--group .module-branch,#modules > details.module--group .module-branches,#modules > details.module--group > .module-group-trigger::after{animation:none!important;transition:none!important;}
+}
+/* Keep the third-tier scanner card proportionate to the smaller tool cards. */
+#modules > a.module--qr-scanner{min-height:160px!important;}
+/* === END VALEO ORB NAVIGATION === */
+
+
+
+/* === VALEO refinement: edge-left navigation, seamless branches and theme morph === */
+/* Keep the button anchored to the browser's left edge, not to the 1312px content grid. */
+.topbar-inner{
+  max-width:none!important;
+  padding-left:clamp(66px,5.5vw,86px)!important;
+  padding-right:clamp(14px,2.2vw,32px)!important;
+}
+.topbar .nav-orb-button{
+  position:absolute!important;
+  left:clamp(10px,1.35vw,20px)!important;
+  top:50%!important;
+  translate:0 -50%;
+  z-index:5;
+}
+/* The card's outer frame performs one continuous height animation; branch contents
+   dissolve in/out rather than running overlapping keyframe animations. */
+#modules > details.module--group > .module-branches{
+  animation:none!important;
+  opacity:0;
+  transform:translateY(-10px);
+  filter:blur(3px);
+  transition:opacity .38s ease,transform .53s cubic-bezier(.2,.85,.22,1),filter .42s ease!important;
+  will-change:opacity,transform;
+}
+#modules > details.module--group.is-expanded > .module-branches{
+  opacity:1;
+  transform:translateY(0);
+  filter:blur(0);
+}
+#modules > details.module--group.is-opening > .module-branches,
+#modules > details.module--group.is-closing > .module-branches{
+  animation:none!important;
+}
+#modules > details.module--group .module-branch{
+  animation:none!important;
+  transition:transform .28s cubic-bezier(.2,.85,.22,1),
+             opacity .35s ease,background .25s ease,border-color .25s ease,box-shadow .28s ease!important;
+}
+#modules > details.module--group.is-animating{
+  overflow:hidden!important;
+  contain:layout;
+}
+/* Modern Chromium/Edge: dissolve the complete Stella/Metroid frame, including
+   hologram gradients that CSS alone cannot interpolate between. */
+::view-transition-old(root){
+  animation:valeoThemeFadeOut .56s cubic-bezier(.2,.75,.25,1) both;
+}
+::view-transition-new(root){
+  animation:valeoThemeFadeIn .56s cubic-bezier(.2,.75,.25,1) both;
+}
+@keyframes valeoThemeFadeOut{
+  0%{opacity:1;filter:blur(0) brightness(1);}
+  100%{opacity:0;filter:blur(2px) brightness(1.03);}
+}
+@keyframes valeoThemeFadeIn{
+  0%{opacity:0;filter:blur(2px) brightness(1.07);}
+  100%{opacity:1;filter:blur(0) brightness(1);}
+}
+/* Fallback for browsers that don't support document.startViewTransition. */
+.theme-transition-fallback{
+  position:fixed;inset:0;z-index:1900;pointer-events:none;
+  background:var(--fallback-wash,rgba(65,191,195,.13));
+  opacity:0;animation:valeoFallbackWash .55s ease-out both;
+}
+@keyframes valeoFallbackWash{
+  0%{opacity:.27;}
+  100%{opacity:0;}
+}
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none!important;}
+  #modules > details.module--group > .module-branches{transition:none!important;filter:none!important;}
+  .theme-transition-fallback{display:none!important;}
+}
+/* === end VALEO refinement === */
+
+
+/* === VALEO vNext: primary-card blue/crimson accents + elemental hero transition === */

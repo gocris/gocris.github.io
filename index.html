@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="stella">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f2fdfb" id="themeColor">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="VALEO Lab">
+  <meta name="description" content="VALEO Laboratory Operations — a clear, unified entry point for data viewing, inventory, quality analysis, CMM measurements and scanner setup.">
+  <link rel="icon" type="image/png" href="capy.png">
+  <link rel="apple-touch-icon" href="capy.png">
+  <title>VALEO | Laboratory Operations — Stella / Metroid</title>
+  <script src="js/theme-bootstrap.js"></script>
+    <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/applications.css">
+  <link rel="stylesheet" href="css/navigation.css">
+  <link rel="stylesheet" href="css/theme-effects.css">
+  <link rel="stylesheet" href="css/refinements.css">
+  <link rel="stylesheet" href="css/entrance.css">
+</head>
+<body>
+<canvas id="ambientParticles" aria-hidden="true"></canvas>
+<div class="page">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <button type="button" class="nav-orb-button" id="navOpenButton" aria-label="Open laboratory navigation" aria-controls="labSidePanel" aria-expanded="false">
+        <span class="nav-orb-lines" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+      <a class="identity" href="index.html" aria-label="VALEO Laboratory Operations home">
+        <span class="brand-logo-shell"><img class="brand-logo" src="valeoLogo.png" alt="VALEO" onerror="this.hidden=true; this.nextElementSibling.hidden=false"><span class="brand-fallback" hidden>VALEO</span></span>
+        <span class="identity-text"><span class="identity-subtitle">RENO NV LABORATORY</span></span>
+      </a>
+      <div class="topbar-right">
+        <div class="theme-picker" role="group" aria-label="Color theme">
+          <button type="button" class="theme-button" id="themeStella" data-theme-option="stella" aria-pressed="true"><span class="theme-orb stella-orb" aria-hidden="true"></span><span>STELLA</span></button>
+          <button type="button" class="theme-button" id="themeMetroid" data-theme-option="metroid" aria-pressed="false"><span class="theme-orb metroid-orb" aria-hidden="true"></span><span>METROID</span></button>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <!-- Sliding laboratory navigation, mirrored with the homepage destinations. -->
+  <div class="nav-side-backdrop" id="navSideBackdrop" aria-hidden="true"></div>
+  <aside class="nav-side-panel" id="labSidePanel" aria-label="Laboratory navigation" aria-hidden="true" inert>
+    <div class="nav-side-edge" aria-hidden="true"></div>
+    <div class="nav-side-top">
+      <div class="nav-side-title"><span class="nav-side-live" aria-hidden="true"></span><span><small>RENO NV LABORATORY</small><strong>NAVIGATION</strong></span></div>
+      <button class="nav-side-close" type="button" id="navCloseButton" aria-label="Close laboratory navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg></button>
+    </div>
+    <nav class="nav-side-menu" aria-label="Quick access">
+      <div class="nav-side-caption">LABORATORY REQUESTS</div>
+      <a href="#" class="nav-side-ticket" data-ticket-link aria-label="Create a laboratory analysis ticket">
+        <span class="nav-side-ticket-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" aria-hidden="true"><path d="M3 5.5h18v4.3a2.2 2.2 0 0 0 0 4.4v4.3H3v-4.3a2.2 2.2 0 0 0 0-4.4zM13 6.5v2M13 11v2M13 15.5v2"/></svg></span>
+        <span class="nav-side-link-text"><strong>Create Analysis Ticket</strong><small>Submit a lab analysis request</small></span>
+        <svg class="nav-side-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+      </a>
+      <div class="nav-side-caption nav-side-caption--workspace">WORKSPACES</div>
+      <a href="inventory_nexus.html" class="nav-side-link"><span class="nav-side-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 0v10l9 4 9-4V7M12 11v10"/></svg></span><span>Inventory</span><span class="nav-side-end" aria-hidden="true">↗</span></a>
+      <a href="dataView.html" class="nav-side-link"><span class="nav-side-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5h16v14H4zM4 9h16M9 9v10M15 13h2m-2 3h2"/></svg></span><span>Data Archive</span><span class="nav-side-end" aria-hidden="true">↗</span></a>
+      <div class="nav-side-caption nav-side-caption--workspace">TECHNICIAN ACCESS</div>
+      <div class="nav-tools-group" id="navToolsGroup">
+        <button type="button" class="nav-side-tools-toggle" id="navToolsToggle" aria-expanded="false" aria-controls="navToolsCollapse">
+          <span class="nav-side-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 3h6m-5 0v7L4.3 19a1.4 1.4 0 0 0 1.2 2h13a1.4 1.4 0 0 0 1.2-2L14 10V3M8 15h8"/></svg></span>
+          <span>Technician Tools</span><span class="nav-tools-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="m6 9 6 6 6-6"/></svg></span>
+        </button>
+        <div class="nav-tools-collapse" id="navToolsCollapse" inert>
+          <div class="nav-tools-inner">
+            <div class="nav-tools-tree">
+              <div class="nav-tools-category">QUALITY ANALYSIS</div>
+              <a href="corsair_dash.html" class="nav-tools-item"><span class="nav-tools-node" aria-hidden="true"></span>CMM Measurements<span aria-hidden="true">↗</span></a>
+              <a href="black_lab_DSC.html" class="nav-tools-item"><span class="nav-tools-node" aria-hidden="true"></span>DSC Thermal Analysis<span aria-hidden="true">↗</span></a>
+              <a href="black_lab_keyence.html" class="nav-tools-item"><span class="nav-tools-node" aria-hidden="true"></span>Keyence PCT &amp; Braze<span aria-hidden="true">↗</span></a>
+              <div class="nav-tools-category">DOCUMENTS &amp; SCANNING</div>
+              <a href="scanner_setup.html" class="nav-tools-item"><span class="nav-tools-node" aria-hidden="true"></span>Scanner Setup<span aria-hidden="true">↗</span></a>
+              <a href="qrScanner.html" class="nav-tools-item"><span class="nav-tools-node" aria-hidden="true"></span>QR Scanner<span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="nav-side-footer"><span class="nav-side-footer-dot" aria-hidden="true"></span>LABORATORY OPERATIONS <span>•</span> VALEO</div>
+  </aside>
+
+  <main class="container">
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-screen-fx" aria-hidden="true"><span class="hero-screen-beam"></span></div>
+      <div class="hero-boot-scan" aria-hidden="true"></div>
+      <div class="hero-theme-flash" aria-hidden="true"></div>
+      <div>
+        <div class="hero-eyebrow"><span class="workspace-signal" aria-hidden="true"></span><span>Unified laboratory workspace</span></div>
+        <h1 id="heroTitle">Laboratory Operations</h1>
+        <p class="hero-copy">Access Quality Analysis, Scanning Tool, and Inventory from one connected workspace.</p>
+        <div class="hero-actions">
+          <a class="primary-action" href="#" id="analysisTicketLink" aria-label="Create a laboratory analysis ticket" data-ticket-link>Create Analysis Ticket <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+          <a class="quiet-action" href="#workspaces">Explore tools <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14m-5-5 5 5 5-5"/></svg></a>
+        </div>
+      </div>
+      <aside class="hero-summary" aria-label="Technician quick tool access overview">
+        <div class="hero-summary-heading">Technician Quick Tool Access</div>
+        <a href="corsair_dash.html" class="summary-step" aria-label="Open CMM measurements"><span class="step-index step-orb" aria-hidden="true"></span><div><div class="step-label">CMM</div><div class="step-desc">Metrology measurements</div></div><span class="summary-arrow" aria-hidden="true">↗</span></a>
+        <a href="black_lab_DSC.html" class="summary-step" aria-label="Open DSC thermal analysis"><span class="step-index step-orb" aria-hidden="true"></span><div><div class="step-label">DSC</div><div class="step-desc">Thermal analysis</div></div><span class="summary-arrow" aria-hidden="true">↗</span></a>
+        <a href="black_lab_keyence.html" class="summary-step" aria-label="Open Keyence analysis"><span class="step-index step-orb" aria-hidden="true"></span><div><div class="step-label">KEYENCE</div><div class="step-desc">Cross-section &amp; braze</div></div><span class="summary-arrow" aria-hidden="true">↗</span></a>
+      </aside>
+    </section>
+
+    <section id="workspaces" aria-labelledby="workspacesTitle">
+      <div class="section-header">
+        <div>
+          <h2 id="workspacesTitle">Applications</h2>
+          
+        </div>
+      </div>
+      <div class="modules" id="modules">
+        <a href="dataView.html" class="module module--wide module--cmm" aria-label="Open Data Archive" data-keywords="data archive data portal quality lab reports archive qr translator scanner dsc keyence csv">
+          <div class="module-topline"><span class="module-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 9h16M9 9v10M15 13h2m-2 3h2M7 7h2"/></svg></span><span class="module-eyebrow">Laboratory records</span></div>
+          <h3 class="module-title">Data Archive</h3>
+          <p class="module-description">Explore and review laboratory results, archived files, and QR records from one connected workspace.</p>
+          <span class="module-footer"><span>Open data archive</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+        </a>
+        <a href="inventory_nexus.html" class="module module--wide module--inventory" data-keywords="inventory nexus stock parts quantities barcode management">
+          <div class="module-topline"><span class="module-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 0v10l9 4 9-4V7M12 11v10m-5-12 9-4"/></svg></span><span class="module-eyebrow">Inventory management</span></div>
+          <h3 class="module-title">Inventory</h3>
+          <p class="module-description">Find parts, review stock levels, and manage inventory from one organized system.</p>
+          <span class="module-footer"><span>Open inventory</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+        </a>
+        <div class="module-tier-divider" aria-hidden="true"></div>
+        <details class="module module--wide module--group module--analysis" id="qualityAnalysisGroup" data-keywords="quality analysis dsc thermal keyence braze pct xsection cmm metrology cooling measurements">
+          <summary class="module-group-trigger">
+            <span class="module-topline"><span class="module-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M5 17l5-5 4 3 5-9M5 7h5m8 3h1"/></svg></span><span class="module-eyebrow">3 laboratory tools</span></span>
+            <span class="module-title">Quality Analysis</span>
+            <span class="module-description">CMM, DSC and Keyence measurement workflows.</span>
+            <span class="module-footer"><span>Browse analysis tools</span><svg class="group-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+          </summary>
+          <nav class="module-branches" aria-label="Quality Analysis applications">
+            <a href="corsair_dash.html" class="module-branch"><span class="branch-indicator" aria-hidden="true"></span><span class="branch-copy"><strong>CMM Measurements</strong><small>Metrology and cooling tube records</small></span><span class="branch-arrow" aria-hidden="true">↗</span></a>
+            <a href="black_lab_DSC.html" class="module-branch"><span class="branch-indicator" aria-hidden="true"></span><span class="branch-copy"><strong>DSC Thermal Analysis</strong><small>Thermal analysis records</small></span><span class="branch-arrow" aria-hidden="true">↗</span></a>
+            <a href="black_lab_keyence.html" class="module-branch"><span class="branch-indicator" aria-hidden="true"></span><span class="branch-copy"><strong>Keyence PCT &amp; Braze</strong><small>Cross-section and braze results</small></span><span class="branch-arrow" aria-hidden="true">↗</span></a>
+          </nav>
+        </details>
+        <details class="module module--wide module--group module--documents" id="documentsGroup" data-keywords="documents scanner setup zebra scanner scanning device barcode configuration support">
+          <summary class="module-group-trigger">
+            <span class="module-topline"><span class="module-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l4 4v14H7zM15 3v5h5M10 13h6m-6 4h6"/></svg></span><span class="module-eyebrow">Guides &amp; setup</span></span>
+            <span class="module-title">Documents</span>
+            <span class="module-description">Access scanner setup and related operating guidance.</span>
+            <span class="module-footer"><span>Browse documents</span><svg class="group-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+          </summary>
+          <nav class="module-branches" aria-label="Documents and setup">
+            <a href="scanner_setup.html" class="module-branch"><span class="branch-indicator" aria-hidden="true"></span><span class="branch-copy"><strong>Scanner Setup</strong><small>Zebra device configuration</small></span><span class="branch-arrow" aria-hidden="true">↗</span></a>
+          </nav>
+        </details>
+        <a href="qrScanner.html" class="module module--wide module--qr-scanner" aria-label="Open QR Scanner" data-keywords="qr scanner barcode camera handheld zebra code scan">
+          <div class="module-topline"><span class="module-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9V4h5M16 4h5v5M21 15v5h-5M8 20H3v-5M7 8h4v4H7zM15 8h3v3h-3zM8 15h3v3H8zM15 15h1m3 2h1m-5 2h3"/></svg></span><span class="module-eyebrow">Scan &amp; verify</span></div>
+          <h3 class="module-title">QR Scanner</h3>
+          <p class="module-description">Scan a QR code using a camera or USB/Bluetooth scanner.</p>
+          <span class="module-footer"><span>Open scanner</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+        </a>
+      </div>
+    </section>
+    <footer class="footer"><span><strong>VALEO</strong> · Laboratory Operations</span><span>Tools open using their existing local file paths.</span></footer>
+  </main>
+</div>
+<dialog class="service-desk-dialog" id="serviceDeskDialog" aria-labelledby="serviceDeskTitle">
+  <form id="serviceDeskForm" class="service-desk-form">
+    <div class="service-desk-head"><span class="service-desk-dot" aria-hidden="true"></span><h2 id="serviceDeskTitle">Laboratory Analysis Tickets</h2></div>
+    <p>Enter the URL for your laboratory analysis request portal. The address is saved in this browser.</p>
+    <label for="serviceDeskUrl">Ticket portal URL</label>
+    <input id="serviceDeskUrl" type="url" placeholder="https://your-company.example/lab-requests" autocomplete="url" required>
+    <p class="service-desk-error" id="serviceDeskError" role="alert" hidden></p>
+    <div class="service-desk-actions"><button type="button" id="cancelServiceDesk">Cancel</button><button type="submit">Save &amp; open</button></div>
+    <small>Enter the URL provided by your laboratory. To change it later, Shift+click Create Analysis Ticket.</small>
+  </form>
+</dialog>
+  <script src="js/theme.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/tickets.js"></script>
+  <script src="js/ambient.js"></script>
+  <script src="js/entrance.js"></script>
+</body>
+</html>

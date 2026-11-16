@@ -1,0 +1,87 @@
+/* VALEO Inventory integration layer.
+   Hub files css/{base,themes,components,navigation,theme-effects,refinements}.css
+   and js/{theme-bootstrap,theme,navigation,tickets}.js are loaded unchanged.
+   This file adapts the inventory toolbar and legacy controls to the shared shell. */
+
+/* Hub header is always the single primary navbar; don't inherit the original
+   inventory presentation header's styling or its old independent theme toggle. */
+body > .os-container { isolation:isolate; }
+.os-container > .topbar { flex:0 0 auto; z-index:75; }
+.os-container > .topbar .topbar-inner { max-width:none; width:100%; }
+.os-container > .topbar .identity { text-decoration:none; }
+.os-container > .topbar .brand-fallback { display:inline-block; }
+.os-container > .topbar .brand-fallback[hidden] { display:none!important; }
+.os-container > .topbar .topbar-right { margin-left:auto; }
+.os-container > .topbar .theme-picker { flex:0 0 auto; }
+
+.inventory-command-bar{
+ display:flex; flex:0 0 auto; align-items:center; gap:12px;
+ width:100%; padding:9px clamp(12px,1.6vw,23px);
+ background:color-mix(in srgb,var(--surface) 79%,transparent);
+ border-bottom:1px solid var(--inv-line);
+ box-shadow:inset 0 1px rgba(255,255,255,.035);
+ backdrop-filter:blur(14px);
+ position:relative;z-index:12;
+}
+.inventory-command-bar .status-panel{ flex:1 1 220px; min-width:165px; max-width:none; }
+.inventory-command-bar .header-actions {display:flex; flex:0 1 auto; align-items:center;gap:9px; min-width:0;}
+.inventory-command-bar .header-control {flex:0 0 auto; min-height:39px; height:39px;padding:6px 11px;font-size:.71rem; }
+.inventory-command-bar #statisticsButton {white-space:nowrap;}
+html[data-theme="stella"] .inventory-command-bar {background:rgba(246,252,253,.88);}
+html[data-theme="metroid"] .inventory-command-bar {background:rgba(15,14,19,.89);}
+
+/* Small, translucent monitor panel (status text remains live). */
+.inventory-command-bar #statusPanel{border:1px solid var(--inv-line)!important;min-width:0;}
+/* Keep main menu above the inventory tables, overlay and keyboard. */
+.os-container > .nav-side-backdrop,
+.os-container > .nav-side-panel{z-index:100;}
+body.nav-open .os-container{isolation:auto;}
+
+@media(max-width:1080px){
+ .inventory-command-bar {flex-wrap:wrap;gap:8px;}
+ .inventory-command-bar .header-actions{flex:1 1 auto;justify-content:space-between;flex-wrap:wrap;}
+ .inventory-command-bar .status-panel{flex:1 1 100%;width:100%;height:35px;}
+ .inventory-command-bar .header-control{flex:1 1 auto;min-width:90px;}
+}
+@media(max-width:550px){
+ .inventory-command-bar{padding:8px 10px;}
+ .inventory-command-bar .header-actions{gap:5px;}
+ .inventory-command-bar .header-control{min-width:0;padding:6px;font-size:clamp(.56rem,2.1vw,.67rem);max-width:none;}
+ .inventory-command-bar .status-panel{height:32px;}
+ .inventory-command-bar .status-text{font-size:1.05rem;letter-spacing:1px;}
+ .os-container > .topbar .topbar-inner{padding-inline:10px;}
+}
+
+/* Reuse common theme tokens instead of copying the hub's blue/red hex values. */
+:root{--inv-accent:var(--primary-card-accent,#137fdf);}
+html[data-theme="metroid"]{--inv-accent:var(--primary-card-accent,#f02d50);}
+/* Modal and document-level shared UI remain above canvas layers. */
+.service-desk-dialog{z-index:1500;}
+@media(prefers-reduced-motion:reduce){.inventory-command-bar{backdrop-filter:none;}}
+
+/* On compact screens the legacy inventory header used a single tall flex
+   column inside a short row, placing buttons behind the main navigation bar.
+   Force distinct grid tracks so every stock control stays visible/tappable. */
+@media (max-width:740px){
+  .inventory-command-bar{
+    display:grid;grid-template-columns:minmax(0,1fr);
+    align-items:stretch;gap:7px;min-height:0;
+  }
+  .inventory-command-bar .status-panel{
+    order:0;grid-column:1;grid-row:1;
+    width:100%;min-width:0;max-width:none;height:34px;
+    margin:0;
+  }
+  .inventory-command-bar .header-actions{
+    grid-row:2;grid-column:1;order:0;
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:5px;min-width:0;width:100%;max-width:none;
+    align-items:stretch;margin:0;
+  }
+  .inventory-command-bar .header-control{
+    width:100%;max-width:none;min-width:0;
+    height:38px;min-height:38px;
+    padding:6px 5px;font-size:clamp(.56rem,1.8vw,.68rem);
+    letter-spacing:0;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;
+  }
+}

@@ -1,0 +1,236 @@
+/* VALEO Shared Design System — refinements.css */
+   VALEO | restrained Metroid black chrome + alternate-mode orb
+   ============================================================ */
+/* Show only the destination theme as a single glowing round control.
+   aria-pressed is already updated by setTheme() on every switch. */
+.topbar .theme-picker{
+  padding:0!important;
+  gap:0!important;
+  border:0!important;
+  border-radius:50%!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  flex:0 0 auto;
+}
+.topbar .theme-picker .theme-button{
+  width:40px!important;
+  min-width:40px!important;
+  height:40px!important;
+  padding:0!important;
+  border-radius:50%!important;
+  background:transparent!important;
+  border:1px solid transparent!important;
+  display:grid!important;
+  place-items:center!important;
+  box-shadow:none!important;
+  transform:none;
+  transition:background .28s,box-shadow .28s,border-color .28s,transform .28s!important;
+}
+.topbar .theme-picker .theme-button[aria-pressed="true"]{display:none!important;}
+.topbar .theme-picker .theme-button > span:last-child{display:none!important;}
+.topbar .theme-picker .theme-button[aria-pressed="false"]:hover,
+.topbar .theme-picker .theme-button[aria-pressed="false"]:focus-visible{
+  transform:scale(1.09)!important;
+  background:color-mix(in srgb,var(--tone-two) 6%,transparent)!important;
+  border-color:color-mix(in srgb,var(--tone-two) 20%,transparent)!important;
+}
+.topbar .theme-picker .theme-orb{
+  width:13px!important;height:13px!important;flex:0 0 13px!important;
+  border-radius:50%!important;
+  position:relative;
+}
+.topbar .theme-picker .stella-orb{
+  background:#31daf0!important;
+  box-shadow:0 0 0 3px rgba(49,218,240,.10),0 0 11px 3px rgba(49,218,240,.58),0 0 25px rgba(49,218,240,.27)!important;
+}
+.topbar .theme-picker .metroid-orb{
+  background:#e72c50!important;
+  box-shadow:0 0 0 3px rgba(231,44,80,.12),0 0 11px 3px rgba(231,44,80,.58),0 0 25px rgba(231,44,80,.28)!important;
+}
+@media(max-width:500px){
+  .topbar .theme-picker .theme-button{width:34px!important;min-width:34px!important;height:34px!important;}
+  .topbar .theme-picker .theme-orb{width:11px!important;height:11px!important;flex-basis:11px!important;}
+}
+
+/* Dark chrome: restrained graphite highlights and minimal separation.
+   Stella's white header is deliberately left unchanged. */
+html[data-theme="metroid"] .topbar{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.045) 0%,transparent 18%,rgba(255,255,255,.012) 44%,rgba(0,0,0,.27) 100%),
+    linear-gradient(105deg,#0b0d11 0%,#14151a 43%,#111116 70%,#090a0e 100%)!important;
+  color:#f2eaf1!important;
+  --header-track:rgba(172,29,55,.24);
+  --header-beam-a:#a51031;
+  --header-beam-b:#dd2549;
+  --header-beam-shadow:rgba(171,21,47,.36);
+  border-bottom-color:rgba(146,28,49,.27)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 2px 13px rgba(0,0,0,.18)!important;
+}
+html[data-theme="metroid"] .topbar::before{
+  background:linear-gradient(90deg,transparent,rgba(143,24,45,.32) 30%,rgba(181,30,53,.20) 72%,transparent)!important;
+  height:1px!important;
+}
+html[data-theme="metroid"] .topbar::after{
+  background:linear-gradient(90deg,transparent,#a90d30 26%,#dc2146 58%,#a71031 82%,transparent)!important;
+  height:2px!important;
+  box-shadow:0 0 7px rgba(191,22,51,.43),0 0 14px rgba(159,18,42,.25)!important;
+}
+html[data-theme="metroid"] .identity-subtitle,
+html[data-theme="metroid"] .topbar-right{
+  color:#a7a0ad!important;
+}
+html[data-theme="metroid"] .brand-logo{
+  filter:drop-shadow(0 0 4px rgba(213,19,49,.64))
+         drop-shadow(0 0 12px rgba(190,14,44,.43))
+         drop-shadow(0 0 23px rgba(138,8,34,.17))!important;
+}
+html[data-theme="metroid"] .identity:hover .brand-logo{
+  filter:drop-shadow(0 0 6px rgba(231,29,59,.75))
+         drop-shadow(0 0 17px rgba(180,13,42,.48))!important;
+}
+html[data-theme="metroid"] .brand-fallback{
+  color:#f7f2f6!important;
+  text-shadow:0 0 9px rgba(203,23,51,.56),0 0 22px rgba(154,12,39,.27)!important;
+}
+/* Transparent card edges are legible against the dark surface without
+   turning into neon outlines. Keep the colored short side rails intact. */
+html[data-theme="metroid"] #modules > a.module--wide:not(.module--qr-scanner){
+  border-color:rgba(233,58,95,.16)!important;
+  box-shadow:0 6px 20px rgba(0,0,0,.17),0 0 15px rgba(179,22,53,.055)!important;
+}
+html[data-theme="metroid"] #modules > a.module--wide:not(.module--qr-scanner):hover,
+html[data-theme="metroid"] #modules > a.module--wide:not(.module--qr-scanner):focus-visible{
+  border-color:rgba(236,74,108,.34)!important;
+  box-shadow:0 12px 26px rgba(0,0,0,.25),0 0 22px rgba(207,30,60,.14)!important;
+}
+html[data-theme="metroid"] #modules > details.module--group{
+  border-color:rgba(191,108,242,.12)!important;
+  box-shadow:0 4px 16px rgba(0,0,0,.12)!important;
+}
+html[data-theme="metroid"] #modules > details.module--group > .module-group-trigger,
+html[data-theme="metroid"] #modules > a.module--qr-scanner{
+  border-color:rgba(191,108,242,.17)!important;
+  box-shadow:0 5px 17px rgba(0,0,0,.15),0 0 10px rgba(161,65,233,.05)!important;
+}
+html[data-theme="metroid"] #modules > details.module--group > .module-group-trigger:hover,
+html[data-theme="metroid"] #modules > details.module--group > .module-group-trigger:focus-visible,
+html[data-theme="metroid"] #modules > a.module--qr-scanner:hover,
+html[data-theme="metroid"] #modules > a.module--qr-scanner:focus-visible{
+  border-color:rgba(204,118,249,.40)!important;
+  box-shadow:0 9px 22px rgba(0,0,0,.20),0 0 20px rgba(158,59,221,.13)!important;
+}
+html[data-theme="metroid"] #modules > details.module--group .module-branch{
+  border-color:rgba(187,99,239,.14)!important;
+}
+html[data-theme="metroid"] #modules > details.module--group .module-branch:hover,
+html[data-theme="metroid"] #modules > details.module--group .module-branch:focus-visible{
+  border-color:rgba(204,118,249,.38)!important;
+}
+html[data-theme="metroid"] #modules .module-icon{
+  border-color:rgba(189,100,235,.15)!important;
+}
+/* ============================================================ */
+
+
+/* VALEO V4: restrained chrome, longer rail, secondary heading hierarchy */
+/* Allow the scan beam a little more width, without escaping the clipped header. */
+.topbar::after{
+  width:33%!important;
+  left:-33%;
+}
+@keyframes valeoHeaderScanner{
+  from{left:-33%;}
+  to{left:100%;}
+}
+@media(prefers-reduced-motion:reduce){
+  .topbar::after{left:34%!important;width:33%!important;animation:none!important;}
+}
+/* A slightly stronger graphite/chrome reflection, still clean and architectural. */
+html[data-theme="metroid"] .topbar{
+  background:
+    linear-gradient(180deg,
+      rgba(244,247,252,.105) 0%,rgba(244,247,252,.045) 3%,
+      rgba(255,255,255,.012) 24%,transparent 45%,
+      rgba(13,14,19,.17) 71%,rgba(0,0,0,.40) 100%),
+    linear-gradient(102deg,
+      #0a0d12 0%,#1d2027 29%,#13151a 52%,#22252d 74%,#0b0d12 100%)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(234,237,246,.095),
+    inset 0 -1px 0 rgba(0,0,0,.36),
+    0 3px 17px rgba(0,0,0,.26)!important;
+}
+/* The Applications heading remains visually dominant over secondary modules. */
+#modules > details.module--group .module-group-trigger .module-title,
+#modules > a.module--qr-scanner .module-title{
+  font-size:20px!important;
+  line-height:1.16!important;
+  letter-spacing:.04em!important;
+}
+@media(max-width:720px){
+  #modules > details.module--group .module-group-trigger .module-title,
+  #modules > a.module--qr-scanner .module-title{font-size:19px!important;}
+}
+/* END VALEO V4 */
+
+
+/* VALEO V5: marble Stella header, longer scanner, primary title scale */
+/* A very light marble effect made of white stone, diffuse cloudy variation,
+   and fine gray-blue mineral veining; no intrusive photo or texture asset. */
+html[data-theme="stella"] .topbar{
+  background:
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDQwIiBoZWlnaHQ9IjEwNiIgdmlld0JveD0iMCAwIDE0NDAgMTA2Ij4KPGRlZnM+PGZpbHRlciBpZD0ibWlzdCI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIvPjwvZmlsdGVyPjwvZGVmcz4KPGcgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj4KIDxwYXRoIGQ9Ik0tMzYgNyBDOTkgMzEgMTk0IDYyIDI3NCA1NSBTNDE0IDE3IDUwOSAtNSIgc3Ryb2tlPSIjYTJiOGM0IiBzdHJva2Utd2lkdGg9IjEzIiBvcGFjaXR5PSIuMTYiIGZpbHRlcj0idXJsKCNtaXN0KSIvPgogPHBhdGggZD0iTS0zNiA3IEM5NSAyOCAxOTEgNjIgMjczIDU1IFM0MTQgMTcgNTA5IC01IiBzdHJva2U9IiM4ZGE5YjkiIHN0cm9rZS13aWR0aD0iMS4wIiBvcGFjaXR5PSIuMjQ1Ii8+CiA8cGF0aCBkPSJNNjM5IC0yMCBDNzA0IDggNzQ1IDQ3IDg0MSA0MSBTOTgzIDcgMTA2MiAyMyBTMTE5MCA2NyAxMjI4IDEwMyIgc3Ryb2tlPSIjOWJiM2JmIiBzdHJva2Utd2lkdGg9IjE0IiBvcGFjaXR5PSIuMTQ1IiBmaWx0ZXI9InVybCgjbWlzdCkiLz4KIDxwYXRoIGQ9Ik02MzkgLTIwIEM3MDQgOCA3NDUgNDcgODQxIDQxIFM5ODMgNyAxMDYyIDIzIFMxMTkwIDY3IDEyMjggMTAzIiBzdHJva2U9IiM4NzlmYWMiIHN0cm9rZS13aWR0aD0iMS4xNSIgb3BhY2l0eT0iLjIxIi8+CiA8cGF0aCBkPSJNMTM0OCAtMTQgQzEzMDEgMjIgMTM1MSA2MSAxMzA2IDkwIFMxMjYyIDExNiAxMjA5IDExOSIgc3Ryb2tlPSIjOTFhYWJiIiBzdHJva2Utd2lkdGg9Ii45IiBvcGFjaXR5PSIuMjEiLz4KIDxwYXRoIGQ9Ik0yMjYgLTcgQzI3OCAyMSAzMTkgMzggMzUxIDMxIFM0MTEgMTAgNDQ0IC0xMCIgc3Ryb2tlPSIjOWJiNGM0IiBzdHJva2Utd2lkdGg9Ii41NSIgb3BhY2l0eT0iLjE0Ii8+CjwvZz48L3N2Zz4=") center center / cover no-repeat,
+    radial-gradient(ellipse 48% 160% at 16% -20%,rgba(176,195,207,.19) 0%,transparent 80%),
+    radial-gradient(ellipse 54% 130% at 81% 113%,rgba(186,206,217,.15) 0%,transparent 83%),
+    linear-gradient(106deg,#ffffff 0%,#f7fafb 27%,#ffffff 49%,#f4f8fa 76%,#ffffff 100%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),inset 0 -1px 0 rgba(154,180,193,.14),0 3px 13px rgba(45,88,111,.065)!important;
+}
+/* The travelling light remains slim but now covers 42% of the header. */
+.topbar::after{width:42%!important;left:-42%;}
+@keyframes valeoHeaderScanner{
+  from{left:-42%;}
+  to{left:100%;}
+}
+@media(prefers-reduced-motion:reduce){
+  .topbar::after{left:29%!important;width:42%!important;animation:none!important;}
+}
+/* Applications = 24px; Data Archive/Inventory = 22px;
+   lower card titles retain their smaller existing 20px/19px sizing. */
+#modules > a.module--wide:not(.module--qr-scanner) .module-title{
+  font-size:22px!important;
+  line-height:1.17!important;
+  letter-spacing:.045em!important;
+}
+@media(max-width:720px){
+  #modules > a.module--wide:not(.module--qr-scanner) .module-title{font-size:21px!important;}
+}
+/* END VALEO V5 */
+
+
+/* VALEO V6 | Compact top header + slightly clearer natural marble. */
+.topbar .topbar-inner{
+  min-height:66px!important;
+  padding-top:7px!important;
+  padding-bottom:7px!important;
+}
+.topbar .brand-logo-shell{height:43px!important;}
+.topbar .nav-orb-button{width:40px!important;height:40px!important;flex-basis:40px!important;}
+.topbar .theme-picker .theme-button{
+  width:36px!important;min-width:36px!important;height:36px!important;
+}
+html[data-theme="stella"] .topbar{
+  /* Existing lightly veined marble SVG remains topmost; a little more stone shading. */
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.94),
+             inset 0 -1px 0 rgba(128,158,176,.23),
+             0 3px 12px rgba(45,88,111,.055)!important;
+}
+@media(max-width:720px){
+  .topbar .topbar-inner{min-height:59px!important;padding-top:6px!important;padding-bottom:6px!important;}
+  .topbar .brand-logo-shell{height:39px!important;}
+}
+@media(max-width:500px){
+  .topbar .topbar-inner{min-height:56px!important;padding-top:5px!important;padding-bottom:5px!important;}
+  .topbar .brand-logo-shell{height:36px!important;}
+  .topbar .nav-orb-button{width:36px!important;height:36px!important;flex-basis:36px!important;}
+  .topbar .theme-picker .theme-button{width:32px!important;min-width:32px!important;height:32px!important;}
+}
+/* END VALEO V6 */

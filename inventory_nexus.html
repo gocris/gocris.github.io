@@ -1,0 +1,3287 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="stella" class="inventory-boot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>VALEO | Laboratory Inventory</title>
+    <meta name="theme-color" id="themeColor" content="#f0fbfc">
+    <script src="js/theme-bootstrap.js"></script>
+    <!-- 01. REUSED SHARED HUB FILES: Do not duplicate these stylesheets -->
+    <link rel="stylesheet" href="css/inventory-base.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/navigation.css">
+    <link rel="stylesheet" href="css/theme-effects.css">
+    <link rel="stylesheet" href="css/refinements.css">
+    <!-- 02. INVENTORY-SPECIFIC CSS: Existing inventory components -->
+    <link rel="stylesheet" href="css/inventory-theme.css">
+    <link rel="stylesheet" href="css/inventory-bridge.css">
+
+    <!-- ===========================================================
+         00. INVENTORY PAGE DESIGN OVERRIDES
+         Change values HERE; shared css/ and js/ stay untouched.
+         Stella: pale marble / blue • Metroid: black chrome / violet.
+         =========================================================== -->
+    <style>
+      /* 00A — Page color tokens: easiest section to customize */
+      :root {
+        --inv-page-accent: #137fdf;
+        --inv-page-edge: rgba(39, 118, 174, .22);
+        --inv-page-text: #163549;
+        --inv-page-muted: #6a8291;
+        --inv-page-panel: rgba(255,255,255,.88);
+      }
+      html[data-theme="metroid"] {
+        --inv-page-accent: #d47aff;
+        --inv-page-edge: rgba(174, 102, 213, .24);
+        --inv-page-text: #f5effb;
+        --inv-page-muted: #b6a5c6;
+        --inv-page-panel: rgba(25, 14, 33, .90);
+      }
+
+      /* 00B — No startup / boot overlay. Open directly to the dashboard. */
+      #inventoryBoot { display: none !important; }
+
+      /* 00C — Simpler typography and quieter hover effects */
+      .category-nav .menu-btn,
+      .header-control, .action-btn, .stats-btn,
+      .quick-card, .modal-content, .forge-input {
+        transition-duration: .24s;
+      }
+      .category-nav .menu-btn {
+        min-height: 68px;
+        height: 68px;
+        border-color: var(--inv-page-edge) !important;
+        box-shadow: 0 3px 13px rgba(9, 33, 54, .04) !important;
+        transform: none;
+      }
+      .category-nav .menu-btn:hover,
+      .category-nav .menu-btn.active-cat {
+        transform: translateY(-2px) !important;
+        filter: none !important;
+        box-shadow: 0 8px 22px rgba(22, 62, 92, .09),
+                    inset 3px 0 var(--inv-page-accent) !important;
+      }
+      .category-nav .btn-title {
+        font-family: var(--inv-display);
+        font-weight: 700;
+        font-size: clamp(15px, 1.25vw, 19px);
+        letter-spacing: .06em;
+        line-height: 1.1;
+        color: var(--inv-page-text) !important;
+        text-shadow: none !important;
+      }
+      .category-nav .btn-jp {
+        font-family: var(--inv-display);
+        color: var(--inv-page-muted) !important;
+        font-size: 11px;
+        letter-spacing: .10em;
+        opacity: .92;
+      }
+
+      /* 00D — Compact professional command bar and status readout */
+      .inventory-command-bar .status-panel {
+        border-radius: 6px;
+        box-shadow: inset 0 1px rgba(255,255,255,.09) !important;
+      }
+      .inventory-command-bar .status-text {
+        font-family: var(--inv-display);
+        font-weight: 700;
+        font-size: clamp(14px,1.4vw,18px);
+        letter-spacing: .08em;
+      }
+      .header-control, .action-btn {
+        border-radius: 5px;
+        text-shadow: none;
+        font-weight: 700;
+        letter-spacing: .025em;
+      }
+      .action-row .action-btn {
+        box-shadow: 0 3px 12px rgba(18, 67, 99, .07) !important;
+        text-transform: none !important;
+      }
+      .action-row .action-btn:hover {
+        box-shadow: 0 7px 20px rgba(18, 67, 99, .13) !important;
+      }
+
+      /* 00E — Inventory table: restrained borders; clear stock numbers */
+      .scroll-container .data-table th {
+        font-family: var(--inv-display);
+        font-weight: 700;
+        letter-spacing: .085em;
+        font-size: 13px;
+      }
+      .data-table td {
+        border-bottom: 1px solid var(--inv-page-edge) !important;
+      }
+      .data-table .cell-name { font-weight: 650; letter-spacing: .012em; }
+      .data-table .cell-qty { font-weight: 700; text-shadow: none; }
+      .data-table .btn-mini { text-shadow: none; }
+      .data-table .btn-mini.add, .data-table .btn-mini.sub {
+        box-shadow: none;
+      }
+
+      /* 00F — Modals, search cards and analytics */
+      .modal-content, .keyboard-panel,
+      .stats-panel, .stats-kpi, .quick-card {
+        border-color: var(--inv-page-edge) !important;
+        box-shadow: 0 10px 30px rgba(13,34,55,.10) !important;
+      }
+      .modal-header, .keyboard-heading {
+        font-family: var(--inv-display);
+        font-weight: 700;
+        letter-spacing: .07em;
+      }
+      .forge-input { border-radius: 5px; }
+      .quick-card { border-radius: 7px; }
+      html[data-theme="metroid"] .modal-content,
+      html[data-theme="metroid"] .stats-panel,
+      html[data-theme="metroid"] .quick-card {
+        box-shadow: 0 11px 34px rgba(0,0,0,.24) !important;
+      }
+      /* Keep user data and live stock controls fully readable on small screens */
+      @media (max-width: 740px) {
+        .category-nav .menu-btn { min-height: 63px; height: 63px; }
+        .category-nav .btn-title { font-size: 14px; }
+        .category-nav .btn-jp { font-size: 10px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .category-nav .menu-btn, .quick-card, .action-btn { transition: none !important; }
+      }
+
+      /* ===========================================================
+         00G. FINAL CLEANUP — ONE MOVING BAR, NO GLOWING FONTS
+         This page keeps the shared header light bar. The SECOND
+         animated line over the inventory table is removed.
+         =========================================================== */
+      .table-scan-line:not(.scan-critical) {
+        display: none !important;
+      }
+      .table-scan-line:not(.scan-critical)::after {
+        content: none !important;
+        animation: none !important;
+      }
+      /* The stock-alert border remains: it is a status indicator,
+         not a second traveling scan beam. */
+
+      /* Inventory text is clean and fully readable in both themes.
+         This also suppresses the inline glowing text from the
+         preserved inventory-core.js status messages. */
+      body, body * {
+        text-shadow: none !important;
+      }
+
+      /* ===========================================================
+         00H. PROFESSIONAL STATUS PANEL
+         One small state dot + label + dynamic operational message.
+         Theme colors inherit from the original shared CSS folder.
+         =========================================================== */
+      .inventory-command-bar #statusPanel {
+        --status-dot: var(--inv-page-accent);
+        --status-line: var(--inv-page-edge);
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        min-width: 0 !important;
+        padding: 7px 16px !important;
+        overflow: hidden !important;
+        position: relative;
+        border: 1px solid var(--inv-page-edge) !important;
+        border-left: 3px solid var(--status-dot) !important;
+        border-radius: 6px !important;
+        background: var(--inv-page-panel) !important;
+        box-shadow: 0 2px 9px rgba(20, 67, 89, .045), inset 0 1px 0 rgba(255,255,255,.16) !important;
+        isolation: isolate;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel {
+        background: rgba(21, 19, 26, .93) !important;
+        box-shadow: 0 3px 13px rgba(0, 0, 0, .16), inset 0 1px 0 rgba(255,255,255,.035) !important;
+      }
+      .inventory-command-bar #statusPanel::before,
+      .inventory-command-bar #statusPanel::after {
+        content: none !important;
+        display: none !important;
+        animation: none !important;
+      }
+      .inventory-command-bar .inv-status-indicator {
+        display: block;
+        flex: 0 0 9px;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--status-dot);
+        box-shadow: 0 0 0 3px color-mix(in srgb,var(--status-dot) 12%,transparent);
+      }
+      .inventory-command-bar .inv-status-copy {
+        display: flex;
+        flex: 1 1 auto;
+        min-width: 0;
+        flex-direction: column;
+        justify-content: center;
+        gap: 2px;
+        text-align: left;
+      }
+      .inventory-command-bar .inv-status-eyebrow {
+        font-family: var(--inv-display), Arial, sans-serif;
+        font-size: 9px;
+        font-weight: 750;
+        line-height: 1.1;
+        letter-spacing: .13em;
+        color: var(--inv-page-muted);
+      }
+      .inventory-command-bar #statusPanel .status-text {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+        text-overflow: ellipsis !important;
+        font-family: var(--inv-display), Arial, sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        letter-spacing: .025em !important;
+        line-height: 1.25 !important;
+        text-align: left !important;
+        text-transform: none !important;
+        color: var(--inv-page-text) !important;
+        text-shadow: none !important;
+      }
+      .inventory-command-bar #statusPanel[data-state="warning"] {
+        --status-dot: #d55653;
+      }
+      .inventory-command-bar #statusPanel[data-state="success"] {
+        --status-dot: #169d7f;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel[data-state="warning"] {
+        --status-dot: #f46b74;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel[data-state="success"] {
+        --status-dot: #57d2ae;
+      }
+      .inventory-command-bar #statusPanel[data-state="warning"] .status-text {
+        color: var(--status-dot) !important;
+      }
+      @media(max-width:1080px){
+        .inventory-command-bar #statusPanel {
+          height: 46px !important;
+          min-height: 46px !important;
+          width: 100% !important;
+        }
+      }
+      @media(max-width:740px){
+        .inventory-command-bar #statusPanel {
+          height: 44px !important;
+          min-height: 44px !important;
+          padding: 6px 12px !important;
+          gap: 10px !important;
+        }
+        .inventory-command-bar #statusPanel .status-text {
+          font-size: 13px !important;
+        }
+      }
+      @media(prefers-reduced-motion:reduce){
+        .inventory-command-bar #statusPanel .inv-status-indicator{transition:none!important;}
+      }
+
+
+      /* ===========================================================
+         00I. CATEGORY BUTTONS — ONE TITLE PER BUTTON
+         Removed the legacy subtitles (THERMAL, ASSURANCE, etc.).
+         =========================================================== */
+      .category-nav .menu-btn {
+        height: 56px !important;
+        min-height: 56px !important;
+        justify-content: center !important;
+        padding-block: 8px !important;
+      }
+      .category-nav .btn-jp { display: none !important; }
+      .category-nav .btn-title {
+        font-size: clamp(14px,1.18vw,18px) !important;
+        letter-spacing: .065em !important;
+      }
+
+      /* ===========================================================
+         00J. TWO INVENTORY TABLE SURFACES — TRANSPARENT SEPARATOR
+         Critical stock table remains separate; the standard table
+         gets a fixed upper rule where the traveling light used to be.
+         The blank band between tables reveals the page background.
+         =========================================================== */
+      .inventory-workspace .scroll-container {
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border-radius: 0 !important;
+      }
+      /* Critical table gets its own contained surface; preserve its header alert. */
+      #criticalSection {
+        margin: 0 0 19px !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: 1px solid var(--inv-page-edge);
+        border-radius: 5px;
+        overflow: visible;
+      }
+      #criticalSection > .critical-table {
+        background: var(--inv-surface) !important;
+        border-collapse: collapse;
+      }
+      /* A stationary accent (no moving beam) caps the lower table. */
+      #standardInventorySection {
+        position: relative;
+        min-width: 1180px;
+        background: var(--inv-surface);
+        border: 1px solid var(--inv-page-edge);
+        border-top: 2px solid var(--inv-page-accent);
+        border-radius: 4px;
+        box-shadow: 0 3px 16px rgba(12,40,65,.035);
+      }
+      #standardInventorySection > .data-table {
+        background: transparent !important;
+      }
+      #standardInventorySection .table-scan-line {
+        display: none !important;
+      }
+      html[data-theme="metroid"] #standardInventorySection {
+        border-top-color: rgba(203,122,241,.76);
+        box-shadow: 0 4px 16px rgba(0,0,0,.12);
+      }
+      /* The separation must never become a solid white panel. */
+      .inventory-workspace .grid-wrapper,
+      #criticalSection + #standardInventorySection { background: transparent; }
+
+      /* ===========================================================
+         00K. HOLOGRAPHIC OPERATIONAL SCREENS — STATUS + SEARCH
+         Matched to the hub's hero: understated glass layers, grid,
+         faint scan texture and stationary screen rails, no text glow.
+         =========================================================== */
+      :root {
+        --inv-holo-grid: rgba(27,131,172,.055);
+        --inv-holo-ray: rgba(41,174,209,.12);
+        --inv-holo-surface: linear-gradient(113deg,rgba(255,255,255,.90),rgba(236,252,255,.84) 56%,rgba(218,242,252,.79));
+        --inv-holo-accent: #168bd0;
+      }
+      html[data-theme="metroid"] {
+        --inv-holo-grid: rgba(196,127,235,.065);
+        --inv-holo-ray: rgba(183,77,240,.10);
+        --inv-holo-surface: linear-gradient(115deg,rgba(15,11,24,.95),rgba(30,16,42,.95) 62%,rgba(21,11,31,.96));
+        --inv-holo-accent: #be77f2;
+      }
+      /* Inherit status emphasis from the existing status classification. */
+      .inventory-command-bar #statusPanel,
+      .action-row .search-beeper {
+        isolation: isolate;
+        position: relative;
+        overflow: hidden !important;
+        border: 1px solid var(--inv-page-edge) !important;
+        border-radius: 4px !important;
+        background: var(--inv-holo-surface) !important;
+        box-shadow: inset 0 1px rgba(255,255,255,.18),0 4px 15px rgba(23,76,102,.045) !important;
+        backdrop-filter: blur(8px) saturate(115%);
+        -webkit-backdrop-filter: blur(8px) saturate(115%);
+        transition: border-color .25s ease,box-shadow .25s ease !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel,
+      html[data-theme="metroid"] .action-row .search-beeper {
+        box-shadow: inset 0 1px rgba(255,255,255,.055),0 5px 19px rgba(0,0,0,.16) !important;
+      }
+      /* Fine hologram grid; screen remains static and fully readable. */
+      .inventory-command-bar #statusPanel::before,
+      .action-row .search-beeper::before {
+        content: "" !important;
+        display: block !important;
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          repeating-linear-gradient(90deg,transparent 0 49px,var(--inv-holo-grid) 50px,transparent 51px),
+          repeating-linear-gradient(0deg,transparent 0 25px,var(--inv-holo-grid) 26px,transparent 27px),
+          linear-gradient(105deg,transparent 15%,var(--inv-holo-ray) 55%,transparent 85%);
+        opacity: .85;
+        animation: none !important;
+      }
+      .inventory-command-bar #statusPanel::after,
+      .action-row .search-beeper::after {
+        content: "" !important;
+        display: block !important;
+        position: absolute;
+        bottom: 0;left:0;right:0;top:auto;
+        height: 2px;
+        background: linear-gradient(90deg,transparent,var(--inv-holo-accent) 28%,var(--inv-holo-accent) 63%,transparent);
+        opacity: .40;
+        box-shadow: none !important;
+        pointer-events: none;
+        animation: none !important;
+        z-index: 1;
+      }
+      .inventory-command-bar #statusPanel {
+        --status-dot: var(--inv-holo-accent);
+        border-left: 3px solid var(--status-dot) !important;
+        height: 51px !important;
+        min-height: 51px !important;
+        padding: 7px 15px !important;
+        gap: 13px !important;
+      }
+      .inventory-command-bar #statusPanel[data-state="success"] { --status-dot: #159b81; }
+      .inventory-command-bar #statusPanel[data-state="warning"] { --status-dot: #df5962; }
+      .inventory-command-bar #statusPanel .inv-status-copy,
+      .inventory-command-bar #statusPanel .inv-status-indicator,
+      .action-row .search-beeper > * {position: relative;z-index:2;}
+      .inventory-command-bar .inv-status-eyebrow {
+        font-size: 9px !important;
+        letter-spacing: .17em !important;
+        font-weight: 780 !important;
+        color: var(--inv-page-muted) !important;
+      }
+      .inventory-command-bar #statusPanel .status-text {
+        color: var(--inv-page-text) !important;
+        font-size: 14px !important;
+        font-weight: 720 !important;
+        letter-spacing: .015em !important;
+        text-shadow: none !important;
+      }
+      .inventory-command-bar #statusPanel[data-state="warning"] .status-text {
+        color: var(--status-dot) !important;
+      }
+      .action-row .search-beeper {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: stretch;
+        height: 52px !important;
+        min-height: 52px !important;
+        padding: 7px 13px 4px;
+      }
+      .action-row .inv-search-display-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        font: 750 9px/1 var(--inv-display),Arial,sans-serif;
+        letter-spacing: .15em;
+        color: var(--inv-page-muted);
+        white-space: nowrap;
+        pointer-events: none;
+      }
+      .action-row .inv-screen-tick {
+        display:inline-block;width:4px;height:4px;border-radius:50%;
+        background:var(--inv-holo-accent);opacity:.9;
+      }
+      .action-row .search-beeper .inventory-search {
+        height: 27px !important;
+        min-height: 27px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        outline: none;
+        color: var(--inv-page-text) !important;
+        font: 650 14px/1.2 var(--inv-display),Arial,sans-serif !important;
+        letter-spacing:.012em !important;
+        text-shadow:none !important;
+        width:100% !important;
+      }
+      .action-row .search-beeper .inventory-search::placeholder {
+        color:var(--inv-page-muted)!important;
+        opacity:.83 !important;
+        text-shadow:none!important;
+      }
+      .action-row .search-beeper:focus-within {
+        border-color:var(--inv-holo-accent) !important;
+        box-shadow: 0 0 0 2px color-mix(in srgb,var(--inv-holo-accent) 13%,transparent) !important;
+      }
+      @media(max-width:740px){
+        .category-nav .menu-btn{height:52px!important;min-height:52px!important;}
+        .inventory-command-bar #statusPanel{height:46px!important;min-height:46px!important;padding:6px 12px!important;}
+        .action-row .search-beeper{height:48px!important;min-height:48px!important;padding:6px 10px 3px;}
+        .action-row .search-beeper .inventory-search{font-size:12px!important;height:24px!important;min-height:24px!important;}
+        .action-row .inv-search-display-label{font-size:8px;}
+      }
+      @media(prefers-reduced-motion:reduce){
+        .inventory-command-bar #statusPanel,.action-row .search-beeper{transition:none!important;}
+      }
+
+    
+      /* ===========================================================
+         00L. ROUND ACTION BUTTONS — SEARCH + HEADER (SEE 00P)
+         Edit here for circle size, border color and touch spacing.
+         Icon shapes use CSS masks because inventory-core.js changes
+         the Sync / Statistics / Stock Up text dynamically.
+         =========================================================== */
+      .inventory-command-bar > #statusPanel { flex: 1 1 auto !important; min-width:0 !important; }
+      .inventory-command-bar > #saveJsonButton[hidden] { display:none !important; }
+      .inventory-command-bar > #saveJsonButton:not([hidden]) { flex:0 0 auto; }
+      .action-row {
+        display:flex!important; flex-direction:row!important; flex-wrap:nowrap!important;
+        justify-content:flex-start!important; align-items:center!important;
+        gap:12px!important; min-width:0; width:100%;
+      }
+      .action-row > .search-beeper {
+        flex:1 1 auto!important; width:auto!important; min-width:0!important;
+        max-width:none!important;
+      }
+      .kiosk-controls {
+        flex:0 0 auto; display:flex; align-items:center;
+        justify-content:flex-end; gap:9px; min-width:0;
+      }
+      .action-row .kiosk-controls > .kiosk-control,
+      .action-row .kiosk-controls > #searchKeyboardToggle {
+        --kiosk-color:var(--inv-holo-accent);
+        display:grid!important; place-items:center!important; position:relative!important;
+        flex:0 0 54px!important; width:54px!important; height:54px!important;
+        min-width:54px!important; min-height:54px!important; max-width:54px!important;
+        padding:0!important; margin:0!important;
+        background:color-mix(in srgb, var(--inv-holo-accent) 6%,var(--inv-holo-surface-color, #ffffff))!important;
+        color:var(--kiosk-color)!important;
+        border:1px solid color-mix(in srgb,var(--inv-holo-accent) 50%,transparent)!important;
+        border-radius:50%!important;
+        font-size:0!important; line-height:0!important; letter-spacing:0!important;
+        text-shadow:none!important;
+        box-shadow:inset 0 1px rgba(255,255,255,.10),0 3px 10px rgba(15,60,90,.06)!important;
+        filter:none!important; opacity:1!important; cursor:pointer;
+        transform:none!important; -webkit-tap-highlight-color:transparent;
+        touch-action:manipulation;
+        transition:background .20s ease,border-color .20s ease,box-shadow .20s ease,transform .20s ease!important;
+      }
+      html[data-theme="stella"] .kiosk-controls > .kiosk-control {
+        --inv-holo-surface-color:#f6fbfd;
+      }
+      html[data-theme="metroid"] .kiosk-controls > .kiosk-control {
+        --inv-holo-surface-color:#171020;
+      }
+      .kiosk-controls > .kiosk-control::before,
+      .kiosk-controls > #searchKeyboardToggle::before {
+        content:""; width:23px; height:23px; display:block;
+        position:relative; z-index:1;
+        background:currentColor;
+        -webkit-mask:var(--kiosk-svg) center / contain no-repeat;
+        mask:var(--kiosk-svg) center / contain no-repeat;
+        pointer-events:none;
+      }
+      .kiosk-controls > .kiosk-control::after,
+      .kiosk-controls > #searchKeyboardToggle::after { content:none!important; }
+      .action-row .kiosk-controls > .kiosk-control:hover,
+      .action-row .kiosk-controls > .kiosk-control:focus-visible,
+      .action-row .kiosk-controls > #searchKeyboardToggle:hover,
+      .action-row .kiosk-controls > #searchKeyboardToggle:focus-visible {
+        background:color-mix(in srgb,var(--inv-holo-accent) 14%,var(--inv-holo-surface-color,#fff))!important;
+        border-color:var(--inv-holo-accent)!important;
+        box-shadow:0 0 0 3px color-mix(in srgb,var(--inv-holo-accent) 10%,transparent),0 0 19px color-mix(in srgb,var(--inv-holo-accent) 18%,transparent)!important;
+        transform:translateY(-1px)!important;
+      }
+      .kiosk-controls > .kiosk-control:focus-visible,
+      .kiosk-controls > #searchKeyboardToggle:focus-visible {
+        outline:2px solid var(--inv-holo-accent)!important; outline-offset:3px!important;
+      }
+      .kiosk-controls > #searchKeyboardToggle[aria-pressed="true"],
+      .kiosk-controls > #statisticsButton[aria-pressed="true"] {
+        border-color:var(--inv-holo-accent)!important;
+        background:color-mix(in srgb,var(--inv-holo-accent) 18%,var(--inv-holo-surface-color,#fff))!important;
+      }
+      /* Stats toggles the same button to a back arrow. */
+      .kiosk-controls > #statisticsButton[aria-pressed="true"] {
+        --kiosk-svg:var(--kiosk-back-svg)!important;
+      }
+      /* Stock Up gets a clear green active state; all other icons stay usable. */
+      .action-row .kiosk-controls > #stockModeButton.stock-up-active {
+        --kiosk-color:#10a67b;
+        background:color-mix(in srgb,#10a67b 16%,var(--inv-holo-surface-color,#fff))!important;
+        border-color:#10a67b!important;
+        color:var(--kiosk-color)!important;
+        box-shadow:0 0 0 3px rgba(16,166,123,.13)!important;
+        filter:none!important;
+      }
+      html[data-theme="metroid"] .action-row .kiosk-controls > #stockModeButton.stock-up-active {
+        --kiosk-color:#5be5ac;
+      }
+      /* Shared styles give Statistics a darker text color; align its icon with the other kiosk controls. */
+      .action-row .kiosk-controls > #statisticsButton {
+        color:var(--kiosk-color)!important;
+      }
+            /* Folder connection feedback stays visible when its text is replaced by inventory-core.js. */
+      .action-row .kiosk-controls > #folderSyncButton.is-connected {
+        --kiosk-color:#159f81;
+        color:var(--kiosk-color)!important;
+        border-color:color-mix(in srgb,var(--kiosk-color) 70%,transparent)!important;
+        background:color-mix(in srgb,var(--kiosk-color) 12%,var(--inv-holo-surface-color,#fff))!important;
+      }
+      .action-row .kiosk-controls > #folderSyncButton.is-pending {
+        --kiosk-color:#c58a32;
+        color:var(--kiosk-color)!important;
+        border-color:color-mix(in srgb,var(--kiosk-color) 65%,transparent)!important;
+      }
+            /* Statistics view hides the normal search UI in inventory-core.js;
+         keep its one back button accessible so operators can return. */
+      body:has(#statisticsView:not([hidden])) .action-row {
+        display:flex!important; justify-content:flex-end!important;
+      }
+      body:has(#statisticsView:not([hidden])) .action-row > .search-beeper,
+      body:has(#statisticsView:not([hidden])) .kiosk-controls > :not(#statisticsButton) {
+        display:none!important;
+      }
+      @media(max-width:850px){
+        .action-row{gap:9px!important;}
+        .kiosk-controls{gap:7px;}
+        .action-row .kiosk-controls > .kiosk-control,
+        .action-row .kiosk-controls > #searchKeyboardToggle {
+          width:49px!important;height:49px!important;min-width:49px!important;min-height:49px!important;max-width:49px!important;flex-basis:49px!important;
+        }
+      }
+      @media(max-width:620px){
+        /* Keep keyboard and all four controls together; search takes its own line. */
+        .action-row {flex-wrap:wrap!important; gap:9px!important;}
+        .action-row > .search-beeper {flex:1 1 100%!important; width:100%!important;}
+        .kiosk-controls {width:100%;justify-content:space-between;gap:7px;}
+        .action-row .kiosk-controls > .kiosk-control,
+        .action-row .kiosk-controls > #searchKeyboardToggle {
+          flex:0 0 51px!important;width:51px!important;height:51px!important;
+          min-width:51px!important;min-height:51px!important;max-width:51px!important;
+        }
+      }
+      @media(max-width:340px){
+        .action-row .kiosk-controls > .kiosk-control,
+        .action-row .kiosk-controls > #searchKeyboardToggle {
+          flex-basis:46px!important;width:46px!important;height:46px!important;
+          min-width:46px!important;min-height:46px!important;max-width:46px!important;
+        }
+      }
+      @media(prefers-reduced-motion:reduce){
+        .kiosk-controls > .kiosk-control { transition:none!important; }
+      }
+
+      .kiosk-controls .kiosk-keyboard { --kiosk-svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.85%22%3E%3Crect%20x%3D%222.5%22%20y%3D%225%22%20width%3D%2219%22%20height%3D%2214%22%20rx%3D%222%22%2F%3E%3Cpath%20d%3D%22M6%209h.01M10%209h.01M14%209h.01M18%209h.01M6%2012h.01M10%2012h.01M14%2012h.01M18%2012h.01M8%2016h8%22%20stroke-linecap%3D%22round%22%20stroke-width%3D%222.1%22%2F%3E%3C%2Fsvg%3E"); }
+      .kiosk-controls .kiosk-plus { --kiosk-svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.85%22%3E%3Cpath%20d%3D%22M12%205v14M5%2012h14%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+      .kiosk-controls .kiosk-folder { --kiosk-svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.85%22%3E%3Cpath%20d%3D%22M3.5%207a2%202%200%200%201%202-2h4.2l2.1%202.2h6.7a2%202%200%200%201%202%202v8a2%202%200%200%201-2%202h-13a2%202%200%200%201-2-2Z%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+      .kiosk-controls .kiosk-chart { --kiosk-svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.85%22%3E%3Cpath%20d%3D%22M4%204.5v15h16%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22m7%2015%204-4%203%202%205-6%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+      .kiosk-controls .kiosk-back { --kiosk-svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.85%22%3E%3Cpath%20d%3D%22M19%2012H5m6%206-6-6%206-6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+      .kiosk-controls .kiosk-up { --kiosk-svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.85%22%3E%3Cpath%20d%3D%22M12%2020V4m-7%207%207-7%207%207%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+      /* 00L.1 — Icon maps; IDs preserved for live label updates. */
+      .kiosk-controls .kiosk-keyboard{--kiosk-svg:var(--kiosk-keyboard-svg);}
+      .kiosk-controls .kiosk-plus{--kiosk-svg:var(--kiosk-plus-svg);}
+      .kiosk-controls .kiosk-folder{--kiosk-svg:var(--kiosk-folder-svg);}
+      .kiosk-controls .kiosk-chart{--kiosk-svg:var(--kiosk-chart-svg);}
+      .kiosk-controls .kiosk-stock-up{--kiosk-svg:var(--kiosk-up-svg);}
+      .kiosk-controls { --kiosk-keyboard-svg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.85%22%3E%3Crect%20x%3D%222.5%22%20y%3D%225%22%20width%3D%2219%22%20height%3D%2214%22%20rx%3D%222%22%2F%3E%3Cpath%20d%3D%22M6%209h.01M10%209h.01M14%209h.01M18%209h.01M6%2012h.01M10%2012h.01M14%2012h.01M18%2012h.01M8%2016h8%22%20stroke-linecap%3D%22round%22%20stroke-width%3D%222.1%22%2F%3E%3C%2Fsvg%3E"); }
+      .kiosk-controls { --kiosk-plus-svg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.85%22%3E%3Cpath%20d%3D%22M12%205v14M5%2012h14%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+      .kiosk-controls { --kiosk-folder-svg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.85%22%3E%3Cpath%20d%3D%22M3.5%207a2%202%200%200%201%202-2h4.2l2.1%202.2h6.7a2%202%200%200%201%202%202v8a2%202%200%200%201-2%202h-13a2%202%200%200%201-2-2Z%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+      .kiosk-controls { --kiosk-chart-svg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.85%22%3E%3Cpath%20d%3D%22M4%204.5v15h16%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22m7%2015%204-4%203%202%205-6%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+      .kiosk-controls { --kiosk-back-svg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.85%22%3E%3Cpath%20d%3D%22M19%2012H5m6%206-6-6%206-6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+      .kiosk-controls { --kiosk-up-svg:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.85%22%3E%3Cpath%20d%3D%22M12%2020V4m-7%207%207-7%207%207%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+
+  
+      /* ===========================================================
+         00M. REFINED HOLOGRAPHIC SEARCH + CENTERED STATUS DISPLAY
+         Edit only this section to change the search pill, magnifier,
+         or the professional status screen. Uses Stella/Metroid colors
+         already defined by the shared VALEO stylesheets.
+         =========================================================== */
+      :root {
+        --inv-search-icon: #137fdf;
+        --inv-screen-outline: rgba(30,132,189,.24);
+        --inv-screen-fill: linear-gradient(111deg,
+          rgba(255,255,255,.94),rgba(236,250,255,.89) 54%,rgba(222,242,252,.85));
+      }
+      html[data-theme="metroid"] {
+        --inv-search-icon: #bb79ec;
+        --inv-screen-outline: rgba(165,94,211,.29);
+        --inv-screen-fill: linear-gradient(112deg,
+          rgba(14,10,22,.94),rgba(28,15,40,.94) 56%,rgba(20,12,31,.96));
+      }
+
+      /* Matching holographic glass with fine non-animated screen lines. */
+      .inventory-command-bar #statusPanel,
+      .action-row .search-beeper {
+        background: var(--inv-screen-fill) !important;
+        border: 1px solid var(--inv-screen-outline) !important;
+        backdrop-filter: blur(9px) saturate(115%);
+        -webkit-backdrop-filter: blur(9px) saturate(115%);
+      }
+
+      /* Status: centered two-line readout, restrained dot, NO glow. */
+      .inventory-command-bar #statusPanel {
+        min-height: 54px !important;
+        height: 54px !important;
+        border-radius: 10px !important;
+        border-left: 1px solid var(--inv-screen-outline) !important;
+        padding: 5px 45px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 0 !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.19) !important;
+        text-shadow: none !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel {
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.045) !important;
+      }
+      .inventory-command-bar #statusPanel .inv-status-indicator {
+        position: absolute !important;
+        z-index: 3;
+        left: 19px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 7px;
+        height: 7px;
+        box-shadow: none !important;
+        background: var(--status-dot) !important;
+      }
+      .inventory-command-bar #statusPanel .inv-status-copy {
+        flex: 1 1 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100%;
+        text-align: center !important;
+        gap: 3px;
+      }
+      .inventory-command-bar #statusPanel .inv-status-eyebrow {
+        width: 100%;
+        text-align: center !important;
+        font-size: 9px !important;
+        line-height: 1.1;
+      }
+      .inventory-command-bar #statusPanel .status-text {
+        text-align: center !important;
+        font-size: 14px !important;
+        letter-spacing: .035em !important;
+        text-shadow: none !important;
+        color: var(--inv-page-text) !important;
+      }
+      /* Warnings change the dot, not the entire text line. */
+      .inventory-command-bar #statusPanel[data-state="warning"] .status-text {
+        color: var(--inv-page-text) !important;
+      }
+      .inventory-command-bar #statusPanel::after {
+        opacity: .22 !important;
+        height: 1px !important;
+        box-shadow: none !important;
+      }
+
+      /* Search: one rounded screen with a left-side magnifier. */
+      .action-row .search-beeper {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        height: 54px !important;
+        min-height: 54px !important;
+        padding: 0 18px 0 53px !important;
+        border-radius: 28px !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.19),
+                    0 4px 14px rgba(20,72,98,.035) !important;
+      }
+      html[data-theme="metroid"] .action-row .search-beeper {
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.05),
+                    0 4px 12px rgba(0,0,0,.12) !important;
+      }
+      .action-row .inv-search-display-label,
+      .action-row .inv-screen-tick { display: none !important; }
+      .action-row .search-beeper .inv-search-magnifier {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: var(--inv-search-icon);
+        stroke-width: 1.85;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        z-index: 3;
+        pointer-events: none;
+        opacity: .94;
+      }
+      .action-row .search-beeper .inventory-search {
+        flex: 1 1 auto;
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        font-size: 14px !important;
+        border: none !important;
+        border-radius: 0 !important;
+        outline: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        color: var(--inv-page-text) !important;
+        box-shadow: none !important;
+      }
+      .action-row .search-beeper::after {
+        height: 1px !important;
+        opacity: .23 !important;
+        box-shadow: none !important;
+      }
+      .action-row .search-beeper:focus-within {
+        border-color: var(--inv-search-icon) !important;
+        box-shadow: 0 0 0 2px color-mix(in srgb,var(--inv-search-icon) 12%,transparent) !important;
+      }
+      @media(max-width:740px) {
+        .inventory-command-bar #statusPanel {
+          min-height: 50px !important;
+          height: 50px !important;
+          padding: 5px 33px !important;
+        }
+        .inventory-command-bar #statusPanel .inv-status-indicator { left: 13px; }
+        .inventory-command-bar #statusPanel .status-text { font-size: 12px !important; }
+        .action-row .search-beeper {
+          height: 51px !important;
+          min-height: 51px !important;
+          padding: 0 13px 0 46px !important;
+        }
+        .action-row .search-beeper .inv-search-magnifier { left: 16px; width: 18px; height: 18px; }
+        .action-row .search-beeper .inventory-search { font-size: 13px !important; }
+      }
+      @media(prefers-reduced-motion:reduce){
+        .action-row .search-beeper,.inventory-command-bar #statusPanel {transition:none !important;}
+      }
+
+    
+
+      /* ===========================================================
+         00N. KIOSK ACTION ORDER + CRITICAL STOCK INDICATOR
+         Change these rules to adjust the + button position, warning
+         dot/line glow, or the mobile touchscreen layout.
+         =========================================================== */
+      /* New Item is a dedicated circular button immediately before search. */
+      .action-row > .kiosk-add-slot {
+        width:54px;
+        flex:0 0 54px;
+        justify-content:flex-start;
+        margin:0;
+      }
+      .action-row > .kiosk-utility-controls { margin-left:0; }
+      .action-row > .kiosk-add-slot > #addItemButton { flex-shrink:0!important; }
+      @media (max-width:850px){
+        .action-row > .kiosk-add-slot {width:49px;flex-basis:49px;}
+      }
+      @media (max-width:620px){
+        /* First row: [+] and rounded search. Second row: four tools. */
+        .action-row {
+          display:grid!important;
+          grid-template-columns:51px minmax(0,1fr)!important;
+          grid-template-rows:auto auto;
+          align-items:center!important;
+          column-gap:9px!important;
+          row-gap:10px!important;
+        }
+        .action-row > .kiosk-add-slot {
+          grid-column:1;grid-row:1;
+          width:51px;min-width:51px;max-width:51px;
+          flex-basis:51px!important;
+        }
+        .action-row > .search-beeper {
+          grid-column:2;grid-row:1;
+          width:100%!important;
+          flex:1 1 auto!important;
+          min-width:0!important;
+        }
+        .action-row > .kiosk-utility-controls {
+          grid-column:1/-1;grid-row:2;
+          width:100%;min-width:0;
+          justify-content:flex-end;
+        }
+        body:has(#statisticsView:not([hidden])) .action-row {
+          display:flex!important;
+          justify-content:flex-end!important;
+        }
+      }
+      @media(max-width:340px){
+        .action-row {grid-template-columns:46px minmax(0,1fr)!important;}
+        .action-row > .kiosk-add-slot {width:46px;min-width:46px;max-width:46px;flex-basis:46px!important;}
+      }
+
+      /* Critical stock is a separate, restrained status band. */
+      #criticalSection {
+        min-width:1180px;
+        border-top:1px solid rgba(218,50,68,.32) !important;
+      }
+      #criticalSection > .critical-heading {
+        min-height:47px;
+        display:flex;
+        align-items:center;
+        gap:12px;
+        padding:10px 19px;
+        background:linear-gradient(90deg,
+          rgba(224,50,65,.062),rgba(224,50,65,.024) 43%,transparent 100%);
+        border-bottom:1px solid rgba(218,50,68,.15);
+      }
+      #criticalSection .critical-heading-dot {
+        display:block;
+        width:9px;
+        height:9px;
+        flex:0 0 9px;
+        border-radius:50%;
+        background:#ef3547;
+        box-shadow:0 0 0 3px rgba(236,45,66,.10),0 0 11px rgba(244,33,55,.60);
+        animation:criticalDotBreathe 3.2s ease-in-out infinite;
+      }
+      #criticalSection .critical-heading-title {
+        color:#d22b41;
+        font:750 14px/1.2 var(--inv-display),"Segoe UI",Arial,sans-serif;
+        letter-spacing:.09em;
+        text-transform:uppercase;
+        text-shadow:none!important;
+        white-space:nowrap;
+      }
+      #criticalSection .critical-heading::after {
+        content:"";
+        height:1px;
+        flex:1 1 auto;
+        margin-left:7px;
+        background:linear-gradient(90deg,
+          rgba(239,43,63,.70) 0%,rgba(239,43,63,.30) 23%,
+          rgba(239,43,63,.08) 61%,transparent 100%);
+        box-shadow:0 0 6px rgba(220,34,55,.12);
+        opacity:.76;
+        animation:criticalLineBreathe 3.2s ease-in-out infinite;
+      }
+      html[data-theme="metroid"] #criticalSection .critical-heading-title {color:#ff7182;}
+      html[data-theme="metroid"] #criticalSection > .critical-heading {
+        background:linear-gradient(90deg,rgba(225,38,63,.09),rgba(200,30,53,.025) 47%,transparent 100%);
+      }
+      /* Completely remove the old animated red table-header border. */
+      #criticalSection .table-scan-line,
+      #criticalSection .critical-table thead th::after {
+        display:none!important;
+        content:none!important;
+        animation:none!important;
+        box-shadow:none!important;
+      }
+      @keyframes criticalDotBreathe {
+        0%,100%{opacity:.74;box-shadow:0 0 0 3px rgba(236,45,66,.09),0 0 7px rgba(244,33,55,.42);}
+        50%{opacity:1;box-shadow:0 0 0 3px rgba(236,45,66,.13),0 0 13px rgba(244,33,55,.64);}
+      }
+      @keyframes criticalLineBreathe {0%,100%{opacity:.43;}50%{opacity:.82;}}
+      @media(prefers-reduced-motion:reduce){
+        #criticalSection .critical-heading-dot,
+        #criticalSection .critical-heading::after {animation:none!important;opacity:1;}
+      }
+
+
+      /* ============================================================
+         00O. TWO CLEAN TABLE HEADERS — CRITICAL / IN STOCK
+         No tinted band or outer red border. The rules remain solid,
+         ending at the right edge; only their status dots softly glow.
+         ============================================================ */
+      #criticalSection {
+        border: 0 !important;
+        border-top: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+      #criticalSection > .critical-heading,
+      html[data-theme="metroid"] #criticalSection > .critical-heading {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 10px 8px 12px !important;
+        min-height: 44px;
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+      }
+      #criticalSection .critical-heading::after {
+        content: "" !important;
+        display: block !important;
+        height: 1px;
+        flex: 1 1 auto;
+        background: rgba(225, 47, 67, .68) !important;
+        margin-left: 5px;
+        opacity: 1 !important;
+        animation: none !important;
+        box-shadow: none !important;
+      }
+      #standardInventorySection {
+        border-top: 0 !important; /* replaced by labeled rule */
+      }
+      #standardInventorySection > .stock-heading {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 13px 12px;
+        min-height: 44px;
+        background: transparent !important;
+        border: 0 !important;
+      }
+      .stock-heading-dot {
+        width: 9px;
+        height: 9px;
+        flex: 0 0 9px;
+        border-radius: 50%;
+        background: #119d82;
+        box-shadow: 0 0 0 3px rgba(17, 157, 130, .10), 0 0 9px rgba(17, 157, 130, .25);
+      }
+      .stock-heading-title {
+        font: 750 14px/1.2 var(--inv-display),"Segoe UI",Arial,sans-serif;
+        letter-spacing: .09em;
+        text-transform: uppercase;
+        color: #147a67;
+        white-space: nowrap;
+      }
+      .stock-heading::after {
+        content: "";
+        flex: 1 1 auto;
+        height: 1px;
+        margin-left: 5px;
+        background: rgba(23, 165, 131, .64);
+      }
+      html[data-theme="metroid"] .stock-heading-dot {
+        background: #52d8b6;
+        box-shadow: 0 0 0 3px rgba(82,216,182,.12), 0 0 10px rgba(82,216,182,.31);
+      }
+      html[data-theme="metroid"] .stock-heading-title { color: #8aebd1; }
+      html[data-theme="metroid"] .stock-heading::after { background: rgba(82,216,182,.53); }
+
+      /* ============================================================
+         00P. TOP-HEADER SYNC & STATISTICS + POST-LOAD FADE IN
+         Both buttons retain their original IDs and onclick actions.
+         Text is visually hidden; the SVG mask displays the icon.
+         ============================================================ */
+      .topbar .topbar-inner { gap: 11px; }
+      .topbar .topbar-right { min-width:0; gap:10px; }
+      .topbar .header-kiosk-controls {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end;
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 0;
+        gap: 8px;
+        margin: 0;
+      }
+      .topbar .header-kiosk-controls > .kiosk-control {
+        --kiosk-color: var(--inv-holo-accent, #137fdf);
+        --inv-holo-surface-color:#f6fbfd;
+        display: grid !important;
+        place-items: center !important;
+        position: relative !important;
+        flex: 0 0 44px !important;
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        max-width: 44px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 50% !important;
+        border: 1px solid color-mix(in srgb,var(--kiosk-color) 51%,transparent) !important;
+        background:color-mix(in srgb,var(--kiosk-color) 5%,var(--inv-holo-surface-color)) !important;
+        color:var(--kiosk-color) !important;
+        box-shadow:none !important;
+        text-shadow:none !important;
+        font-size:0 !important;
+        line-height:0 !important;
+        letter-spacing:0 !important;
+        touch-action:manipulation;
+        cursor:pointer;
+        -webkit-tap-highlight-color:transparent;
+        opacity:0;
+        transform:translateY(-6px);
+        transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1),background .2s,border-color .2s,box-shadow .2s !important;
+      }
+      html[data-theme="metroid"] .topbar .header-kiosk-controls > .kiosk-control {
+        --inv-holo-surface-color:#171020;
+      }
+      .topbar .header-kiosk-controls.is-loaded > .kiosk-control {
+        opacity: 1;
+        transform:translateY(0);
+      }
+      .topbar .header-kiosk-controls.is-loaded > .kiosk-control:nth-child(2) {
+        transition-delay: .085s;
+      }
+      .topbar .header-kiosk-controls > .kiosk-control:hover,
+      .topbar .header-kiosk-controls > .kiosk-control:focus-visible {
+        border-color:var(--kiosk-color) !important;
+        background:color-mix(in srgb,var(--kiosk-color) 13%,var(--inv-holo-surface-color)) !important;
+        box-shadow:0 0 0 3px color-mix(in srgb,var(--kiosk-color) 10%,transparent) !important;
+      }
+      .topbar .header-kiosk-controls > #folderSyncButton.is-connected { --kiosk-color:#149c80; }
+      .topbar .header-kiosk-controls > #folderSyncButton.is-pending { --kiosk-color:#ca963a; }
+      .topbar .header-kiosk-controls > #statisticsButton[aria-pressed="true"] {
+        --kiosk-svg:var(--kiosk-back-svg) !important;
+        border-color:var(--kiosk-color) !important;
+      }
+      /* All circular glyphs are absolutely centered, regardless of text changes. */
+      .kiosk-controls > .kiosk-control::before,
+      .kiosk-controls > #searchKeyboardToggle::before {
+        content:"" !important;
+        position:absolute !important;
+        left:50% !important;
+        top:50% !important;
+        display:block !important;
+        width:23px;
+        height:23px;
+        transform:translate(-50%,-50%) !important;
+        margin:0 !important;
+        padding:0 !important;
+        pointer-events:none;
+      }
+      @media(max-width:850px){
+        .topbar .header-kiosk-controls {gap:6px;}
+        .topbar .header-kiosk-controls > .kiosk-control {
+          flex-basis:40px!important;width:40px!important;height:40px!important;
+          min-width:40px!important;min-height:40px!important;max-width:40px!important;
+        }
+      }
+      @media(max-width:500px){
+        /* Reserve the left gutter for the absolutely positioned navigation orb. */
+        .topbar .topbar-inner { gap:6px!important; padding-left:55px!important; padding-right:8px!important; }
+        .topbar .brand-logo-shell {width:92px!important;min-width:92px!important;}
+        .topbar .topbar-right {gap:5px!important;}
+        .topbar .header-kiosk-controls { gap:5px!important; }
+        .topbar .header-kiosk-controls > .kiosk-control {
+          flex-basis:36px!important;width:36px!important;height:36px!important;
+          min-width:36px!important;min-height:36px!important;max-width:36px!important;
+        }
+        .topbar .header-kiosk-controls > .kiosk-control::before {width:19px;height:19px;}
+        .topbar .theme-picker {padding:3px!important;}
+      }
+      @media(max-width:355px){
+        .topbar .topbar-inner { padding-left:50px!important;padding-right:6px!important;gap:4px!important; }
+        .topbar .brand-logo-shell {width:76px!important;min-width:76px!important;}
+        .topbar .header-kiosk-controls > .kiosk-control {
+          flex-basis:33px!important;width:33px!important;height:33px!important;
+          min-width:33px!important;min-height:33px!important;max-width:33px!important;
+        }
+        .topbar .header-kiosk-controls > .kiosk-control::before {width:17px;height:17px;}
+      }
+      @media(prefers-reduced-motion:reduce){
+        .topbar .header-kiosk-controls > .kiosk-control {transition:none!important;opacity:1!important;transform:none!important;}
+      }
+
+      /* ============================================================
+         00Q. PLAIN INVENTORY STATUS TEXT — NO BADGE OR GLOW
+         STATUS column: CRITICAL = red, NOMINAL = green.
+         Also cleans up IN STOCK / CRITICAL in quick-search cards.
+         Edit only this section for future status appearance changes.
+         ============================================================ */
+      :root {
+        --inv-critical-word: #bf293c;
+        --inv-nominal-word: #087b60;
+      }
+      html[data-theme="metroid"] {
+        --inv-critical-word: #ff7180;
+        --inv-nominal-word: #62e0bb;
+      }
+      .data-table td .cell-badge {
+        display: inline !important;
+        width: auto !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+        filter: none !important;
+        text-shadow: none !important;
+        font: 750 13px/1.3 var(--inv-display), "Segoe UI", Arial, sans-serif !important;
+        letter-spacing: .07em;
+      }
+      .data-table tr.status-critical .cell-badge {
+        color: var(--inv-critical-word) !important;
+      }
+      .data-table tr.status-nominal .cell-badge {
+        color: var(--inv-nominal-word) !important;
+      }
+      /* Quick-search result labels use the same unboxed text treatment. */
+      .quick-meta span[style*="var(--crimson)"],
+      .quick-meta span[style*="var(--mint)"] {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        filter: none !important;
+        text-shadow: none !important;
+        font-weight: 750 !important;
+        letter-spacing: .035em;
+      }
+      .quick-meta span[style*="var(--crimson)"] {color:var(--inv-critical-word) !important;}
+      .quick-meta span[style*="var(--mint)"] {color:var(--inv-nominal-word) !important;}
+
+
+      /* ============================================================
+         00R. TABLE TYPOGRAPHY — NEUTRAL HIGH-CONTRAST ROWS
+         Stella uses near-black labels and values. Metroid uses
+         charcoal type on brushed-silver HEADER and FOLDER rows;
+         its dark data rows stay light for legibility.
+         Status values retain red/green meaning in both themes.
+         ============================================================ */
+      html[data-theme="stella"] .scroll-container .data-table thead th,
+      html[data-theme="stella"] .scroll-container .data-table tbody td,
+      html[data-theme="stella"] .scroll-container .data-table .cell-id,
+      html[data-theme="stella"] .scroll-container .data-table .cell-name,
+      html[data-theme="stella"] .scroll-container .data-table .cell-category,
+      html[data-theme="stella"] .scroll-container .data-table .cell-type,
+      html[data-theme="stella"] .scroll-container .data-table .cell-qty,
+      html[data-theme="stella"] .scroll-container .data-table .folder-label,
+      html[data-theme="stella"] .scroll-container .data-table .folder-icon,
+      html[data-theme="stella"] .scroll-container .data-table .tree-branch {
+        color: #17212b !important;
+        text-shadow: none !important;
+      }
+      html[data-theme="stella"] #criticalSection .critical-heading-title,
+      html[data-theme="stella"] #standardInventorySection .stock-heading-title {
+        color: #17212b !important;
+      }
+      html[data-theme="metroid"] .scroll-container .data-table thead th,
+      html[data-theme="metroid"] .scroll-container .data-table thead th:first-child {
+        background: #d5d1d8 !important;
+        color: #18161c !important;
+        text-shadow: none !important;
+        box-shadow: none !important;
+        border-bottom: 1px solid rgba(41,29,48,.2) !important;
+      }
+      html[data-theme="metroid"] .scroll-container .data-table .group-header td {
+        background: #dbd5df !important;
+        color: #17151d !important;
+        border-color: rgba(59,39,65,.16) !important;
+        box-shadow: none !important;
+      }
+      html[data-theme="metroid"] .scroll-container .data-table .group-header .folder-label,
+      html[data-theme="metroid"] .scroll-container .data-table .group-header .folder-icon {
+        color: #17151d !important;
+        text-shadow: none !important;
+      }
+      html[data-theme="metroid"] .scroll-container .data-table tbody tr:not(.group-header) td {
+        color: #f0edf3 !important;
+      }
+      /* Unboxed status words are the intentional red/green exceptions. */
+      html[data-theme="stella"] .scroll-container .data-table tr.status-critical .cell-badge,
+      html[data-theme="metroid"] .scroll-container .data-table tr.status-critical .cell-badge {
+        color: var(--inv-critical-word) !important;
+      }
+      html[data-theme="stella"] .scroll-container .data-table tr.status-nominal .cell-badge,
+      html[data-theme="metroid"] .scroll-container .data-table tr.status-nominal .cell-badge {
+        color: var(--inv-nominal-word) !important;
+      }
+      html[data-theme="metroid"] .scroll-container .data-table .cell-qty,
+      html[data-theme="metroid"] .scroll-container .data-table .cell-name {
+        color: #f0edf3 !important;
+      }
+      /* Critical still has a red dot; the word itself is neutral. */
+      html[data-theme="metroid"] #criticalSection .critical-heading-title,
+      html[data-theme="metroid"] #standardInventorySection .stock-heading-title {
+        color: #e8e2ec !important;
+      }
+
+      /* ============================================================
+         00S. ENLARGED SCAN FEEDBACK SCREEN
+         The inventory script owns the message and save result.
+         This visual layer only celebrates a confirmed, saved scan.
+         ============================================================ */
+      .inventory-command-bar #statusPanel {
+        --inv-status-color: var(--inv-search-icon, #187fd7);
+        height: 86px !important;
+        min-height: 86px !important;
+        padding: 12px 64px !important;
+        border-radius: 11px !important;
+        border: 1px solid var(--inv-screen-outline) !important;
+        background: var(--inv-screen-fill) !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.26), 0 5px 19px rgba(28,75,99,.035) !important;
+        transition: border-color .25s ease, background .25s ease, box-shadow .25s ease;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel {
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.055), 0 5px 19px rgba(0,0,0,.11) !important;
+      }
+      .inventory-command-bar #statusPanel .inv-status-copy {
+        gap: 5px !important;
+      }
+      .inventory-command-bar #statusPanel .inv-status-eyebrow {
+        font: 700 11px/1.1 "Bahnschrift", "Segoe UI Variable", "Segoe UI", sans-serif !important;
+        letter-spacing: .22em !important;
+        color: var(--inv-page-muted) !important;
+      }
+      .inventory-command-bar #statusPanel .status-text {
+        font: 720 clamp(17px,2vw,23px)/1.2 "Bahnschrift SemiCondensed", "Bahnschrift", "Segoe UI Variable", "Consolas", sans-serif !important;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: .085em !important;
+        text-transform: uppercase !important;
+        text-align: center !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+        text-overflow: ellipsis !important;
+        color: var(--inv-page-text) !important;
+        text-shadow: none !important;
+      }
+      .inventory-command-bar #statusPanel .inv-status-indicator {
+        left: 22px !important;
+        width: 10px !important;
+        height: 10px !important;
+        background: var(--inv-status-color) !important;
+        box-shadow: none !important;
+        animation: invStatusDot 3s ease-in-out infinite;
+      }
+      .inventory-command-bar #statusPanel .inv-scan-success-title {
+        display: none;
+        color: #159a70;
+        font: 790 clamp(19px,2vw,25px)/1.02 "Bahnschrift", "Segoe UI Variable", "Segoe UI", sans-serif;
+        letter-spacing: .10em;
+        text-align: center;
+      }
+      .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-scan-success-title {
+        display: block;
+      }
+      .inventory-command-bar #statusPanel[data-state="scan-success"] .status-text {
+        font-size: clamp(12px,1.2vw,15px) !important;
+        letter-spacing: .045em !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-scan-success-title {
+        color:#55d3a6;
+      }
+      .inventory-command-bar #statusPanel .inv-scan-confirm-check {
+        display: none;
+        position: absolute;
+        right: 21px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 31px;
+        height: 31px;
+        border: 1px solid rgba(21,154,108,.42);
+        border-radius: 50%;
+        color: #138865;
+        font: 800 20px/29px "Segoe UI", Arial, sans-serif;
+        text-align: center;
+        background: rgba(21,154,108,.08);
+      }
+      .inventory-command-bar #statusPanel[data-state="scan-success"] {
+        --inv-status-color: #159a70;
+        border-color: rgba(21,154,112,.54) !important;
+        background: linear-gradient(110deg,rgba(21,154,112,.055),rgba(255,255,255,.02)), var(--inv-screen-fill) !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel[data-state="scan-success"] {
+        --inv-status-color: #55d3a6;
+        border-color: rgba(85,211,166,.5) !important;
+      }
+      .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-status-eyebrow {
+        color: var(--inv-status-color) !important;
+        font-weight: 800 !important;
+      }
+      .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-scan-confirm-check {
+        display: block;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-scan-confirm-check {
+        color:#55d3a6;
+        border-color:rgba(85,211,166,.46);
+        background:rgba(85,211,166,.08);
+      }
+      .inventory-command-bar #statusPanel[data-state="warning"] {
+        --inv-status-color: #db465b;
+        border-color: rgba(219,70,91,.39) !important;
+      }
+      .inventory-command-bar #statusPanel[data-state="warning"] .inv-status-eyebrow {
+        color: var(--inv-status-color) !important;
+      }
+      .inventory-command-bar #statusPanel[data-state="success"] {
+        --inv-status-color: #169475;
+      }
+      .inventory-command-bar #statusPanel.is-scan-confirmed {
+        animation: invScanPulse 1.5s ease-out both;
+      }
+      .inventory-command-bar #statusPanel.is-scan-error {
+        animation: invScanErrorPulse .9s ease-out both;
+      }
+      @keyframes invStatusDot {
+        0%,100% {opacity:.72;transform:translateY(-50%) scale(.9)}
+        50% {opacity:1;transform:translateY(-50%) scale(1.14)}
+      }
+      @keyframes invScanPulse {
+        0% {outline:0 solid rgba(21,154,112,.18);filter:brightness(1)}
+        28% {outline:7px solid rgba(21,154,112,.16);filter:brightness(1.07)}
+        100% {outline:0 solid rgba(21,154,112,0);filter:brightness(1)}
+      }
+      @keyframes invScanErrorPulse {
+        0% {outline:0 solid rgba(220,59,84,.17)}
+        30% {outline:6px solid rgba(220,59,84,.13)}
+        100% {outline:0 solid rgba(220,59,84,0)}
+      }
+      @media(max-width:740px) {
+        .inventory-command-bar #statusPanel {
+          height:74px !important;min-height:74px !important;
+          padding:10px 42px !important;
+        }
+        .inventory-command-bar #statusPanel .status-text {
+          font-size:clamp(14px,3.6vw,18px) !important;
+          letter-spacing:.035em !important;
+        }
+        .inventory-command-bar #statusPanel .inv-status-eyebrow {
+          font-size:9px !important;letter-spacing:.15em !important;
+        }
+        .inventory-command-bar #statusPanel .inv-status-indicator {left:13px!important;width:8px!important;height:8px!important;}
+        .inventory-command-bar #statusPanel .inv-scan-confirm-check {
+          right:10px;width:23px;height:23px;font-size:16px;line-height:21px;
+        }
+      }
+      @media(prefers-reduced-motion:reduce) {
+        .inventory-command-bar #statusPanel,
+        .inventory-command-bar #statusPanel .inv-status-indicator {
+          animation:none !important;
+        }
+      }
+
+
+
+      /* ==============================================================
+         00T. STELLA ONLY — INDEX.HTML CATEGORY CARD TREATMENT
+         The previous Metroid theme and its per-category colors remain
+         100% owned by the existing shared CSS (untouched).
+         Each Stella category has its own index.html-derived aqua tone;
+         no red/crimson accents appear on Stella category cards.
+         ============================================================= */
+      html[data-theme="stella"] .category-nav .btn-dsc {
+        --stella-cat-accent:#0fc6c1; --stella-cat-border:rgba(15,198,193,.48);
+      }
+      html[data-theme="stella"] .category-nav .btn-xsec {
+        --stella-cat-accent:#2ba3cc; --stella-cat-border:rgba(43,163,204,.48);
+      }
+      html[data-theme="stella"] .category-nav .btn-qual {
+        --stella-cat-accent:#27bfae; --stella-cat-border:rgba(39,191,174,.48);
+      }
+      html[data-theme="stella"] .category-nav .btn-clean {
+        --stella-cat-accent:#54b9d1; --stella-cat-border:rgba(84,185,209,.48);
+      }
+      html[data-theme="stella"] .category-nav .btn-all {
+        --stella-cat-accent:#6b94ad; --stella-cat-border:rgba(107,148,173,.48);
+      }
+      html[data-theme="stella"] .category-nav > .menu-btn {
+        --stella-cat-cut:27px;
+        position:relative !important;
+        isolation:isolate;
+        overflow:hidden !important;
+        border:1px solid var(--stella-cat-border) !important;
+        border-radius:0 !important;
+        clip-path:polygon(0 0,100% 0,100% 100%,var(--stella-cat-cut) 100%,0 calc(100% - var(--stella-cat-cut))) !important;
+        background:rgba(250,255,255,.96) !important;
+        color:#183c4b !important;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.72),0 4px 13px rgba(14,79,96,.045) !important;
+        transition:border-color .28s,background-color .28s,transform .28s,box-shadow .28s !important;
+      }
+      html[data-theme="stella"] .category-nav > .menu-btn .btn-title {
+        position:relative; z-index:2;
+        color:#183c4b !important;
+        text-shadow:none !important;
+      }
+      /* Thin glowing left rail, matching the kinetic index cards. */
+      html[data-theme="stella"] .category-nav > .menu-btn::before {
+        content:"" !important;
+        position:absolute !important;
+        left:0 !important;top:0 !important;bottom:auto !important;
+        width:4px !important;height:22px !important;
+        opacity:1 !important;
+        background:var(--stella-cat-accent) !important;
+        box-shadow:0 0 12px color-mix(in srgb,var(--stella-cat-accent) 47%,transparent) !important;
+        transform:none !important;
+        z-index:3 !important;
+        transition:height .36s cubic-bezier(.16,1,.3,1),box-shadow .3s !important;
+      }
+      /* Explicit diagonal edge so the chopped lower-left border is visible. */
+      html[data-theme="stella"] .category-nav > .menu-btn::after {
+        content:"" !important;
+        position:absolute !important;inset:0 !important;
+        display:block !important;width:100% !important;height:100% !important;
+        opacity:1 !important;
+        pointer-events:none !important;z-index:1 !important;
+        background:linear-gradient(45deg,
+            transparent calc(50% - .8px),var(--stella-cat-accent) 50%,transparent calc(50% + .8px))
+            left bottom / var(--stella-cat-cut) var(--stella-cat-cut) no-repeat !important;
+        box-shadow:none !important;
+        transform:none !important;
+      }
+      html[data-theme="stella"] .category-nav > .menu-btn:is(:hover,:focus-visible,.active-cat) {
+        border-color:var(--stella-cat-accent) !important;
+        background:color-mix(in srgb,var(--stella-cat-accent) 7%,white) !important;
+        box-shadow:inset 0 1px rgba(255,255,255,.8),0 9px 20px color-mix(in srgb,var(--stella-cat-accent) 16%,transparent) !important;
+        transform:translateY(-2px) !important;
+        filter:none !important;
+      }
+      html[data-theme="stella"] .category-nav > .menu-btn:is(:hover,:focus-visible,.active-cat)::before {
+        height:calc(100% - var(--stella-cat-cut)) !important;
+        box-shadow:0 0 17px color-mix(in srgb,var(--stella-cat-accent) 58%,transparent) !important;
+      }
+
+      /* ==============================================================
+         00U. STELLA ONLY — SOLID FULL-CARD SCANNER SCREEN
+         The actual scan and stock persistence remain inventory-core.js's
+         responsibility. No diagonal fade. Each whole screen switches to
+         flat green/dark-green or soft red/dark-red on a completed result.
+         ============================================================= */
+      html[data-theme="stella"] .inventory-command-bar #statusPanel {
+        --stella-status-fill:#edf9fd;
+        --stella-status-ink:#18475d;
+        --stella-status-frame:#4fa8ca;
+        --stella-status-grid:rgba(29,125,157,.084);
+        --stella-status-rule:#328fc0;
+        position:relative !important;
+        isolation:isolate !important;
+        background:var(--stella-status-fill) !important;
+        background-image:none !important;
+        border:1px solid var(--stella-status-frame) !important;
+        border-radius:9px !important;
+        color:var(--stella-status-ink) !important;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.57),0 3px 13px rgba(23,89,115,.055) !important;
+        filter:none !important;
+        transition:background-color .18s ease,color .18s,border-color .18s,box-shadow .22s ease !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel::before {
+        content:"" !important;
+        display:block !important;
+        position:absolute !important;
+        inset:0 !important;
+        z-index:0 !important;
+        opacity:1 !important;
+        background:repeating-linear-gradient(90deg,transparent 0 46px,var(--stella-status-grid) 47px,transparent 48px),
+                   repeating-linear-gradient(0deg,transparent 0 24px,var(--stella-status-grid) 25px,transparent 26px) !important;
+        background-size:auto !important;
+        animation:none !important;
+        pointer-events:none !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel::after {
+        content:"" !important;
+        display:block !important;
+        position:absolute !important;
+        left:0 !important;right:0 !important;bottom:0 !important;top:auto !important;
+        width:100% !important;height:2px !important;
+        background:var(--stella-status-rule) !important;
+        opacity:1 !important;
+        box-shadow:none !important;
+        transform:none !important;
+        animation:none !important;
+        z-index:1 !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel .inv-status-copy,
+      html[data-theme="stella"] .inventory-command-bar #statusPanel .inv-status-indicator,
+      html[data-theme="stella"] .inventory-command-bar #statusPanel .inv-scan-confirm-check {
+        z-index:2 !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel .status-text,
+      html[data-theme="stella"] .inventory-command-bar #statusPanel .inv-status-eyebrow,
+      html[data-theme="stella"] .inventory-command-bar #statusPanel .inv-scan-success-title {
+        color:var(--stella-status-ink) !important;
+        text-shadow:none !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel .inv-status-indicator {
+        background:var(--stella-status-rule) !important;
+        box-shadow:none !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="scan-success"],
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="success"] {
+        --stella-status-fill:#d8f5e3;
+        --stella-status-ink:#075b35;
+        --stella-status-frame:#45b781;
+        --stella-status-grid:rgba(13,117,63,.087);
+        --stella-status-rule:#16834e;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="warning"] {
+        --stella-status-fill:#f9e3e4;
+        --stella-status-ink:#80323d;
+        --stella-status-frame:#e2a4aa;
+        --stella-status-grid:rgba(127,47,59,.071);
+        --stella-status-rule:#b45d67;
+      }
+      /* Higher-specificity selectors outrank the older gradient in 00S. */
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="scan-success"],
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="success"],
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="warning"] {
+        background:var(--stella-status-fill) !important;
+        background-image:none !important;
+        border-color:var(--stella-status-frame) !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state] .status-text,
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state] .inv-status-eyebrow,
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state] .inv-scan-success-title {
+        color:var(--stella-status-ink) !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-scan-confirm-check {
+        color:#075b35 !important;
+        border-color:rgba(9,113,63,.43) !important;
+        background:rgba(9,113,63,.07) !important;
+      }
+      /* Detect = bright blue whole-card flash; saved = bright green;
+         invalid = soft red. These are deliberately theme-scoped. */
+      html[data-theme="stella"] .inventory-command-bar #statusPanel.is-scan-detected {
+        box-shadow:0 0 0 3px rgba(45,171,230,.43),0 0 45px 13px rgba(46,177,237,.61) !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel.is-scan-confirmed {
+        box-shadow:0 0 0 3px rgba(29,190,104,.46),0 0 47px 15px rgba(35,205,111,.64) !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel.is-scan-error {
+        box-shadow:0 0 0 3px rgba(205,96,107,.28),0 0 32px 9px rgba(213,99,108,.37) !important;
+      }
+      @media(prefers-reduced-motion:reduce){
+        html[data-theme="stella"] .category-nav > .menu-btn,
+        html[data-theme="stella"] .category-nav > .menu-btn::before,
+        html[data-theme="stella"] .inventory-command-bar #statusPanel {transition:none !important;}
+      }
+
+
+
+      /* ================================================================
+         00V. LAB CATEGORY IDENTITIES / ORIGINAL METROID ROWS
+         Nav cards, row category words, and collapsible inventory folders
+         all carry visible, theme-specific category colors.
+         ================================================================ */
+      :root {
+        --category-dsc:#087e8a;
+        --category-xsec:#187fab;
+        --category-quality:#008f80;
+        --category-clean:#427baf;
+        --category-all:#53788e;
+        --folder-tone-0:#087f9f;--folder-tone-1:#078a7c;
+        --folder-tone-2:#327bb7;--folder-tone-3:#8665b2;
+        --folder-tone-4:#bb7c38;--folder-tone-5:#557c98;
+        --folder-tone-6:#218d92;--folder-tone-7:#806997;
+        --folder-tone-8:#648058;--folder-tone-9:#94754d;
+      }
+      html[data-theme="metroid"] {
+        --category-dsc:#ff627c;
+        --category-xsec:#cc8aff;
+        --category-quality:#6ddaf1;
+        --category-clean:#76e4c1;
+        --category-all:#a79ac4;
+        --folder-tone-0:#cb83fd;--folder-tone-1:#63d9b7;
+        --folder-tone-2:#ff6b98;--folder-tone-3:#75c8fa;
+        --folder-tone-4:#edb66b;--folder-tone-5:#ad9afe;
+        --folder-tone-6:#f38dc5;--folder-tone-7:#77d4db;
+        --folder-tone-8:#b5df8d;--folder-tone-9:#d3adfb;
+      }
+      /* Extra breathing room between the large 5 category cards. */
+      .category-nav { gap:23px !important; padding:20px 23px 21px !important; }
+      .category-nav > .menu-btn {
+        --category-accent:var(--inv-page-accent);
+        --category-ink:var(--inv-page-text);
+        border-color:color-mix(in srgb,var(--category-accent) 54%,transparent) !important;
+      }
+      .category-nav > .btn-dsc {--category-accent:#0fc6c1;--category-ink:var(--category-dsc);}
+      .category-nav > .btn-xsec {--category-accent:#2ba3cc;--category-ink:var(--category-xsec);}
+      .category-nav > .btn-qual {--category-accent:#27bfae;--category-ink:var(--category-quality);}
+      .category-nav > .btn-clean {--category-accent:#54b9d1;--category-ink:var(--category-clean);}
+      .category-nav > .btn-all {--category-accent:#8daec0;--category-ink:var(--category-all);}
+      html[data-theme="metroid"] .category-nav > .btn-dsc {--category-accent:var(--crimson);}
+      html[data-theme="metroid"] .category-nav > .btn-xsec {--category-accent:var(--violet);}
+      html[data-theme="metroid"] .category-nav > .btn-qual {--category-accent:var(--cyan);}
+      html[data-theme="metroid"] .category-nav > .btn-clean {--category-accent:var(--mint);}
+      html[data-theme="metroid"] .category-nav > .btn-all {--category-accent:#a79ac4;}
+      .category-nav > .menu-btn .btn-title {
+        color:var(--category-ink) !important;
+        text-shadow:none !important;
+      }
+      html[data-theme="stella"] .category-nav > .menu-btn::before,
+      html[data-theme="stella"] .category-nav > .menu-btn::after {
+        --stella-cat-accent:var(--category-accent);
+      }
+      html[data-theme="stella"] .category-nav > .menu-btn {
+        --stella-cat-border:color-mix(in srgb,var(--category-accent) 59%,transparent);
+      }
+      html[data-theme="metroid"] .category-nav > .menu-btn::before {
+        background:var(--category-accent) !important;
+        box-shadow:0 0 13px color-mix(in srgb,var(--category-accent) 65%,transparent) !important;
+      }
+      html[data-theme="metroid"] .category-nav > .menu-btn:is(:hover,:focus-visible,.active-cat) {
+        border-color:var(--category-accent) !important;
+        box-shadow:inset 2px 0 var(--category-accent),0 0 19px color-mix(in srgb,var(--category-accent) 18%,transparent) !important;
+      }
+      /* Override the gray/lilac table override shown in the screenshot.
+         Metroid returns to its ORIGINAL dark chrome table surfaces. */
+      html[data-theme="metroid"] .scroll-container .data-table thead th,
+      html[data-theme="metroid"] .scroll-container .data-table thead th:first-child {
+        background:var(--inv-surface-strong) !important;
+        color:var(--inv-accent) !important;
+        border-bottom:1px solid var(--inv-line) !important;
+        box-shadow:0 3px 12px rgba(0,0,0,.12) !important;
+      }
+      html[data-theme="metroid"] .scroll-container .data-table .group-header td {
+        background:color-mix(in srgb,var(--folder-accent,var(--violet)) 9%,var(--inv-surface)) !important;
+        color:var(--inv-ink) !important;
+        border-top:1px solid color-mix(in srgb,var(--folder-accent,var(--violet)) 36%,var(--inv-line)) !important;
+        border-bottom:1px solid color-mix(in srgb,var(--folder-accent,var(--violet)) 36%,var(--inv-line)) !important;
+        box-shadow:inset 4px 0 var(--folder-accent,var(--violet)) !important;
+      }
+      html[data-theme="metroid"] .scroll-container .data-table .group-header:is(:hover,:focus-within) td {
+        background:color-mix(in srgb,var(--folder-accent,var(--violet)) 15%,var(--inv-surface)) !important;
+      }
+      /* Every folder's name and +/- symbol use its own unique accent. */
+      #inventoryGridBody .group-header .folder-label,
+      #inventoryGridBody .group-header .folder-icon {
+        color:var(--folder-accent,var(--inv-accent)) !important;
+        text-shadow:none !important;
+      }
+      html[data-theme="stella"] #inventoryGridBody .group-header td {
+        background:color-mix(in srgb,var(--folder-accent,var(--inv-accent)) 7%,var(--inv-surface)) !important;
+        box-shadow:inset 4px 0 var(--folder-accent,var(--inv-accent)) !important;
+        border-bottom:1px solid color-mix(in srgb,var(--folder-accent,var(--inv-accent)) 20%,var(--inv-line)) !important;
+      }
+      html[data-theme="stella"] #inventoryGridBody .group-header:hover td {
+        background:color-mix(in srgb,var(--folder-accent,var(--inv-accent)) 13%,var(--inv-surface)) !important;
+      }
+      /* Folder tokens are set by a tiny observer below, not the stock JS. */
+      #inventoryGridBody .group-header[data-folder-tone="0"]{--folder-accent:var(--folder-tone-0);}
+      #inventoryGridBody .group-header[data-folder-tone="1"]{--folder-accent:var(--folder-tone-1);}
+      #inventoryGridBody .group-header[data-folder-tone="2"]{--folder-accent:var(--folder-tone-2);}
+      #inventoryGridBody .group-header[data-folder-tone="3"]{--folder-accent:var(--folder-tone-3);}
+      #inventoryGridBody .group-header[data-folder-tone="4"]{--folder-accent:var(--folder-tone-4);}
+      #inventoryGridBody .group-header[data-folder-tone="5"]{--folder-accent:var(--folder-tone-5);}
+      #inventoryGridBody .group-header[data-folder-tone="6"]{--folder-accent:var(--folder-tone-6);}
+      #inventoryGridBody .group-header[data-folder-tone="7"]{--folder-accent:var(--folder-tone-7);}
+      #inventoryGridBody .group-header[data-folder-tone="8"]{--folder-accent:var(--folder-tone-8);}
+      #inventoryGridBody .group-header[data-folder-tone="9"]{--folder-accent:var(--folder-tone-9);}
+
+      /* Category words in every inventory row: matching nav card accent.
+         Higher-specificity rules override the old globally black text and
+         the legacy crimson inline styles (especially in Stella). */
+      .scroll-container .data-table tbody tr:not(.group-header) td.cell-category.cat-dsc {color:var(--category-dsc) !important;text-shadow:none !important;}
+      .scroll-container .data-table tbody tr:not(.group-header) td.cell-category.cat-xsec {color:var(--category-xsec) !important;text-shadow:none !important;}
+      .scroll-container .data-table tbody tr:not(.group-header) td.cell-category.cat-quality {color:var(--category-quality) !important;text-shadow:none !important;}
+      .scroll-container .data-table tbody tr:not(.group-header) td.cell-category.cat-clean {color:var(--category-clean) !important;text-shadow:none !important;}
+      .scroll-container .data-table tbody tr:not(.group-header) td.cell-category.cat-other {color:var(--inv-page-text) !important;text-shadow:none !important;}
+
+      /* ================================================================
+         00W. LIVE INSTRUMENT DISPLAY — INDEX.HTML HERO SCREEN EFFECTS
+         Persistent horizontal scanlines, breathing surface, and an
+         edge-to-edge moving light beam. Idle pulse works in both themes.
+         No fading of the entire colored status-screen background.
+         ================================================================ */
+      .inventory-command-bar #statusPanel {
+        --ready-accent:#258faf;
+        --ready-glow:rgba(33,149,194,.38);
+        --screen-line:rgba(23,137,168,.082);
+        --screen-highlight:rgba(29,192,212,.25);
+        --screen-beam:rgba(30,172,196,.14);
+        isolation:isolate !important;
+        overflow:hidden !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel {
+        --ready-accent:#2b98bf;
+        --ready-glow:rgba(35,164,203,.36);
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel {
+        --ready-accent:#bb75ea;
+        --ready-glow:rgba(178,87,229,.36);
+        --screen-line:rgba(214,113,244,.075);
+        --screen-highlight:rgba(232,87,245,.23);
+        --screen-beam:rgba(174,67,229,.19);
+      }
+      .inventory-command-bar #statusPanel::before {
+        content:"" !important;
+        display:block !important;
+        position:absolute !important;
+        inset:0 !important;
+        z-index:0 !important;
+        opacity:.91 !important;
+        pointer-events:none !important;
+        background:
+          linear-gradient(180deg,rgba(255,255,255,.12),transparent 19%,transparent 86%,rgba(38,151,172,.045)),
+          repeating-linear-gradient(0deg,transparent 0 5px,var(--screen-line) 5px 6px),
+          repeating-linear-gradient(90deg,transparent 0 54px,var(--screen-line) 55px,transparent 56px) !important;
+        background-size:auto !important;
+        animation:valeoStatusScreenBreathe 5.8s ease-in-out infinite alternate !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel::before {
+        background:
+          linear-gradient(180deg,rgba(252,222,255,.055),transparent 19%,transparent 86%,rgba(190,87,235,.035)),
+          repeating-linear-gradient(0deg,transparent 0 5px,var(--screen-line) 5px 6px),
+          repeating-linear-gradient(90deg,transparent 0 54px,var(--screen-line) 55px,transparent 56px) !important;
+      }
+      /* Broad, soft moving beam on the inside of the screen. */
+      .inventory-command-bar #statusPanel::after {
+        content:"" !important;
+        display:block !important;
+        position:absolute !important;
+        top:-22% !important;
+        bottom:auto !important;
+        left:0 !important;
+        right:auto !important;
+        width:22% !important;
+        height:145% !important;
+        z-index:1 !important;
+        pointer-events:none !important;
+        background:linear-gradient(90deg,transparent,var(--screen-beam) 36%,var(--screen-highlight) 53%,var(--screen-beam) 68%,transparent) !important;
+        box-shadow:none !important;
+        filter:blur(12px) !important;
+        opacity:.65 !important;
+        transform:translateX(-180%) skewX(-16deg) !important;
+        animation:valeoStatusScanSweep 7.7s ease-in-out infinite !important;
+      }
+      /* Keep all content clear and above the beam. */
+      .inventory-command-bar #statusPanel .inv-status-copy,
+      .inventory-command-bar #statusPanel .inv-status-indicator,
+      .inventory-command-bar #statusPanel .inv-scan-confirm-check {
+        position:relative;
+        z-index:3 !important;
+      }
+      .inventory-command-bar #statusPanel .inv-status-indicator {
+        position:absolute !important;
+        animation:valeoReadyIndicator 2.1s ease-in-out infinite !important;
+      }
+      .inventory-command-bar #statusPanel[data-state="idle"] {
+        animation:valeoReadyHeartbeat 3.6s ease-in-out infinite !important;
+      }
+      /* Clear scan confirmation / error states must take priority over standby. */
+      .inventory-command-bar #statusPanel[data-state="scan-success"],
+      .inventory-command-bar #statusPanel[data-state="success"] {
+        --screen-line:rgba(9,131,68,.075);
+        --screen-highlight:rgba(21,174,92,.23);
+        --screen-beam:rgba(23,142,81,.14);
+      }
+      .inventory-command-bar #statusPanel[data-state="warning"] {
+        --screen-line:rgba(166,59,75,.062);
+        --screen-highlight:rgba(188,79,100,.16);
+        --screen-beam:rgba(180,77,91,.10);
+      }
+      /* Green success and muted red error continue to fill ALL of Stella. */
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="scan-success"],
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="success"] {
+        background:#d8f5e3 !important;
+        color:#075b35 !important;
+        border-color:#45b781 !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="warning"] {
+        background:#f9e3e4 !important;
+        color:#80323d !important;
+        border-color:#e2a4aa !important;
+      }
+      /* Immediate detected glow works for both modes; scan success gets an
+         even brighter, themed feedback bloom for both modes. */
+      .inventory-command-bar #statusPanel.is-scan-detected {
+        animation:valeoScanDetected 900ms ease-out both !important;
+      }
+      .inventory-command-bar #statusPanel.is-scan-confirmed {
+        animation:valeoScanConfirmed 1550ms ease-out both !important;
+      }
+      .inventory-command-bar #statusPanel.is-scan-error {
+        animation:valeoScanError 1100ms ease-out both !important;
+      }
+      @keyframes valeoStatusScreenBreathe {
+        0%{opacity:.47} 100%{opacity:.95}
+      }
+      @keyframes valeoStatusScanSweep {
+        0%,12%{transform:translateX(-180%) skewX(-16deg);opacity:0}
+        22%{opacity:.84} 70%{opacity:.6}
+        88%,100%{transform:translateX(630%) skewX(-16deg);opacity:0}
+      }
+      @keyframes valeoReadyHeartbeat {
+        0%,100%{box-shadow:inset 0 0 0 1px transparent,0 0 0 1px transparent,0 2px 16px rgba(0,0,0,.05)}
+        48%{box-shadow:inset 0 0 16px color-mix(in srgb,var(--ready-accent) 12%,transparent),0 0 0 2px color-mix(in srgb,var(--ready-accent) 32%,transparent),0 0 26px 5px var(--ready-glow)}
+      }
+      @keyframes valeoReadyIndicator {
+        0%,100%{opacity:.58;transform:translateY(-50%) scale(.88);box-shadow:0 0 3px var(--ready-glow)}
+        50%{opacity:1;transform:translateY(-50%) scale(1.3);box-shadow:0 0 12px 3px var(--ready-glow)}
+      }
+      @keyframes valeoScanDetected {
+        0%{box-shadow:0 0 0 0 var(--ready-glow)}
+        25%{box-shadow:0 0 0 3px var(--ready-glow),0 0 42px 12px var(--ready-glow)}
+        100%{box-shadow:0 0 0 0 transparent}
+      }
+      @keyframes valeoScanConfirmed {
+        0%{box-shadow:0 0 0 1px rgba(26,207,109,.48)}
+        25%{box-shadow:0 0 0 4px rgba(26,207,109,.55),0 0 47px 16px rgba(25,210,104,.55)}
+        100%{box-shadow:0 0 0 0 transparent}
+      }
+      @keyframes valeoScanError {
+        0%{box-shadow:0 0 0 0 rgba(190,81,92,.25)}
+        27%{box-shadow:0 0 0 3px rgba(190,81,92,.33),0 0 30px 8px rgba(190,81,92,.27)}
+        100%{box-shadow:0 0 0 0 transparent}
+      }
+      @media(max-width:740px){
+        .category-nav{gap:14px !important;padding:15px 13px 18px !important;}
+      }
+      @media(prefers-reduced-motion:reduce){
+        .inventory-command-bar #statusPanel,
+        .inventory-command-bar #statusPanel::before,
+        .inventory-command-bar #statusPanel::after,
+        .inventory-command-bar #statusPanel .inv-status-indicator{
+          animation:none !important;
+        }
+      }
+
+
+
+      /* Keep each Stella card label in its assigned cool category color. */
+      html[data-theme="stella"] .category-nav > .menu-btn .btn-title {
+        color:var(--category-ink) !important;
+      }
+
+      /* 00W-2. Independent screen glass layers (no legacy pseudo selector
+         or old !important declarations can disable their animation). */
+      .inventory-command-bar #statusPanel::before,
+      .inventory-command-bar #statusPanel::after {display:none !important;}
+      .inventory-command-bar #statusPanel .inv-live-screen {
+        display:block;position:absolute;inset:0;z-index:1;overflow:hidden;
+        border-radius:inherit;pointer-events:none;
+        background:
+          linear-gradient(180deg,rgba(255,255,255,.12),transparent 19%,transparent 86%,rgba(38,151,172,.045)),
+          repeating-linear-gradient(0deg,transparent 0 5px,var(--screen-line) 5px 6px),
+          repeating-linear-gradient(90deg,transparent 0 54px,var(--screen-line) 55px,transparent 56px);
+        animation:valeoStatusScreenBreathe 5.8s ease-in-out infinite alternate;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel .inv-live-screen {
+        background:
+          linear-gradient(180deg,rgba(252,222,255,.055),transparent 19%,transparent 86%,rgba(190,87,235,.035)),
+          repeating-linear-gradient(0deg,transparent 0 5px,var(--screen-line) 5px 6px),
+          repeating-linear-gradient(90deg,transparent 0 54px,var(--screen-line) 55px,transparent 56px);
+      }
+      .inventory-command-bar #statusPanel .inv-live-beam {
+        display:block;position:absolute;top:-23%;left:0;
+        height:146%;width:27%;pointer-events:none;
+        background:linear-gradient(90deg,transparent,var(--screen-beam) 35%,var(--screen-highlight) 53%,var(--screen-beam) 71%,transparent);
+        filter:blur(11px);
+        transform:translateX(-175%) skewX(-16deg);
+        animation:valeoStatusScanSweep 7.7s ease-in-out infinite;
+      }
+      .inventory-command-bar #statusPanel .inv-live-halo {
+        display:block;position:absolute;inset:0;pointer-events:none;
+        border:1px solid transparent;border-radius:inherit;
+        animation:valeoLiveFace 3.6s ease-in-out infinite;
+      }
+      .inventory-command-bar #statusPanel:not([data-state="idle"]) .inv-live-halo {
+        animation:none;opacity:.25;
+      }
+      @keyframes valeoLiveFace {
+        0%,100% {opacity:.36;box-shadow:inset 0 0 5px 0 var(--ready-glow)}
+        48% {opacity:1;box-shadow:inset 0 0 24px 1px var(--ready-glow)}
+      }
+      @property --scan-depth {
+        syntax:"<length>";inherits:false;initial-value:0px;
+      }
+      @property --scan-spread {
+        syntax:"<length>";inherits:false;initial-value:0px;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel[data-state="idle"] {
+        --scan-depth:0px;
+        --scan-spread:0px;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.12),
+          0 0 calc(7px + var(--scan-depth))
+          calc(1px + var(--scan-spread)) var(--ready-glow) !important;
+        animation:valeoStatusBreath 3.6s ease-in-out infinite !important;
+      }
+      @keyframes valeoStatusBreath {
+        0%,100% {--scan-depth:0px;--scan-spread:0px;outline-color:transparent}
+        48% {--scan-depth:24px;--scan-spread:4px;outline-color:var(--ready-glow)}
+      }
+      /* Full-card glow when reader receives a code, for BOTH themes. */
+      html[data-theme="stella"] .inventory-command-bar #statusPanel.is-scan-detected {
+        box-shadow:0 0 0 3px rgba(45,171,230,.45),0 0 45px 13px rgba(46,177,237,.61) !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel.is-scan-detected {
+        box-shadow:0 0 0 3px rgba(198,120,248,.55),0 0 44px 14px rgba(164,66,224,.64) !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel.is-scan-confirmed {
+        box-shadow:0 0 0 3px rgba(87,217,171,.46),0 0 47px 14px rgba(72,215,162,.56) !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel.is-scan-error {
+        box-shadow:0 0 0 3px rgba(223,116,150,.36),0 0 32px 10px rgba(232,83,119,.42) !important;
+      }
+      @media(prefers-reduced-motion:reduce) {
+        .inventory-command-bar #statusPanel .inv-live-screen,
+        .inventory-command-bar #statusPanel .inv-live-beam,
+        .inventory-command-bar #statusPanel .inv-live-halo {animation:none !important;}
+      }
+
+
+
+      /* ================================================================
+         00X. MATCHED THEME PALETTES / FULL-BLEED HOLOGRAPHIC SCAN DISPLAY
+         Follows index.html's edge-to-edge holographic hero screen:
+         animated translucent scanlines + light sweep + quiet pulse.
+         Only scanner UI styling is changed; existing saving is untouched.
+         ================================================================ */
+      html[data-theme="metroid"] {
+        --category-xsec:#f061cd;     /* X-section: magenta */
+        --category-quality:#ad79ee;  /* Quality: purple */
+        --category-clean:#fb7950;    /* Clean-up: red-orange */
+      }
+      html[data-theme="stella"] {
+        --category-dsc:#219b79;      /* DSC: mint green */
+        --category-xsec:#218154;     /* X-section: green */
+        --category-quality:#2776c0; /* Quality: blue */
+        --category-clean:#0a9ba9;   /* Clean-up: cyan */
+        --category-all:#537c99;
+      }
+      html[data-theme="metroid"] .category-nav > .btn-xsec {--category-accent:var(--category-xsec);--category-ink:var(--category-xsec);}
+      html[data-theme="metroid"] .category-nav > .btn-qual {--category-accent:var(--category-quality);--category-ink:var(--category-quality);}
+      html[data-theme="metroid"] .category-nav > .btn-clean {--category-accent:var(--category-clean);--category-ink:var(--category-clean);}
+      html[data-theme="metroid"] .category-nav > .btn-dsc {--category-ink:var(--category-dsc);}
+      html[data-theme="stella"] .category-nav > .btn-dsc  {--category-accent:var(--category-dsc);--category-ink:var(--category-dsc);--stella-cat-accent:var(--category-dsc);--stella-cat-border:color-mix(in srgb,var(--category-dsc) 56%,transparent);}
+      html[data-theme="stella"] .category-nav > .btn-xsec {--category-accent:var(--category-xsec);--category-ink:var(--category-xsec);--stella-cat-accent:var(--category-xsec);--stella-cat-border:color-mix(in srgb,var(--category-xsec) 56%,transparent);}
+      html[data-theme="stella"] .category-nav > .btn-qual {--category-accent:var(--category-quality);--category-ink:var(--category-quality);--stella-cat-accent:var(--category-quality);--stella-cat-border:color-mix(in srgb,var(--category-quality) 56%,transparent);}
+      html[data-theme="stella"] .category-nav > .btn-clean {--category-accent:var(--category-clean);--category-ink:var(--category-clean);--stella-cat-accent:var(--category-clean);--stella-cat-border:color-mix(in srgb,var(--category-clean) 56%,transparent);}
+      html[data-theme="stella"] .category-nav > .btn-all {--category-accent:var(--category-all);--category-ink:var(--category-all);--stella-cat-accent:var(--category-all);--stella-cat-border:color-mix(in srgb,var(--category-all) 56%,transparent);}
+      .category-nav {gap:36px !important;padding:22px 24px 25px !important;}
+      .category-nav > .menu-btn {flex:1 0 175px;min-width:175px;}
+      /* Both modes preserve their respective categorical text colors. */
+      html[data-theme] .category-nav > .menu-btn .btn-title {color:var(--category-ink) !important;}
+      html[data-theme="metroid"] .category-nav > .menu-btn {border-color:color-mix(in srgb,var(--category-accent) 47%,var(--inv-line)) !important;}
+
+      /* Remove the frame/padding around the command bar; the screen itself
+         reaches its parent section's top, left and right edges. */
+      html[data-theme] .inventory-command-bar {
+        display:flex !important;
+        align-items:stretch !important;
+        width:100% !important;
+        min-width:0 !important;
+        padding:0 !important;
+        margin:0 !important;
+        gap:0 !important;
+        border:0 !important;
+        border-radius:0 !important;
+        background:transparent !important;
+        box-shadow:none !important;
+        backdrop-filter:none !important;
+        overflow:visible;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel {
+        --ready-accent:#169cb0;
+        --ready-glow:rgba(40,161,204,.32);
+        --screen-line:rgba(13,121,157,.105);
+        --screen-highlight:rgba(233,255,255,.42);
+        --screen-beam:rgba(92,237,255,.22);
+        --holo-ink:#154969;
+        --holo-caption:#285a76;
+        flex:1 1 100% !important;
+        width:100% !important;
+        max-width:none !important;
+        min-height:112px !important;
+        height:112px !important;
+        padding:15px 66px !important;
+        margin:0 !important;
+        border:0 !important;
+        border-radius:0 !important;
+        outline:0 !important;
+        overflow:hidden !important;
+        color:var(--holo-ink) !important;
+        background:
+          radial-gradient(ellipse 58% 120% at 1% 98%,rgba(70,165,255,.28),transparent 88%),
+          radial-gradient(ellipse 40% 125% at 96% 0%,rgba(66,238,217,.31),transparent 85%),
+          linear-gradient(to top right,#b9defb 0%,#bcecf9 43%,#c9f9f4 100%) !important;
+        box-shadow:inset 0 8px 28px rgba(41,119,178,.08),inset 0 -11px 25px rgba(23,157,184,.10) !important;
+        transition:background .2s ease,color .2s ease !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel {
+        --ready-accent:#dd72e7;
+        --ready-glow:rgba(194,67,231,.34);
+        --screen-line:rgba(241,166,253,.095);
+        --screen-highlight:rgba(255,157,250,.42);
+        --screen-beam:rgba(232,95,251,.23);
+        --holo-ink:#f9ecff;
+        --holo-caption:#dfc2f0;
+        background:
+          radial-gradient(ellipse 56% 140% at 0% 100%,rgba(244,59,180,.20),transparent 83%),
+          radial-gradient(ellipse 43% 116% at 91% -4%,rgba(144,51,240,.19),transparent 82%),
+          linear-gradient(to top right,#4b114b 0%,#48145d 41%,#281144 100%) !important;
+        box-shadow:inset 0 8px 24px rgba(233,89,240,.08),inset 0 -10px 26px rgba(111,27,175,.13) !important;
+      }
+      /* Important: status text remains above all optical glass layers. */
+      html[data-theme] .inventory-command-bar #statusPanel .status-text {
+        color:var(--holo-ink) !important;
+        font-weight:760 !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel .inv-status-eyebrow {
+        color:var(--holo-caption) !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel .inv-status-indicator {
+        background:var(--ready-accent) !important;
+        box-shadow:0 0 13px 3px var(--ready-glow) !important;
+      }
+      /* Reference: index.html's screen overlay and animated hologram beam. */
+      html[data-theme] .inventory-command-bar #statusPanel .inv-live-screen {
+        position:absolute !important;inset:0 !important;
+        display:block !important;z-index:1 !important;
+        overflow:hidden !important;
+        border-radius:0 !important;
+        pointer-events:none !important;
+        background:
+          linear-gradient(180deg,rgba(255,255,255,.19),transparent 20%,transparent 82%,rgba(37,146,186,.07)),
+          repeating-linear-gradient(0deg,transparent 0 4px,var(--screen-line) 5px,transparent 6px),
+          repeating-linear-gradient(90deg,transparent 0 63px,var(--screen-line) 64px,transparent 65px) !important;
+        animation:valeoHoloGlassBreathe 5.8s ease-in-out infinite alternate !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel .inv-live-screen {
+        background:
+          linear-gradient(180deg,rgba(255,201,252,.09),transparent 20%,transparent 82%,rgba(208,95,235,.06)),
+          repeating-linear-gradient(0deg,transparent 0 4px,var(--screen-line) 5px,transparent 6px),
+          repeating-linear-gradient(90deg,transparent 0 63px,var(--screen-line) 64px,transparent 65px) !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel .inv-live-screen::before {
+        content:"";position:absolute;inset:0;pointer-events:none;
+        background:
+          radial-gradient(ellipse 36% 100% at 49% 30%,var(--screen-highlight),transparent 81%),
+          linear-gradient(150deg,transparent 15%,var(--screen-beam) 51%,transparent 87%);
+        opacity:.33;
+        animation:valeoHoloRefraction 9s ease-in-out infinite alternate;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel .inv-live-screen::after {
+        content:"";position:absolute;left:0;right:0;bottom:0;height:2px;pointer-events:none;
+        background:linear-gradient(90deg,transparent,var(--ready-accent) 36%,var(--screen-highlight) 60%,transparent);
+        opacity:.42;
+        box-shadow:0 -3px 20px var(--ready-glow);
+        animation:valeoHoloEdge 3.6s ease-in-out infinite;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel .inv-live-beam {
+        position:absolute !important;left:0 !important;top:-24% !important;
+        display:block !important;width:25% !important;height:148% !important;
+        opacity:.75 !important;
+        transform:translateX(-150%) skewX(-16deg);
+        background:linear-gradient(90deg,transparent,var(--screen-beam) 38%,var(--screen-highlight) 54%,var(--screen-beam) 69%,transparent) !important;
+        filter:blur(12px) !important;
+        animation:valeoStatusScanSweep 9.5s ease-in-out infinite !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel .inv-live-halo {
+        border:0 !important;border-radius:0 !important;
+        animation:valeoHoloInnerPulse 3.5s ease-in-out infinite !important;
+      }
+      @keyframes valeoHoloGlassBreathe {from{opacity:.65}to{opacity:1}}
+      @keyframes valeoHoloRefraction {from{transform:translateX(-8%);opacity:.18}to{transform:translateX(9%);opacity:.36}}
+      @keyframes valeoHoloEdge {0%,100%{opacity:.24}50%{opacity:.64}}
+      @keyframes valeoHoloInnerPulse {
+        0%,100%{opacity:.3;box-shadow:inset 0 0 9px var(--ready-glow)}
+        50%{opacity:.9;box-shadow:inset 0 0 28px var(--ready-glow)}
+      }
+      /* Keep the native screen completely opaque (no fading of the surface).
+         Pulse only its light field, not its color or text. */
+      html[data-theme] .inventory-command-bar #statusPanel[data-state="idle"] {
+        animation:valeoHoloStatusStandby 3.6s ease-in-out infinite !important;
+      }
+      @keyframes valeoHoloStatusStandby {
+        0%,100%{filter:brightness(1);}
+        50%{filter:brightness(1.06);}
+      }
+      /* Success and warning colors retain strong full-screen contrast.
+         Overlay animations stay active but become more subtle. */
+      html[data-theme="stella"] .inventory-command-bar #statusPanel:is([data-state="scan-success"],[data-state="success"]) {
+        --ready-accent:#16834e;--ready-glow:rgba(21,168,94,.25);
+        --holo-ink:#075b35;--holo-caption:#115f3d;
+        --screen-line:rgba(14,113,65,.08);--screen-beam:rgba(41,169,102,.12);
+        background:#d8f5e3 !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="warning"] {
+        --ready-accent:#b35c68;--ready-glow:rgba(170,82,100,.22);
+        --holo-ink:#80323d;--holo-caption:#914c53;
+        --screen-line:rgba(138,59,70,.075);--screen-beam:rgba(177,98,105,.10);
+        background:#f9e3e4 !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel:is([data-state="scan-success"],[data-state="success"]) {
+        --ready-accent:#5de2a9;--ready-glow:rgba(62,220,161,.30);
+        --holo-ink:#9af4c6;--holo-caption:#72dcb0;
+        --screen-line:rgba(85,219,159,.09);--screen-beam:rgba(51,199,137,.15);
+        background:linear-gradient(to top right,#0b392c,#125540 55%,#124938) !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel[data-state="warning"] {
+        --ready-accent:#ef879b;--ready-glow:rgba(221,107,126,.27);
+        --holo-ink:#ffd0d5;--holo-caption:#f1afb7;
+        --screen-line:rgba(241,140,159,.09);--screen-beam:rgba(205,91,114,.13);
+        background:linear-gradient(to top right,#4b2031,#642b40 55%,#4f2437) !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-scan-success-title,
+      html[data-theme] .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-scan-confirm-check,
+      html[data-theme] .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-status-eyebrow {
+        color:var(--holo-ink) !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-scan-confirm-check {
+        border-color:color-mix(in srgb,var(--ready-accent) 55%,transparent) !important;
+        background:color-mix(in srgb,var(--ready-accent) 13%,transparent) !important;
+      }
+      /* Make the whole screen flash when a scan is detected, not a border. */
+      html[data-theme] .inventory-command-bar #statusPanel.is-scan-detected {
+        animation:valeoHoloScanArrival 860ms ease-out both !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel.is-scan-confirmed {
+        animation:valeoHoloScanConfirmed 1550ms ease-out both !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel.is-scan-error {
+        animation:valeoHoloScanError 1200ms ease-out both !important;
+      }
+      @keyframes valeoHoloScanArrival {0%,100%{filter:brightness(1)} 27%{filter:brightness(1.38)}}
+      @keyframes valeoHoloScanConfirmed {0%,100%{filter:brightness(1)} 27%{filter:brightness(1.30)}}
+      @keyframes valeoHoloScanError {0%,100%{filter:brightness(1)} 27%{filter:brightness(1.14)}}
+      html[data-theme] .inventory-command-bar #statusPanel:not([data-state="idle"]) .inv-live-halo {animation:none !important;}
+      @media(max-width:740px){
+        html[data-theme] .inventory-command-bar #statusPanel {min-height:94px !important;height:94px !important;padding:12px 42px !important;}
+        .category-nav {gap:19px !important;padding:19px 15px 22px !important;}
+        .category-nav > .menu-btn {flex:1 0 160px;min-width:160px;}
+      }
+      @media(prefers-reduced-motion:reduce){
+        html[data-theme] .inventory-command-bar #statusPanel,
+        html[data-theme] .inventory-command-bar #statusPanel .inv-live-screen,
+        html[data-theme] .inventory-command-bar #statusPanel .inv-live-beam,
+        html[data-theme] .inventory-command-bar #statusPanel .inv-live-halo,
+        html[data-theme] .inventory-command-bar #statusPanel .inv-live-screen::before,
+        html[data-theme] .inventory-command-bar #statusPanel .inv-live-screen::after {animation:none !important;filter:none !important;}
+      }
+
+
+      /* ================================================================
+         00Y. FINAL INTERFACE REFINEMENTS — MATCH THE SHARED INDEX
+         Large instrument-display status lettering, clean warnings,
+         index-matched single alternate-mode orb, and centered cards.
+         ================================================================ */
+
+      /* Exact seafoam teal from Stella's index.html Data Archive/CMM card. */
+      html[data-theme="stella"] { --category-dsc:#27bfae; }
+      html[data-theme="stella"] .category-nav > .btn-dsc {
+        --category-accent:#27bfae !important;
+        --category-ink:#27bfae !important;
+        --stella-cat-accent:#27bfae !important;
+        --stella-cat-border:rgba(39,191,174,.57) !important;
+      }
+      /* Center every category caption both horizontally and vertically.
+         Keep the theme-specific left rails, borders and colors. */
+      html[data-theme] .category-nav > .menu-btn {
+        display:flex !important;
+        flex-direction:column !important;
+        justify-content:center !important;
+        align-items:center !important;
+        text-align:center !important;
+        padding-left:16px !important;
+        padding-right:16px !important;
+      }
+      html[data-theme] .category-nav > .menu-btn .btn-title {
+        display:block !important;
+        width:100% !important;
+        margin:0 auto !important;
+        text-align:center !important;
+      }
+
+      /* Match the index.html display-mode selector: one visible 40px orb
+         at the right edge. Its center never shifts between modes. */
+      .topbar .topbar-right {display:flex !important;align-items:center !important;}
+      .topbar .theme-picker {
+        margin-left:auto !important;
+        flex:0 0 40px !important;
+        width:40px !important;
+        height:40px !important;
+        padding:0 !important;
+        gap:0 !important;
+        border:0 !important;
+        border-radius:50% !important;
+        background:transparent !important;
+        box-shadow:none !important;
+        display:grid !important;
+        place-items:center !important;
+      }
+      .topbar .theme-picker .theme-button {
+        display:grid !important;
+        place-items:center !important;
+        width:40px !important;
+        min-width:40px !important;
+        height:40px !important;
+        padding:0 !important;
+        border-radius:50% !important;
+        border:1px solid transparent !important;
+        background:transparent !important;
+        box-shadow:none !important;
+        transform:none;
+        transition:background .28s,box-shadow .28s,border-color .28s,transform .28s !important;
+      }
+      .topbar .theme-picker .theme-button[aria-pressed="true"] {display:none !important;}
+      .topbar .theme-picker .theme-button > span:last-child {display:none !important;}
+      .topbar .theme-picker .theme-button[aria-pressed="false"]:is(:hover,:focus-visible) {
+        transform:scale(1.09) !important;
+        background:rgba(43,186,206,.06) !important;
+        border-color:rgba(43,186,206,.22) !important;
+      }
+      .topbar .theme-picker .theme-orb {
+        width:13px !important;
+        height:13px !important;
+        flex:0 0 13px !important;
+        border-radius:50% !important;
+        position:relative !important;
+      }
+      .topbar .theme-picker .stella-orb {
+        background:#31daf0 !important;
+        box-shadow:0 0 0 3px rgba(49,218,240,.10),0 0 11px 3px rgba(49,218,240,.58),0 0 25px rgba(49,218,240,.27) !important;
+      }
+      .topbar .theme-picker .metroid-orb {
+        background:#e72c50 !important;
+        box-shadow:0 0 0 3px rgba(231,44,80,.12),0 0 11px 3px rgba(231,44,80,.58),0 0 25px rgba(231,44,80,.28) !important;
+      }
+      @media(max-width:500px){
+        .topbar .theme-picker{flex-basis:34px !important;width:34px !important;height:34px !important;}
+        .topbar .theme-picker .theme-button{width:34px !important;min-width:34px !important;height:34px !important;}
+        .topbar .theme-picker .theme-orb{width:11px !important;height:11px !important;flex-basis:11px !important;}
+      }
+
+      /* Status is a single large, live holographic readout — no eyebrow
+         caption or inventory-status badge. The font resembles instrumentation. */
+      html[data-theme] .inventory-command-bar #statusPanel .inv-status-eyebrow {
+        display:none !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel .inv-status-copy {
+        display:flex !important;
+        flex-direction:column !important;
+        align-items:center !important;
+        justify-content:center !important;
+        text-align:center !important;
+        gap:3px !important;
+        width:100% !important;
+        min-width:0 !important;
+        z-index:5 !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel .status-text {
+        font-family:"Cascadia Code","Bahnschrift SemiCondensed","Consolas","Lucida Console",monospace !important;
+        font-size:clamp(24px,3.15vw,46px) !important;
+        font-weight:750 !important;
+        line-height:1.1 !important;
+        letter-spacing:.035em !important;
+        text-transform:none !important;
+        text-align:center !important;
+        color:var(--holo-ink) !important;
+        text-shadow:none !important;
+        white-space:nowrap !important;
+        text-overflow:ellipsis !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel:not([data-state="idle"]) .status-text {
+        font-size:clamp(19px,2.05vw,28px) !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-scan-success-title {
+        font-family:"Cascadia Code","Bahnschrift","Consolas",monospace !important;
+        font-size:clamp(21px,2.2vw,31px) !important;
+        letter-spacing:.07em !important;
+      }
+      /* The older dashboard sets an ID-level status color; override it
+         explicitly so Metroid uses a luminous legible lavender/white. */
+      html[data-theme] .inventory-command-bar #statusPanel #sysStatus {
+        color:var(--holo-ink) !important;
+      }
+            /* Warning symbol replaces ATTENTION REQUIRED completely, while the
+         real error message stays visible and accessible in #sysStatus. */
+      html[data-theme] .inventory-command-bar #statusPanel[data-state="warning"] .inv-status-eyebrow {
+        display:block !important;
+        position:absolute !important;
+        top:50% !important;
+        left:27px !important;
+        transform:translateY(-50%) !important;
+        font:900 36px/1 "Segoe UI Symbol","Arial Unicode MS",sans-serif !important;
+        color:var(--holo-ink) !important;
+        letter-spacing:0 !important;
+      }
+      /* Translucent glass, NOT whole-element opacity: both text and light
+         effects stay sharp, success/warning fills remain legible. */
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="idle"] {
+        background:
+          radial-gradient(ellipse 58% 120% at 1% 98%,rgba(70,165,255,.22),transparent 88%),
+          radial-gradient(ellipse 40% 125% at 96% 0%,rgba(66,238,217,.25),transparent 85%),
+          linear-gradient(to top right,rgba(185,222,251,.91) 0%,rgba(188,236,249,.91) 43%,rgba(201,249,244,.91) 100%) !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel[data-state="idle"] {
+        background:
+          radial-gradient(ellipse 56% 140% at 0% 100%,rgba(244,59,180,.17),transparent 83%),
+          radial-gradient(ellipse 43% 116% at 91% -4%,rgba(144,51,240,.16),transparent 82%),
+          linear-gradient(to top right,rgba(75,17,75,.91) 0%,rgba(72,20,93,.91) 41%,rgba(40,17,68,.91) 100%) !important;
+      }
+      @media(max-width:740px) {
+        html[data-theme] .inventory-command-bar #statusPanel[data-state="idle"] .status-text {
+          font-size:clamp(15px,2.95vw,23px) !important;
+          letter-spacing:.015em !important;
+        }
+        html[data-theme] .inventory-command-bar #statusPanel[data-state="warning"] .inv-status-eyebrow {
+          left:11px !important;font-size:25px !important;
+        }
+      }
+
+
+      /* ================================================================
+         00Z. INDEX-ALIGNED ENTRANCE + COLORED HOLOGRAPHIC INVENTORY
+         Reference: VALEO index.html hero drop-in and card reveal.
+         ================================================================ */
+      /* Inventory uses the same topbar-inner geometry as index.html.
+         The extra administration buttons sit LEFT of the shared theme orb. */
+      .os-container > .topbar .topbar-inner {
+        width:100% !important;
+        max-width:1312px !important;
+        margin-inline:auto !important;
+        box-sizing:border-box !important;
+        padding-inline:32px !important;
+      }
+      .os-container > .topbar .topbar-right {
+        margin-left:auto !important;
+        flex:0 1 auto !important;
+        min-width:0 !important;
+        justify-content:flex-end !important;
+      }
+      .os-container > .topbar .theme-picker {
+        margin-left:0 !important;
+        flex:0 0 40px !important;
+        width:40px !important;
+        min-width:40px !important;
+      }
+      @media(max-width:720px){
+        .os-container > .topbar .topbar-inner{padding-inline:20px !important;}
+      }
+      @media(max-width:500px){
+        .os-container > .topbar .topbar-inner{padding-inline:14px !important;}
+        .os-container > .topbar .theme-picker{flex-basis:34px !important;width:34px !important;min-width:34px !important;}
+      }
+
+      /* Muted luminous glass. These use alpha backgrounds, NOT element opacity,
+         so scanner feedback and line animations remain independently readable. */
+      html[data-theme="stella"] .inventory-command-bar #statusPanel {
+        --holo-ink:#175d77;
+        --banner-ink:rgba(18,84,111,.77);
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel {
+        --holo-ink:#d094ec;
+        --banner-ink:rgba(212,145,240,.82);
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="idle"] {
+        background:
+          radial-gradient(ellipse 55% 120% at 1% 98%,rgba(70,165,255,.14),transparent 88%),
+          radial-gradient(ellipse 40% 125% at 96% 0%,rgba(66,238,217,.17),transparent 85%),
+          linear-gradient(to top right,rgba(185,222,251,.72),rgba(188,236,249,.73) 43%,rgba(201,249,244,.72)) !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel[data-state="idle"] {
+        background:
+          radial-gradient(ellipse 56% 140% at 0% 100%,rgba(244,59,180,.10),transparent 83%),
+          radial-gradient(ellipse 43% 116% at 91% -4%,rgba(144,51,240,.12),transparent 82%),
+          linear-gradient(to top right,rgba(75,17,75,.73),rgba(72,20,93,.73) 41%,rgba(40,17,68,.72)) !important;
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel:is([data-state="success"],[data-state="scan-success"]) {
+        --banner-ink:rgba(18,90,66,.86);
+      }
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="warning"] {
+        --banner-ink:rgba(114,35,53,.84);
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel:is([data-state="success"],[data-state="scan-success"]) {
+        --banner-ink:rgba(120,239,187,.89);
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel[data-state="warning"] {
+        --banner-ink:rgba(255,167,145,.88);
+      }
+      /* All displayed statements now share one typography scale, regardless
+         of resting, verified scan, warning, or routine stock-update state. */
+      html[data-theme] .inventory-command-bar #statusPanel .status-text,
+      html[data-theme] .inventory-command-bar #statusPanel #sysStatus,
+      html[data-theme] .inventory-command-bar #statusPanel .inv-scan-success-title,
+      html[data-theme] .inventory-command-bar #statusPanel:not([data-state="idle"]) .status-text,
+      html[data-theme] .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-scan-success-title {
+        font-family:"Cascadia Code","Bahnschrift SemiCondensed","Consolas",monospace !important;
+        font-size:clamp(20px,2.55vw,36px) !important;
+        line-height:1.08 !important;
+        font-weight:720 !important;
+        letter-spacing:.018em !important;
+        color:var(--banner-ink) !important;
+        text-shadow:0 0 16px color-mix(in srgb,var(--banner-ink) 15%,transparent) !important;
+        max-width:100% !important;
+        white-space:normal !important;
+        overflow:visible !important;
+        overflow-wrap:break-word !important;
+        text-overflow:clip !important;
+        text-transform:none !important;
+        text-align:center !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel .inv-scan-success-title {text-transform:uppercase !important;}
+      html[data-theme] .inventory-command-bar #statusPanel .inv-status-copy {
+        box-sizing:border-box !important;
+        padding-inline:clamp(28px,6vw,65px) !important;
+        margin-inline:auto !important;
+        width:100% !important;
+        gap:3px !important;
+      }
+      /* A discrete SVG warning icon replaces the old glyph occupying the
+         eyebrow line. It cannot collide with the centered status message. */
+      html[data-theme] .inventory-command-bar #statusPanel[data-state="warning"] .inv-status-eyebrow {
+        display:none !important;
+      }
+      html[data-theme] .inventory-command-bar #statusPanel .inv-warning-icon {
+        display:none;
+        position:absolute;
+        left:clamp(15px,3.1vw,40px);
+        top:50%;
+        width:clamp(22px,2.5vw,31px);
+        height:clamp(22px,2.5vw,31px);
+        transform:translateY(-50%);
+        pointer-events:none;
+        z-index:6;
+        color:var(--banner-ink);
+        filter:drop-shadow(0 0 7px color-mix(in srgb,var(--banner-ink) 26%,transparent));
+      }
+      html[data-theme] .inventory-command-bar #statusPanel[data-state="warning"] .inv-warning-icon {display:block;}
+      .inv-warning-icon svg {display:block;width:100%;height:100%;stroke:currentColor;}
+      /* In success mode, leave space around the tick as well. */
+      html[data-theme] .inventory-command-bar #statusPanel .inv-scan-confirm-check {
+        right:clamp(14px,3vw,35px) !important;
+      }
+      @media(max-width:740px){
+        html[data-theme] .inventory-command-bar #statusPanel {
+          padding:12px 12px !important;
+          height:auto !important;
+          min-height:108px !important;
+        }
+        html[data-theme] .inventory-command-bar #statusPanel .inv-status-copy {
+          padding-inline:36px !important;
+        }
+        html[data-theme] .inventory-command-bar #statusPanel .status-text,
+        html[data-theme] .inventory-command-bar #statusPanel #sysStatus,
+        html[data-theme] .inventory-command-bar #statusPanel .inv-scan-success-title,
+        html[data-theme] .inventory-command-bar #statusPanel:not([data-state="idle"]) .status-text {
+          font-size:clamp(17px,3.7vw,26px) !important;
+          letter-spacing:.005em !important;
+        }
+      }
+      @media(max-width:390px){
+        html[data-theme] .inventory-command-bar #statusPanel .inv-status-copy{padding-inline:29px !important;}
+        html[data-theme] .inventory-command-bar #statusPanel .inv-warning-icon{left:10px;width:21px;height:21px;}
+      }
+
+      /* Tint every category card with ITS OWN accent while preserving the
+         theme-specific chamfer, colored rail and thin border. */
+      html[data-theme="stella"] .category-nav > .menu-btn {
+        background:
+          linear-gradient(145deg,
+            color-mix(in srgb,var(--category-accent) 17%,transparent),
+            color-mix(in srgb,var(--category-accent) 7%,transparent) 68%,transparent),
+          rgba(244,253,255,.58) !important;
+      }
+      html[data-theme="metroid"] .category-nav > .menu-btn {
+        background:
+          linear-gradient(145deg,
+            color-mix(in srgb,var(--category-accent) 19%,transparent),
+            color-mix(in srgb,var(--category-accent) 8%,transparent) 70%,transparent),
+          rgba(18,8,27,.62) !important;
+      }
+      html[data-theme] .category-nav > .menu-btn:is(:hover,:focus-visible,.active-cat) {
+        background:
+          linear-gradient(135deg,
+            color-mix(in srgb,var(--category-accent) 26%,transparent),
+            color-mix(in srgb,var(--category-accent) 10%,transparent)),
+          var(--inv-page-panel) !important;
+      }
+
+      /* Page-entry choreography: screen unfolds downward from the top;
+         category cards enter left-to-right, then table/search regions. */
+      html.inventory-boot .inventory-command-bar #statusPanel {
+        transform-origin:center top !important;
+        animation:invScreenDropIn .84s cubic-bezier(.15,.72,.23,1) both !important;
+      }
+      html.inventory-boot .category-nav > .menu-btn {
+        animation:invCardAppear .54s cubic-bezier(.18,.82,.25,1) both !important;
+      }
+      html.inventory-boot .category-nav > .menu-btn:nth-child(1){animation-delay:.54s !important;}
+      html.inventory-boot .category-nav > .menu-btn:nth-child(2){animation-delay:.65s !important;}
+      html.inventory-boot .category-nav > .menu-btn:nth-child(3){animation-delay:.76s !important;}
+      html.inventory-boot .category-nav > .menu-btn:nth-child(4){animation-delay:.87s !important;}
+      html.inventory-boot .category-nav > .menu-btn:nth-child(5){animation-delay:.98s !important;}
+      html.inventory-boot .action-row {animation:invTableAppear .54s ease-out 1.20s both !important;}
+      html.inventory-boot .inventory-workspace .grid-wrapper {animation:invTableAppear .65s ease-out 1.39s both !important;}
+      html.inventory-boot .inventory-workspace .quick-results {animation:invTableAppear .65s ease-out 1.53s both !important;}
+      @keyframes invScreenDropIn {
+        0%{opacity:0;clip-path:inset(0 0 98% 0);transform:translateY(-26px) scaleY(.05);filter:blur(7px) brightness(1.5);}
+        24%{opacity:.95;clip-path:inset(0 0 70% 0);transform:translateY(-10px) scaleY(.36);filter:blur(3px) brightness(1.23);}
+        68%{opacity:1;clip-path:inset(0);transform:translateY(1px) scaleY(1.012);filter:blur(.5px) brightness(1.08);}
+        100%{opacity:1;clip-path:inset(0);transform:none;filter:none;}
+      }
+      @keyframes invCardAppear {
+        0%{opacity:0;transform:translateX(-36px) translateY(10px);filter:blur(6px);}
+        55%{opacity:.83;transform:translateX(-5px);filter:blur(1px);}
+        100%{opacity:1;transform:none;filter:none;}
+      }
+      @keyframes invTableAppear {
+        0%{opacity:0;transform:translateY(22px);filter:blur(6px);}
+        100%{opacity:1;transform:none;filter:none;}
+      }
+      @media(prefers-reduced-motion:reduce){
+        html.inventory-boot .inventory-command-bar #statusPanel,
+        html.inventory-boot .category-nav > .menu-btn,
+        html.inventory-boot .action-row,
+        html.inventory-boot .inventory-workspace .grid-wrapper,
+        html.inventory-boot .inventory-workspace .quick-results {
+          animation:none !important;opacity:1 !important;transform:none !important;
+          filter:none !important;clip-path:none !important;
+        }
+      }
+
+      /* 00AA — Edge-aligned header, softer glass, and staged screen expansion */
+
+      /* 00AA — Edge-aligned header, softer glass, and staged screen expansion */
+      /* Use the actual browser width, not a centered 1312px content column.
+         The navigation orb remains at the far-left and the logo sits beside it. */
+      .os-container > .topbar .topbar-inner {
+        width:100% !important;
+        max-width:none !important;
+        margin:0 !important;
+        padding-left:clamp(58px,5.2vw,82px) !important;
+        padding-right:clamp(10px,1.15vw,18px) !important;
+      }
+      .os-container > .topbar .identity {margin-left:0 !important; margin-right:auto !important;}
+      .os-container > .topbar .topbar-right {margin-left:auto !important; margin-right:0 !important;}
+      .os-container > .topbar .theme-picker {margin-right:0 !important;}
+      @media(max-width:720px) {
+        .os-container > .topbar .topbar-inner {padding-left:55px !important;padding-right:9px !important;}
+      }
+      @media(max-width:355px) {
+        .os-container > .topbar .topbar-inner {padding-left:50px !important;padding-right:6px !important;}
+      }
+
+      /* Match the hero/screen typography from index.html (the shared
+         --display-font stack), not the previous terminal/Cascadia font. */
+      html[data-theme] .inventory-command-bar #statusPanel .status-text,
+      html[data-theme] .inventory-command-bar #statusPanel #sysStatus,
+      html[data-theme] .inventory-command-bar #statusPanel .inv-scan-success-title,
+      html[data-theme] .inventory-command-bar #statusPanel:not([data-state="idle"]) .status-text,
+      html[data-theme] .inventory-command-bar #statusPanel[data-state="scan-success"] .inv-scan-success-title {
+        font-family:'Bahnschrift','Avenir Next Condensed','Avenir Next','Segoe UI Variable','Trebuchet MS',Arial,sans-serif !important;
+        font-weight:700 !important;
+        font-size:clamp(21px,2.55vw,36px) !important;
+        line-height:1.13 !important;
+        letter-spacing:.045em !important;
+        text-transform:uppercase !important;
+      }
+      @media(max-width:740px){
+        html[data-theme] .inventory-command-bar #statusPanel .status-text,
+        html[data-theme] .inventory-command-bar #statusPanel #sysStatus,
+        html[data-theme] .inventory-command-bar #statusPanel .inv-scan-success-title,
+        html[data-theme] .inventory-command-bar #statusPanel:not([data-state="idle"]) .status-text {
+          font-size:clamp(17px,3.7vw,26px) !important;
+          letter-spacing:.026em !important;
+        }
+      }
+
+      /* More see-through theme color; preserve scanlines and moving sweep.
+         Only standby glass changes; confirmation and warning remain legible. */
+      html[data-theme="stella"] .inventory-command-bar #statusPanel[data-state="idle"] {
+        background:
+          radial-gradient(ellipse 55% 120% at 1% 98%,rgba(70,165,255,.075),transparent 88%),
+          radial-gradient(ellipse 40% 125% at 96% 0%,rgba(66,238,217,.09),transparent 85%),
+          linear-gradient(to top right,rgba(185,222,251,.43),rgba(188,236,249,.44) 43%,rgba(201,249,244,.43)) !important;
+      }
+      html[data-theme="metroid"] .inventory-command-bar #statusPanel[data-state="idle"] {
+        background:
+          radial-gradient(ellipse 56% 140% at 0% 100%,rgba(244,59,180,.075),transparent 83%),
+          radial-gradient(ellipse 43% 116% at 91% -4%,rgba(144,51,240,.08),transparent 82%),
+          linear-gradient(to top right,rgba(75,17,75,.45),rgba(72,20,93,.46) 41%,rgba(40,17,68,.45)) !important;
+      }
+
+      /* Animate the SECTION'S real height, not only the panel transform.
+         This makes the screen visibly stretch down from the top and pushes
+         the following content into place, like index.html's screen boot. */
+      html.inventory-boot .inventory-command-bar {
+        overflow:hidden !important;
+        animation:invScreenUnfurlReal .98s cubic-bezier(.17,.76,.22,1) both !important;
+        will-change:height;
+      }
+      html.inventory-boot .inventory-command-bar #statusPanel {
+        animation:none !important;
+        transform:none !important;
+        opacity:1 !important;
+        filter:none !important;
+        clip-path:none !important;
+      }
+      @keyframes invScreenUnfurlReal {
+        0%,8% {height:0;max-height:0;}
+        25% {height:13px;max-height:13px;}
+        61% {height:116px;max-height:116px;}
+        80% {height:111px;max-height:111px;}
+        100% {height:112px;max-height:112px;}
+      }
+      /* Card sequence follows the completed screen expansion. */
+      html.inventory-boot .category-nav > .menu-btn:nth-child(1){animation-delay:1.04s !important;}
+      html.inventory-boot .category-nav > .menu-btn:nth-child(2){animation-delay:1.16s !important;}
+      html.inventory-boot .category-nav > .menu-btn:nth-child(3){animation-delay:1.28s !important;}
+      html.inventory-boot .category-nav > .menu-btn:nth-child(4){animation-delay:1.40s !important;}
+      html.inventory-boot .category-nav > .menu-btn:nth-child(5){animation-delay:1.52s !important;}
+      html.inventory-boot .action-row {animation-delay:2.12s !important;}
+      html.inventory-boot .inventory-workspace .grid-wrapper {animation-delay:2.41s !important;}
+      html.inventory-boot .inventory-workspace .quick-results {animation-delay:2.56s !important;}
+      /* Header's folder and statistics buttons are the FINAL items to appear.
+         They stay hidden during every preceding stage, even if assets finish
+         loading early and the original .is-loaded class is already present. */
+      html.inventory-boot .topbar .header-kiosk-controls > .kiosk-control {
+        opacity:0 !important;
+        transform:translateY(-6px) !important;
+        pointer-events:none !important;
+      }
+      @media(prefers-reduced-motion:reduce){
+        html.inventory-boot .inventory-command-bar,
+        html.inventory-boot .inventory-command-bar #statusPanel {
+          animation:none !important;
+          height:auto !important;
+          max-height:none !important;
+          overflow:visible !important;
+          transform:none !important;
+          filter:none !important;
+        }
+        html.inventory-boot .topbar .header-kiosk-controls > .kiosk-control {
+          opacity:1 !important;
+          transform:none !important;
+          pointer-events:auto !important;
+        }
+      }
+
+    </style>
+    <!-- Final, non-invasive Data Archive card match; loaded last. -->
+    <link rel="stylesheet" href="css/inventory-archive-cards.css">
+</head>
+<body>
+<!-- 01. STARTUP: No splash screen; open directly to inventory -->
+
+<!-- ALIEN ORGANISM CANVAS -->
+<canvas id="alienCanvas"></canvas>
+
+<!-- 02. LEGACY COOLDOWN PANEL: Required by existing inventory-core.js -->
+<div id="lockdownScreen">
+    <h1 class="lockdown-title" id="lockTitle">PAUSED</h1>
+    <h2 class="lockdown-sub" id="lockSub">TOO MANY RAPID CHANGES</h2>
+    
+    <div class="dispatch-message" id="dispatchMsg">
+        <span class="blink-red">> UPLINK SECURED: FACILITY SECURITY NOTIFIED.</span>
+        <span>> ARMED RESPONSE TEAM EN ROUTE...</span>
+        <span>> DO NOT ATTEMPT TO LEAVE THE TERMINAL.</span>
+        <span style="color:var(--cyan);">> PLEASE REMAIN IN DIRECT SIGHT OF OVERHEAD BIOMETRIC CAMERAS.</span>
+    </div>
+
+    <div class="lockdown-timer" id="lockTimer">05:00</div>
+</div>
+
+<div class="os-container">
+    
+  <!-- 03. SHARED HEADER: VALEO logo / theme toggle / navigation -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <button type="button" class="nav-orb-button" id="navOpenButton" aria-label="Open laboratory navigation" aria-controls="labSidePanel" aria-expanded="false">
+        <span class="nav-orb-lines" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+      <a class="identity" href="index.html" aria-label="VALEO Laboratory Operations home">
+        <span class="brand-logo-shell"><img class="brand-logo" src="valeoLogo.png" alt="VALEO" onerror="if(!this.dataset.triedUpper){this.dataset.triedUpper='1';this.src='ValeoLogo.png'}else{this.hidden=true;this.nextElementSibling.hidden=false}"><span class="brand-fallback" hidden>VALEO</span></span>
+        <span class="identity-text"><span class="identity-subtitle">RENO NV LABORATORY</span></span>
+      </a>
+      <div class="topbar-right">
+        <!-- 03A. HEADER TOOLS: Folder sync + Statistics (fade in after full load) -->
+        <div class="kiosk-controls header-kiosk-controls" id="headerKioskControls" role="group" aria-label="Inventory administration tools">
+          <button type="button" id="folderSyncButton" class="header-control kiosk-control kiosk-folder"
+                  onclick="connectInventoryFolder()" aria-label="Connect inventory folder"
+                  title="Connect or reconnect the VALEO_INVENTORY folder">SYNC READY</button>
+          <button type="button" id="statisticsButton" class="header-control kiosk-control kiosk-chart"
+                  onclick="toggleStatistics()" aria-pressed="false" aria-label="Toggle inventory statistics view"
+                  title="Show statistics; press again to return to inventory">STATISTICS</button>
+        </div>
+        <div class="theme-picker" role="group" aria-label="Color theme">
+          <button type="button" class="theme-button" id="themeStella" data-theme-option="stella" aria-pressed="true"><span class="theme-orb stella-orb" aria-hidden="true"></span><span>STELLA</span></button>
+          <button type="button" class="theme-button" id="themeMetroid" data-theme-option="metroid" aria-pressed="false"><span class="theme-orb metroid-orb" aria-hidden="true"></span><span>METROID</span></button>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <!-- 04. SHARED NAVIGATION SIDEBAR (Hub navigation.js) -->
+  <div class="nav-side-backdrop" id="navSideBackdrop" aria-hidden="true"></div>
+  <aside class="nav-side-panel" id="labSidePanel" aria-label="Laboratory navigation" aria-hidden="true" inert>
+    <div class="nav-side-edge" aria-hidden="true"></div>
+    <div class="nav-side-top">
+      <div class="nav-side-title"><span class="nav-side-live" aria-hidden="true"></span><span><small>RENO NV LABORATORY</small><strong>NAVIGATION</strong></span></div>
+      <button class="nav-side-close" type="button" id="navCloseButton" aria-label="Close laboratory navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg></button>
+    </div>
+    <nav class="nav-side-menu" aria-label="Quick access">
+      <div class="nav-side-caption">LABORATORY REQUESTS</div>
+      <a href="#" class="nav-side-ticket" data-ticket-link aria-label="Create a laboratory analysis ticket">
+        <span class="nav-side-ticket-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" aria-hidden="true"><path d="M3 5.5h18v4.3a2.2 2.2 0 0 0 0 4.4v4.3H3v-4.3a2.2 2.2 0 0 0 0-4.4zM13 6.5v2M13 11v2M13 15.5v2"/></svg></span>
+        <span class="nav-side-link-text"><strong>Create Analysis Ticket</strong><small>Submit a lab analysis request</small></span>
+        <svg class="nav-side-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+      </a>
+      <div class="nav-side-caption nav-side-caption--workspace">WORKSPACES</div>
+      <a href="inventory_nexus.html" class="nav-side-link"><span class="nav-side-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 0v10l9 4 9-4V7M12 11v10"/></svg></span><span>Inventory</span><span class="nav-side-end" aria-hidden="true">↗</span></a>
+      <a href="dataView.html" class="nav-side-link"><span class="nav-side-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5h16v14H4zM4 9h16M9 9v10M15 13h2m-2 3h2"/></svg></span><span>Data Archive</span><span class="nav-side-end" aria-hidden="true">↗</span></a>
+      <div class="nav-side-caption nav-side-caption--workspace">TECHNICIAN ACCESS</div>
+      <div class="nav-tools-group" id="navToolsGroup">
+        <button type="button" class="nav-side-tools-toggle" id="navToolsToggle" aria-expanded="false" aria-controls="navToolsCollapse">
+          <span class="nav-side-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 3h6m-5 0v7L4.3 19a1.4 1.4 0 0 0 1.2 2h13a1.4 1.4 0 0 0 1.2-2L14 10V3M8 15h8"/></svg></span>
+          <span>Technician Tools</span><span class="nav-tools-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="m6 9 6 6 6-6"/></svg></span>
+        </button>
+        <div class="nav-tools-collapse" id="navToolsCollapse" inert>
+          <div class="nav-tools-inner">
+            <div class="nav-tools-tree">
+              <div class="nav-tools-category">QUALITY ANALYSIS</div>
+              <a href="corsair_dash.html" class="nav-tools-item"><span class="nav-tools-node" aria-hidden="true"></span>CMM Measurements<span aria-hidden="true">↗</span></a>
+              <a href="black_lab_DSC.html" class="nav-tools-item"><span class="nav-tools-node" aria-hidden="true"></span>DSC Thermal Analysis<span aria-hidden="true">↗</span></a>
+              <a href="black_lab_keyence.html" class="nav-tools-item"><span class="nav-tools-node" aria-hidden="true"></span>Keyence PCT &amp; Braze<span aria-hidden="true">↗</span></a>
+              <div class="nav-tools-category">DOCUMENTS &amp; SCANNING</div>
+              <a href="scanner_setup.html" class="nav-tools-item"><span class="nav-tools-node" aria-hidden="true"></span>Scanner Setup<span aria-hidden="true">↗</span></a>
+              <a href="qrScanner.html" class="nav-tools-item"><span class="nav-tools-node" aria-hidden="true"></span>QR Scanner<span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="nav-side-footer"><span class="nav-side-footer-dot" aria-hidden="true"></span>LABORATORY OPERATIONS <span>•</span> VALEO</div>
+  </aside>
+
+    <!-- 04B. INVENTORY STATUS: Keeps only the live status panel and optional JSON fallback -->
+    <section class="inventory-command-bar" aria-label="Inventory operational status">
+        <!-- 04C. PROFESSIONAL STATUS INDICATOR: Live text is managed by inventory-core.js -->
+        <div class="status-panel" id="statusPanel" data-state="idle" role="status" aria-live="polite" aria-atomic="true">
+            <span class="inv-live-screen" aria-hidden="true"><span class="inv-live-beam"></span><span class="inv-live-halo"></span></span>
+            <span class="inv-status-indicator" aria-hidden="true"></span>
+            <span class="inv-warning-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.86 1.82 18.21A2 2 0 0 0 3.55 21h16.9a2 2 0 0 0 1.73-2.79L13.7 3.86a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
+            <span class="inv-scan-confirm-check" aria-hidden="true">✓</span>
+            <span class="inv-status-copy">
+                <span class="inv-status-eyebrow" aria-hidden="true"></span>
+                <span class="inv-scan-success-title" aria-hidden="true">SCAN SUCCESSFUL</span>
+                <span class="status-text" id="sysStatus">Valeo Laboratory Inventory</span>
+            </span>
+        </div>
+        <!-- Rare manual-save fallback; its ID/behavior is preserved -->
+        <button type="button" class="header-control" id="saveJsonButton" onclick="saveLocalInventory()" hidden>SAVE JSON</button>
+    </section>
+
+        <!-- 05. STATISTICS PANEL: Inventory snapshot + transaction history -->
+    <section class="statistics-view" id="statisticsView" hidden aria-labelledby="statisticsHeading">
+      <div class="stats-intro">
+        <div><h1 id="statisticsHeading">INVENTORY <span>INTELLIGENCE</span></h1>
+          <p id="statsTrackingInfo">Connect your inventory folder to begin tracking usage and restocks.</p></div>
+        <div class="stats-actions">
+          <label for="statsWindow">HISTORY</label>
+          <select id="statsWindow" onchange="renderStatistics()" aria-label="Statistics date range">
+            <option value="7">7 DAYS</option><option value="30" selected>30 DAYS</option>
+            <option value="90">90 DAYS</option><option value="all">ALL RECORDED</option>
+          </select>
+          <button type="button" class="stats-btn" onclick="exportActivityCSV()">EXPORT ACTIVITY CSV</button>
+          <button type="button" class="stats-btn stats-close" onclick="toggleStatistics(false)">CLOSE ✕</button>
+        </div>
+      </div>
+      <div class="stats-kpi-grid" id="statsKpis" aria-live="polite"></div>
+      <div class="stats-content-grid">
+        <section class="stats-panel stats-trend-panel">
+          <div class="stats-panel-head"><h2>STOCK MOVEMENT</h2><small id="statsChartHint">Daily units • recent 14 days</small></div>
+          <div class="stats-legend"><span class="used-dot">USED / SCANNED OUT</span><span class="received-dot">RESTOCKED / ADDED</span></div>
+          <div class="stats-chart" id="statsChart" role="img" aria-label="Daily units consumed and received"></div>
+        </section>
+        <section class="stats-panel"><div class="stats-panel-head"><h2>REPLENISHMENT WATCH</h2><small>Current inventory and thresholds</small></div>
+          <div class="stats-table-wrap" id="statsLowStock"></div></section>
+        <section class="stats-panel"><div class="stats-panel-head"><h2>MOST USED ITEMS</h2><small>Observed withdrawals and days of cover</small></div>
+          <div class="stats-table-wrap" id="statsMostUsed"></div></section>
+        <section class="stats-panel"><div class="stats-panel-head"><h2>MOST RESTOCKED</h2><small>Observed incoming units</small></div>
+          <div class="stats-table-wrap" id="statsMostRestocked"></div></section>
+        <section class="stats-panel"><div class="stats-panel-head"><h2>BY CATEGORY</h2><small>Stock, low items and activity</small></div>
+          <div class="stats-table-wrap" id="statsByCategory"></div></section>
+        <section class="stats-panel"><div class="stats-panel-head"><h2>RECENT ACTIVITY</h2><small>Every recorded manual or scanned movement</small></div>
+          <div class="stats-table-wrap" id="statsActivity"></div></section>
+      </div>
+      <p class="stats-note" id="statsDisclaimer">Usage trends start when this feature begins recording. Existing stock levels do not reveal past usage.</p>
+    </section>
+
+    <!-- 06. CATEGORY FILTERS: DSC / X-SECTION / QUALITY / CLEAN-UP / ALL -->
+    <div class="category-nav">
+        <button class="menu-btn btn-dsc cipher-btn" data-cipher="DSC" onclick="setCategoryFilter('DSC')">
+            <span class="btn-title">DSC</span>
+        </button>
+        <button class="menu-btn btn-xsec cipher-btn" data-cipher="X-SECTION" onclick="setCategoryFilter('X-Section')">
+            <span class="btn-title">X-SECTION</span>
+        </button>
+        <button class="menu-btn btn-qual cipher-btn" data-cipher="QUALITY" onclick="setCategoryFilter('Quality')">
+            <span class="btn-title">QUALITY</span>
+        </button>
+        <button class="menu-btn btn-clean cipher-btn" data-cipher="CLEAN-UP" onclick="setCategoryFilter('Clean-Up')">
+            <span class="btn-title">CLEAN-UP</span>
+        </button>
+        <button class="menu-btn btn-all active-cat cipher-btn" data-cipher="ALL" style="flex: 0.3;" onclick="setCategoryFilter('ALL')">
+            <span class="btn-title">ALL</span>
+        </button>
+    </div>
+
+    <!-- 07. TOUCHSCREEN COMMAND STRIP: Add + search + keyboard + stock-up -->
+    <!-- All original onclick functions and IDs are preserved for inventory-core.js. -->
+    <div class="action-row">
+        <!-- 07C. PRIMARY ADD ACTION — stays directly left of the search screen -->
+        <div class="kiosk-controls kiosk-add-slot" role="group" aria-label="Create inventory item">
+            <button type="button" id="addItemButton" class="kiosk-control kiosk-plus"
+                    onclick="openModal('new')" aria-label="Add new inventory item" title="Add New Item">Add New Item</button>
+        </div>
+        <div class="search-beeper" role="group" aria-label="Inventory search">
+            <!-- 07B. SEARCH ICON — Magnifying glass inside the left side of the screen -->
+            <svg class="inv-search-magnifier" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.6 15.6 5.1 5.1"/>
+            </svg>
+            <input id="inventorySearch" class="inventory-search" type="search" inputmode="search"
+                   placeholder="Search by part, name, type, or barcode…"
+                   aria-label="Smart search inventory by name, part ID, type, or barcode; accepts typos"
+                   autocomplete="off" spellcheck="false"
+                   onpointerdown="rememberSearchPointer(event)" oninput="onSearchInput()">
+        </div>
+        <!-- 07A. TOUCH UTILITIES — Keyboard and Stock Up stay beside search -->
+        <div class="kiosk-controls kiosk-utility-controls" role="group" aria-label="Inventory kiosk utilities">
+            <button type="button" id="searchKeyboardToggle" class="search-open-btn kiosk-control kiosk-keyboard"
+                    onclick="toggleSearchKeyboard()" aria-label="Show on-screen keyboard" aria-pressed="false"
+                    aria-controls="touchKeyboard" title="Show or hide the on-screen keyboard">⌨</button>
+            <button type="button" id="stockModeButton" class="header-control kiosk-control kiosk-stock-up"
+                    onclick="toggleStockUpMode()" aria-pressed="false" aria-label="Toggle stock-up scanning mode"
+                    title="Stock Up: scans add 1 instead of subtracting 1 when active">STOCK UP: OFF</button>
+        </div>
+    </div>
+
+        <!-- 08. LOCAL FILE FALLBACK + ACCESSIBILITY STATUS -->
+    <input id="offlineJsonInput" type="file" accept=".json,application/json" hidden onchange="chooseJsonFallback(event)">
+    <div id="offlineFileStatus" class="screen-reader-only" role="status" aria-live="polite">Sync ready: select VALEO_INVENTORY folder.</div>
+
+    <!-- 09. RESPONSIVE INVENTORY TABLE AND SEARCH RESULTS -->
+    <div class="inventory-workspace" id="inventoryWorkspace">
+    <!-- 09A. TABLE WRAPPER -->
+    <div class="grid-wrapper">
+        <div class="scroll-container">
+            
+            <!-- 09B. CRITICAL STOCK TABLE -->
+            <div id="criticalSection" style="display: none; margin-bottom: 40px;">
+                <!-- 09B-1. CRITICAL LABEL — dot + full-length solid red rule (no colored backdrop) -->
+                <div class="critical-heading" role="heading" aria-level="2">
+                    <span class="critical-heading-dot" aria-hidden="true"></span>
+                    <span class="critical-heading-title">Critical</span>
+                </div>
+                <table class="data-table critical-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>CATEGORY</th>
+                            <th>NAME</th>
+                            <th>STOCK</th>
+                            <th>TYPE</th>
+                            <th>STATUS</th>
+                            <th>OVERRIDE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="criticalGridBody">
+                        <!-- Critical rows populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 09C. STANDARD INVENTORY TABLE — separate surface, faint top rule -->
+            <section class="standard-inventory-section" id="standardInventorySection" aria-label="Standard inventory">
+              <!-- 09C-1. IN STOCK LABEL — mint status dot + solid rule -->
+              <div class="stock-heading" role="heading" aria-level="2">
+                <span class="stock-heading-dot" aria-hidden="true"></span>
+                <span class="stock-heading-title">In Stock</span>
+              </div>
+              <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>CATEGORY</th>
+                        <th>NAME</th>
+                        <th>STOCK</th>
+                        <th>TYPE</th>
+                        <th>STATUS</th>
+                        <th>OVERRIDE</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryGridBody">
+                    <!-- Standard rows populated by JS -->
+                </tbody>
+              </table>
+            </section>
+
+        </div>
+        <section class="quick-results" id="quickResults" aria-label="Search results with inventory controls">
+            <div class="quick-results-header">
+                <span class="quick-result-count" id="quickResultCount">INVENTORY</span>
+                <span class="quick-hint">LIVE STOCK • TAP − OR +</span>
+            </div>
+            <div class="quick-list" id="quickResultList"></div>
+        </section>
+    </div>
+    <!-- 10. TOUCH KEYBOARD: Managed by inventory-core.js -->
+    <aside class="keyboard-panel" id="touchKeyboard" aria-label="On-screen search keyboard">
+        <div class="keyboard-top">
+            <div><div class="keyboard-label">VALEO // SEARCH INPUT</div><div class="keyboard-heading">TOUCH KEYBOARD</div></div>
+            <button class="keyboard-close" onclick="closeSearchKeyboard()" aria-label="Close keyboard">×</button>
+        </div>
+        <p class="keyboard-subtitle">Type part numbers or names. Spelling, hyphens and number words don't need to match exactly.</p>
+        <div class="keyboard-keys" id="keyboardKeys"></div>
+        <div class="keyboard-footer">This keyboard can be closed with the ⌨ button. Physical typing automatically hides it.</div>
+        <div class="keyboard-tip">SMART EXAMPLE: 1thousa → one-thousand<br>Every + / − tap changes stock by exactly one.</div>
+    </aside>
+    </div>
+
+</div>
+
+<!-- 11. ADD / EDIT ITEM DIALOG -->
+<div class="modal-overlay" id="forgeModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span id="modalTitle">ADD NEW ITEM</span>
+            <button class="btn-mini del" style="border:none;" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editId" value="">
+            
+            <div class="input-block">
+                <label class="input-label">INTERNAL PART ID</label>
+                <input type="text" id="inputId" class="forge-input" placeholder="e.g. V-001">
+            </div>
+            
+            <div class="input-block">
+                <label for="inputManufacturerBarcode" class="input-label">MANUFACTURER BARCODE / QR (OPTIONAL)</label>
+                <div class="barcode-entry">
+                    <input type="text" id="inputManufacturerBarcode" class="forge-input" maxlength="180"
+                           placeholder="Scan UPC, EAN, or QR payload" autocomplete="off" spellcheck="false">
+                    <button type="button" class="barcode-capture-btn" onclick="prepareBarcodeCapture()">SCAN TO FILL</button>
+                </div>
+                <small class="barcode-help">Scan the package label into this field once. Keep leading zeros; configure the scanner to send Enter after the code.</small>
+            </div>
+
+            <div class="input-block">
+                <label for="inputManufacturerBarcodes" class="input-label">ADDITIONAL MANUFACTURER BARCODES (OPTIONAL)</label>
+                <textarea id="inputManufacturerBarcodes" class="forge-input" rows="2" maxlength="1500" placeholder="One alternate barcode per line (up to 8)"></textarea>
+                <small class="barcode-help">Use when one inventory item has several valid package labels. Do not enter the internal Part ID again.</small>
+            </div>
+
+            <div class="input-block">
+                <label class="input-label">NOMENCLATURE</label>
+                <input type="text" id="inputName" class="forge-input" placeholder="e.g. 9µm Polishing Pads">
+            </div>
+            
+            <div class="input-block">
+                <label class="input-label">FOLDER GROUP (Optional - Groups items in table)</label>
+                <input type="text" id="inputGroup" class="forge-input" placeholder="e.g. Grit Paper, Diamond Suspension" list="groupHints">
+                <datalist id="groupHints">
+                    <option value="Grit Paper">
+                    <option value="Polishing Pads">
+                    <option value="Diamond Suspension">
+                </datalist>
+            </div>
+            
+            <div style="display: flex; gap: 15px;">
+                <div class="input-block" style="flex:1;">
+                    <label class="input-label">CATEGORY</label>
+                    <input type="text" id="inputCategory" class="forge-input" placeholder="DSC, X-Section..." list="categoryHints">
+                    <datalist id="categoryHints">
+                        <option value="DSC">
+                        <option value="X-Section">
+                        <option value="Quality">
+                        <option value="Clean-Up">
+                    </datalist>
+                </div>
+                <div class="input-block" style="flex:1;">
+                    <label class="input-label">PACKAGING TYPE</label>
+                    <input type="text" id="inputType" class="forge-input" placeholder="Box/Bottle" list="typeHints">
+                    <datalist id="typeHints">
+                        <option value="Box">
+                        <option value="Bottle">
+                        <option value="Spool">
+                        <option value="Pack">
+                    </datalist>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <div class="input-block" style="flex:1;">
+                    <label class="input-label">CURRENT QTY</label>
+                    <input type="number" id="inputQty" class="forge-input" value="0" min="0">
+                </div>
+                <div class="input-block" style="flex:1;">
+                    <label class="input-label">CRITICAL THRESHOLD</label>
+                    <input type="number" id="inputThreshold" class="forge-input" value="5" min="0">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="action-btn" style="border-color:var(--crimson); color:var(--crimson); box-shadow:0 0 15px rgba(255,59,48,0.3);" onclick="closeModal()">CANCEL</button>
+            <button class="action-btn" style="border-color:var(--mint); color:var(--mint); box-shadow:0 0 15px rgba(29,242,186,0.3);" onclick="saveItem()">SAVE ITEM</button>
+        </div>
+    </div>
+</div>
+
+<!-- 12. SHARED LAB TICKET DIALOG -->
+<dialog class="service-desk-dialog" id="serviceDeskDialog" aria-labelledby="serviceDeskTitle">
+  <form id="serviceDeskForm" class="service-desk-form">
+    <div class="service-desk-head"><span class="service-desk-dot" aria-hidden="true"></span><h2 id="serviceDeskTitle">Laboratory Analysis Tickets</h2></div>
+    <p>Enter the URL for your laboratory analysis request portal. The address is saved in this browser.</p>
+    <label for="serviceDeskUrl">Ticket portal URL</label>
+    <input id="serviceDeskUrl" type="url" placeholder="https://your-company.example/lab-requests" autocomplete="url" required>
+    <p class="service-desk-error" id="serviceDeskError" role="alert" hidden></p>
+    <div class="service-desk-actions"><button type="button" id="cancelServiceDesk">Cancel</button><button type="submit">Save &amp; open</button></div>
+    <small>Enter the URL provided by your laboratory. To change it later, Shift+click Create Analysis Ticket.</small>
+  </form>
+</dialog>
+<!-- 13. JAVASCRIPT: Existing shared scripts + preserved inventory logic -->
+<script src="js/theme.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/tickets.js"></script>
+<script src="js/inventory-core.js"></script>
+
+
+<!-- =============================================================
+     13A. LIVE STOCK STATUS + VERIFIED SCAN FEEDBACK
+     The existing inventory-core.js performs inventory writes and
+     sets the actual outcome message. This adapter never changes
+     quantities, storage, or sync behavior.
+     ============================================================= -->
+<script>
+(function () {
+  'use strict';
+  const panel = document.getElementById('statusPanel');
+  const output = document.getElementById('sysStatus');
+  const eyebrow = panel && panel.querySelector('.inv-status-eyebrow');
+  if (!panel || !output || !eyebrow) return;
+
+  // Keyboard-wedge scanners send fast characters followed by Enter.
+  // A positive result is shown ONLY if inventory-core.js subsequently
+  // reports a saved stock change. No optimistic success on Enter.
+  let wedge = '';
+  let started = 0;
+  let lastStroke = 0;
+  let awaitingScanUntil = 0;
+  let pulseTimeout;
+  let detectedTimeout;
+  window.addEventListener('keydown', function (event) {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    const target = event.target;
+    if (document.getElementById('forgeModal')?.classList.contains('active')) return;
+    if (target?.closest?.('input, textarea, select') && target.id !== 'inventorySearch') return;
+    const now = performance.now();
+    if (event.key === 'Enter') {
+      const rapid = wedge.length >= 4 && (now - started) <= (wedge.length + 1) * 48;
+      if (rapid) {
+        awaitingScanUntil = now + 12000;
+        // Visible scanner-code detection in BOTH themes. The scanner
+        // still has to confirm a saved stock change for green success.
+        panel.classList.remove('is-scan-detected');
+        void panel.offsetWidth;
+        panel.classList.add('is-scan-detected');
+        clearTimeout(detectedTimeout);
+        detectedTimeout = setTimeout(() => panel.classList.remove('is-scan-detected'), 900);
+      }
+      wedge = '';
+      return;
+    }
+    if (event.key.length !== 1) return;
+    if (!wedge || now - lastStroke > 120) { wedge = ''; started = now; }
+    wedge += event.key;
+    lastStroke = now;
+  }, true);
+
+  function pulse(kind) {
+    panel.classList.remove('is-scan-detected','is-scan-confirmed','is-scan-error');
+    // Restart if scans arrive back-to-back.
+    void panel.offsetWidth;
+    panel.classList.add(kind === 'error' ? 'is-scan-error' : 'is-scan-confirmed');
+    clearTimeout(pulseTimeout);
+    pulseTimeout = setTimeout(() => {
+      panel.classList.remove('is-scan-confirmed','is-scan-error');
+    }, 1600);
+  }
+  function classify() {
+    let message = (output.textContent || '').trim();
+    if (!message || /^(?:VALEO\s*\/\s*LAB INVENTORY|INVENTORY STATUS)$/i.test(message)) {
+      if (message !== 'Valeo Laboratory Inventory') {
+        output.textContent = 'Valeo Laboratory Inventory';
+        return; // MutationObserver immediately reclassifies the new resting label.
+      }
+    }
+    const isWarning = /\b(warn|warning|critical|error|failed|invalid|denied|unknown|out of stock|unsaved|not saved|history not saved)\b/i.test(message);
+    const savedStock = /^[+\-−]1\s/.test(message) && !isWarning;
+    const scanIsPending = performance.now() <= awaitingScanUntil;
+    if (scanIsPending && savedStock) {
+      panel.dataset.state = 'scan-success';
+      eyebrow.textContent = 'STOCK CHANGE VERIFIED';
+      awaitingScanUntil = 0;
+      pulse('success');
+    } else if (isWarning) {
+      panel.dataset.state = 'warning';
+      eyebrow.textContent = ''; // Dedicated, non-overlapping SVG warning icon
+      if (scanIsPending) { awaitingScanUntil = 0; pulse('error'); }
+    } else if (savedStock) {
+      panel.dataset.state = 'success';
+      eyebrow.textContent = 'STOCK UPDATED';
+    } else if (/\b(saved|connected|synced|success|complete|updated|added|restocked)\b/i.test(message)) {
+      panel.dataset.state = 'success';
+      eyebrow.textContent = 'OPERATION COMPLETED';
+    } else {
+      panel.dataset.state = 'idle';
+      eyebrow.textContent = '';
+    }
+  }
+  new MutationObserver(classify).observe(output, {childList:true,characterData:true,subtree:true});
+  classify();
+})();
+</script>
+
+
+<!-- 13A-2. THEME-OWNED CATEGORY COLOR LABELS / FOLDER ACCENTS -->
+<script>
+(function(){
+  'use strict';
+  const categories = {
+    'DSC':'cat-dsc',
+    'X-SECTION':'cat-xsec',
+    'QUALITY':'cat-quality',
+    'CLEAN-UP':'cat-clean'
+  };
+  const bodies = [document.getElementById('inventoryGridBody'),document.getElementById('criticalGridBody')].filter(Boolean);
+  if (!bodies.length) return;
+  function recolor(){
+    for (const body of bodies){
+      body.querySelectorAll('td.cell-category').forEach(cell=>{
+        const key = cell.textContent.trim().toUpperCase();
+        const desired = categories[key] || 'cat-other';
+        if (!cell.classList.contains(desired)) {
+          cell.classList.remove('cat-dsc','cat-xsec','cat-quality','cat-clean','cat-other');
+          cell.classList.add(desired);
+        }
+      });
+    }
+    const folders = [...document.querySelectorAll('#inventoryGridBody .group-header[data-folder-id]')];
+    // Stable alphabetical order: a changing inventory quantity must not
+    // change a folder's color. The first 10 get distinct tones.
+    const keys = [...new Set(folders.map(row => row.dataset.folderId || ''))].sort((a,b)=>a.localeCompare(b));
+    const keyToTone = new Map(keys.map((key,i)=>[key,i % 10]));
+    for (const folder of folders){
+      const tone = String(keyToTone.get(folder.dataset.folderId || '') ?? 0);
+      if (folder.dataset.folderTone !== tone) folder.dataset.folderTone = tone;
+    }
+  }
+  let queued=false;
+  function queue(){
+    if (queued) return;
+    queued=true;
+    queueMicrotask(()=>{queued=false;recolor();});
+  }
+  for (const body of bodies) new MutationObserver(queue).observe(body,{childList:true,subtree:true});
+  recolor();
+})();
+</script>
+
+<!-- 13B. HEADER TOOL REVEAL — Run only after all page assets finish loading. -->
+<script>
+(function () {
+  const controls = document.getElementById('headerKioskControls');
+  if (!controls) return;
+  let revealed = false;
+  function reveal() {
+    if (revealed) return;
+    revealed = true;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        controls.classList.add('is-loaded');
+      });
+    });
+  }
+  if (document.readyState === 'complete') reveal();
+  else window.addEventListener('load', reveal, {once:true});
+})();
+</script>
+
+
+<!-- VALEO inventory entrance matches the index.html screen/card sequence. -->
+<script>
+(function(){
+  'use strict';
+  var root=document.documentElement;
+  var complete=function(){root.classList.remove('inventory-boot');};
+  window.setTimeout(complete, 3410);
+  window.addEventListener('pageshow',function(e){if(e.persisted)complete();});
+})();
+</script>
+
+</body>
+</html>

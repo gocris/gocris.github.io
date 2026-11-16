@@ -1,0 +1,184 @@
+/* ===========================================================================
+   VALEO INVENTORY CATEGORY CARDS — MATCH THE DATA ARCHIVE (NOV 2026)
+   Reference: dataView.html, final archive cards. This is a presentation-only
+   layer: original category filters, stock controls and scanner JS are intact.
+   =========================================================================== */
+
+/* The archive has comfortable spacing and compact, technical, translucent cards.
+   Preserve horizontal scroll on narrow kiosk displays. */
+html[data-theme] body .os-container .category-nav {
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  gap:clamp(18px,2.5vw,36px) !important;
+  padding:22px clamp(16px,2vw,27px) 27px !important;
+  overflow-x:auto !important;
+  overscroll-behavior-x:contain;
+  scrollbar-width:thin;
+}
+
+/* The same chamfer / soft-right-corner silhouette as the archive filters.
+   Using a mask rather than polygon clip-path preserves rounded corners. */
+html[data-theme] body .os-container .category-nav > .menu-btn {
+  --card-accent:var(--category-ink,var(--category-accent,#27bfae));
+  position:relative !important;
+  isolation:isolate !important;
+  display:flex !important;
+  flex:1 0 153px !important;
+  min-width:153px !important;
+  max-width:none !important;
+  height:60px !important;
+  min-height:60px !important;
+  box-sizing:border-box !important;
+  padding:10px 17px 12px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  gap:0 !important;
+  overflow:hidden !important;
+  border:1px solid color-mix(in srgb,var(--card-accent) 38%,var(--inv-line)) !important;
+  border-radius:12px 16px 16px 5px !important;
+  clip-path:none !important;
+  -webkit-clip-path:none !important;
+  -webkit-mask:
+    linear-gradient(#000 0 0) center top / 100% calc(100% - 22px) no-repeat,
+    linear-gradient(45deg,transparent 0 15px,#000 15.5px) left bottom / 100% 22px no-repeat !important;
+  mask:
+    linear-gradient(#000 0 0) center top / 100% calc(100% - 22px) no-repeat,
+    linear-gradient(45deg,transparent 0 15px,#000 15.5px) left bottom / 100% 22px no-repeat !important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--card-accent) 5%,transparent) !important;
+  filter:none !important;
+  backdrop-filter:none !important;
+  transform:none !important;
+  transition:background .26s ease,border-color .26s ease,box-shadow .26s ease,transform .26s ease !important;
+}
+
+/* Semi-transparent, category-tinted surfaces like Archive, never opaque blocks. */
+html[data-theme="stella"] body .os-container .category-nav > .menu-btn {
+  background:linear-gradient(120deg,
+    color-mix(in srgb,var(--card-accent) 13%,transparent),
+    color-mix(in srgb,var(--card-accent) 3.5%,transparent)) !important;
+}
+html[data-theme="metroid"] body .os-container .category-nav > .menu-btn {
+  background:linear-gradient(120deg,
+    color-mix(in srgb,var(--card-accent) 15%,transparent),
+    color-mix(in srgb,var(--card-accent) 4%,transparent)),rgba(15,9,28,.48) !important;
+}
+
+/* Match the archive's short horizontal TOP border rail: 10px inset, 30px long.
+   Hover or keyboard focus grows it across the card, leaving 10px on either side.
+   The active filter's bar stays short until interacted with. */
+html[data-theme] body .os-container .category-nav > .menu-btn::before {
+  content:"" !important;
+  display:block !important;
+  position:absolute !important;
+  z-index:4 !important;
+  top:0 !important;
+  left:10px !important;
+  right:auto !important;
+  bottom:auto !important;
+  width:30px !important;
+  max-width:calc(100% - 20px) !important;
+  height:3px !important;
+  border-radius:999px !important;
+  background:var(--card-accent) !important;
+  opacity:.84 !important;
+  box-shadow:0 0 8px color-mix(in srgb,var(--card-accent) 30%,transparent) !important;
+  pointer-events:none !important;
+  transform:none !important;
+  transition:width .44s cubic-bezier(.18,.84,.2,1),box-shadow .28s ease,opacity .28s ease !important;
+}
+html[data-theme] body .os-container .category-nav > .menu-btn:is(:hover,:focus-visible)::before {
+  width:calc(100% - 20px) !important;
+  max-width:calc(100% - 20px) !important;
+  box-shadow:0 0 12px color-mix(in srgb,var(--card-accent) 48%,transparent) !important;
+  opacity:1 !important;
+}
+/* Hide legacy left rails, floating overlays and any card-specific animated tint. */
+html[data-theme] body .os-container .category-nav > .menu-btn::after {
+  content:none !important;
+  display:none !important;
+}
+
+html[data-theme] body .os-container .category-nav > .menu-btn .btn-title {
+  display:block !important;
+  position:relative !important;
+  z-index:5 !important;
+  width:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:center !important;
+  color:var(--card-accent) !important;
+  font:700 clamp(17px,1.58vw,21px)/1.14 'Bahnschrift','Segoe UI Variable','Segoe UI',Arial,sans-serif !important;
+  letter-spacing:.055em !important;
+  white-space:nowrap !important;
+  text-shadow:none !important;
+  opacity:.96 !important;
+}
+html[data-theme] body .os-container .category-nav > .menu-btn:is(:hover,:focus-visible,.active-cat) {
+  border-color:color-mix(in srgb,var(--card-accent) 60%,var(--inv-line)) !important;
+  background:linear-gradient(120deg,
+    color-mix(in srgb,var(--card-accent) 20%,transparent),
+    color-mix(in srgb,var(--card-accent) 7%,transparent)) !important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--card-accent) 12%,transparent),
+    0 5px 17px color-mix(in srgb,var(--card-accent) 10%,transparent) !important;
+  transform:translateY(-2px) !important;
+}
+/* Active category is marked by its face/border, not a permanently extended bar. */
+html[data-theme] body .os-container .category-nav > .menu-btn.active-cat:not(:hover):not(:focus-visible)::before {
+  width:30px !important;
+}
+
+/* Both pages' low-priority ALL filter: shorter, slightly narrower, and quieter. */
+html[data-theme] body .os-container .category-nav > .menu-btn.btn-all {
+  --card-accent:var(--category-all,var(--category-ink));
+  flex:.55 0 105px !important;
+  min-width:105px !important;
+  max-width:165px !important;
+  height:52px !important;
+  min-height:52px !important;
+  border-color:color-mix(in srgb,var(--card-accent) 27%,var(--inv-line)) !important;
+  background:linear-gradient(120deg,
+    color-mix(in srgb,var(--card-accent) 7%,transparent),
+    color-mix(in srgb,var(--card-accent) 1.7%,transparent)) !important;
+}
+html[data-theme] body .os-container .category-nav > .menu-btn.btn-all .btn-title {
+  font-size:clamp(16px,1.45vw,19px) !important;
+  opacity:.89 !important;
+}
+html[data-theme] body .os-container .category-nav > .menu-btn.btn-all::before {
+  opacity:.7 !important;
+}
+html[data-theme] body .os-container .category-nav > .menu-btn.btn-all.active-cat {
+  border-color:color-mix(in srgb,var(--card-accent) 45%,var(--inv-line)) !important;
+}
+
+/* Existing inventory launch sequence is intentional and retained. */
+@media(max-width:740px) {
+  html[data-theme] body .os-container .category-nav {
+    gap:16px !important;
+    padding:17px 13px 21px !important;
+  }
+  html[data-theme] body .os-container .category-nav > .menu-btn {
+    min-width:145px !important;
+    flex:0 0 145px !important;
+    min-height:58px !important;
+    height:58px !important;
+    border-radius:11px 14px 14px 5px !important;
+  }
+  html[data-theme] body .os-container .category-nav > .menu-btn.btn-all {
+    min-width:98px !important;
+    flex:0 0 98px !important;
+    height:50px !important;
+    min-height:50px !important;
+  }
+  html[data-theme] body .os-container .category-nav > .menu-btn .btn-title {
+    font-size:18px !important;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  html[data-theme] body .os-container .category-nav > .menu-btn,
+  html[data-theme] body .os-container .category-nav > .menu-btn::before {
+    transition:none !important;
+  }
+}

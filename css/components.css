@@ -1,0 +1,392 @@
+/* VALEO Shared Design System — components.css */
+
+    /* STELLA AQUA / METROID CORRUPTION - refined background and true transparent brand */
+    html[data-theme="stella"]{
+      --bg:#f2fdfb;
+      --surface-alt:#eefcf8;
+      --line:#cbe9e4;
+      --teal:#159b8d;
+      --active:#1dcbb4;
+      --glow:rgba(38,212,185,.20);
+      --hero-bg:linear-gradient(116deg,#ffffff 0%,#f4ffff 43%,#e1fcf6 75%,#d9f4fa 100%);
+      --hero-ink:#123f47;--hero-muted:#4a7e83;
+      --hero-outline:rgba(32,177,173,.22);
+      --card-bg:linear-gradient(115deg,rgba(255,255,255,.97),rgba(243,255,252,.95));
+      --card-border:rgba(60,182,177,.24);
+      --card-hover:rgba(41,218,186,.13);
+      --tone-one:#12bdd0;--tone-two:#1fceb3;--tone-three:#47d9c8;
+    }
+    html[data-theme="stella"] body{
+      background:
+        radial-gradient(ellipse at 95% 10%,rgba(65,220,192,.16) 0,transparent 33%),
+        radial-gradient(ellipse at 8% 82%,rgba(61,180,217,.10) 0,transparent 35%),
+        var(--bg);
+    }
+    html[data-theme="stella"] .primary-action{
+      background:linear-gradient(110deg,#0fb2c4,#13bba9);border-color:rgba(18,169,166,.25);
+      box-shadow:0 3px 13px rgba(24,189,178,.12);
+    }
+    html[data-theme="stella"] .primary-action:hover{
+      background:linear-gradient(110deg,#12bbca,#17cfb7);box-shadow:0 8px 19px rgba(24,189,178,.21);
+    }
+    html[data-theme="stella"] .stella-orb{background:#34dec5;box-shadow:0 0 12px rgba(31,203,178,.42)}
+    html[data-theme="stella"] .theme-button[aria-pressed="true"]{border-color:rgba(34,192,175,.40)}
+    html[data-theme="stella"] .module--inventory{--accent:#08acc7;--icon-tint:#e7fbfc}
+    html[data-theme="stella"] .module--cmm{--accent:#27bfae;--icon-tint:#e1fbf4}
+    html[data-theme="stella"] .module--dsc{--accent:#0fc6c1;--icon-tint:#e1fdf6}
+    html[data-theme="stella"] .module--keyence{--accent:#2ba3cc;--icon-tint:#e9f9ff}
+    html[data-theme="stella"] .module--qr{--accent:#22bfaa;--icon-tint:#e4fbf5}
+    html[data-theme="stella"] .module--scanner{--accent:#2ba9b7;--icon-tint:#e6f8fa}
+    .brand-logo-shell{
+      border:0!important;background:transparent!important;box-shadow:none!important;
+      padding:3px 2px!important;border-radius:0!important;overflow:visible!important;
+    }
+    .brand-logo{
+      background:transparent!important;object-fit:contain!important;
+      transition:filter .38s ease,transform .3s ease;
+    }
+    html[data-theme="stella"] .brand-logo{
+      filter:drop-shadow(0 0 4px rgba(0,188,218,.44)) drop-shadow(0 0 13px rgba(33,223,173,.28));
+    }
+    html[data-theme="metroid"] .brand-logo{
+      filter:drop-shadow(0 0 4px rgba(255,30,70,.53)) drop-shadow(0 0 13px rgba(157,0,255,.40));
+    }
+    .identity:hover .brand-logo{transform:scale(1.035)}
+    html[data-theme="stella"] .identity:hover .brand-logo{
+      filter:drop-shadow(0 0 6px rgba(0,192,223,.65)) drop-shadow(0 0 18px rgba(23,208,172,.48));
+    }
+    html[data-theme="metroid"] .identity:hover .brand-logo{
+      filter:drop-shadow(0 0 7px rgba(255,30,70,.70)) drop-shadow(0 0 20px rgba(157,0,255,.55));
+    }
+    html[data-theme="stella"] .brand-fallback{color:#1e8797;text-shadow:0 0 12px rgba(25,207,184,.40)}
+    html[data-theme="metroid"] .brand-fallback{color:#f3dfff;text-shadow:0 0 12px rgba(235,46,120,.58),0 0 24px rgba(164,42,255,.30)}
+    #localDate{display:none!important}
+    .summary-step{text-decoration:none;transition:background .2s ease,padding .2s ease}
+    .summary-step:hover{background:var(--card-hover);padding-left:9px;border-radius:7px}
+    .summary-step .summary-arrow{margin-left:auto;font-size:17px;color:var(--red-deep);opacity:.7}
+    .hero-summary{position:relative;z-index:2}
+    #ambientParticles{
+      display:block;position:fixed;inset:0;width:100%;height:100%;z-index:0;
+      pointer-events:none;opacity:1;
+    }
+    .page{position:relative;z-index:1}
+    @media(prefers-reduced-motion:reduce){#ambientParticles{display:none}}
+
+
+    /* QR Translator-style moving light bar: header bottom edge */
+    html[data-theme="stella"]{
+      --header-track:rgba(20,176,183,.28);
+      --header-beam-a:#15c7d8;
+      --header-beam-b:#43edbd;
+      --header-beam-shadow:rgba(23,214,188,.62);
+    }
+    html[data-theme="metroid"]{
+      --header-track:rgba(178,67,224,.30);
+      --header-beam-a:#ff355c;
+      --header-beam-b:#ba55ff;
+      --header-beam-shadow:rgba(221,78,247,.65);
+    }
+    .topbar{
+      position:relative;
+      isolation:isolate;
+      border-bottom:1px solid var(--header-track)!important;
+    }
+    .topbar::before{
+      content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+      background:var(--header-track);pointer-events:none;
+    }
+    .topbar::after{
+      content:"";position:absolute;bottom:0;left:-27%;width:27%;height:3px;
+      background:linear-gradient(90deg,transparent,var(--header-beam-a) 25%,var(--header-beam-b) 65%,transparent);
+      box-shadow:0 0 8px var(--header-beam-shadow),0 0 17px var(--header-beam-shadow);
+      border-radius:100px;pointer-events:none;z-index:4;
+      animation:valeoHeaderScanner 3.7s ease-in-out infinite alternate;
+    }
+    @keyframes valeoHeaderScanner{
+      from{left:-27%}
+      to{left:100%}
+    }
+    @media (prefers-reduced-motion:reduce){
+      .topbar::after{animation:none!important;left:36%;width:28%;}
+    }
+
+
+    /* Corporate hub v5: contain the moving header scanner within the viewport. */
+    html,body{width:100%;max-width:100%;overflow-x:clip;}
+    .page{width:100%;max-width:100%;overflow-x:clip;}
+    .topbar{max-width:100%;overflow:hidden;}
+    .topbar-inner,.container,.hero,.modules{min-width:0;}
+    .hero-summary .step-orb{
+      --orb:var(--tone-one);
+      display:block;width:15px;height:15px;flex:0 0 15px;
+      border:1px solid rgba(255,255,255,.24);border-radius:50%;
+      background:radial-gradient(circle at 36% 30%,rgba(255,255,255,.92) 0%,var(--orb) 37%,var(--orb) 78%,rgba(0,0,0,.16) 100%);
+      box-shadow:0 0 0 3px var(--glow),0 0 10px var(--orb),inset 0 0 3px rgba(255,255,255,.3);
+      animation:valeoOrbBreathe 2.9s ease-in-out infinite;
+      position:relative;
+    }
+    .hero-summary .summary-step:nth-of-type(1) .step-orb{--orb:var(--tone-one);animation-delay:0s;}
+    .hero-summary .summary-step:nth-of-type(2) .step-orb{--orb:var(--tone-two);animation-delay:-.9s;}
+    .hero-summary .summary-step:nth-of-type(3) .step-orb{--orb:var(--tone-three);animation-delay:-1.8s;}
+    @keyframes valeoOrbBreathe{
+      0%,100%{opacity:.82;transform:scale(.93);box-shadow:0 0 0 2px var(--glow),0 0 6px var(--orb),inset 0 0 3px rgba(255,255,255,.25);}
+      50%{opacity:1;transform:scale(1.13);box-shadow:0 0 0 5px var(--glow),0 0 16px var(--orb),inset 0 0 4px rgba(255,255,255,.45);}
+    }
+    @media(prefers-reduced-motion:reduce){
+      .hero-summary .step-orb{animation:none!important;transform:none!important;}
+    }
+
+  
+/* 2026 refined hierarchy: flat signal indicators instead of glossy, raised dots */
+.hero-eyebrow{display:inline-flex!important;align-items:center!important;gap:11px!important;}
+.workspace-signal{
+  --signal-color:var(--tone-one);
+  display:inline-block;position:relative;vertical-align:middle;
+  width:8px;height:8px;flex:0 0 8px;border-radius:50%;
+  background:var(--signal-color);box-shadow:0 0 7px var(--signal-color);
+  animation:workspaceSignalPulse 3.2s ease-in-out infinite;
+}
+.hero-summary .step-index.step-orb{
+  display:block!important;width:10px!important;height:10px!important;
+  min-width:10px!important;flex:0 0 10px!important;
+  padding:0!important;place-items:initial!important;align-self:center!important;
+  border:none!important;border-radius:50%!important;
+  background:var(--orb)!important;
+  background-image:none!important;
+  filter:none!important;
+  box-shadow:0 0 8px var(--orb)!important;
+  animation:valeoFlatSignalPulse 3.2s ease-in-out infinite!important;
+}
+.hero-summary .summary-step{align-items:center!important;gap:13px!important;min-height:43px;}
+.hero-summary .summary-step:nth-of-type(1) .step-orb{animation-delay:0s!important;}
+.hero-summary .summary-step:nth-of-type(2) .step-orb{animation-delay:-1.05s!important;}
+.hero-summary .summary-step:nth-of-type(3) .step-orb{animation-delay:-2.1s!important;}
+@keyframes valeoFlatSignalPulse{
+  0%,100%{opacity:.60;box-shadow:0 0 3px var(--orb),0 0 6px var(--glow)}
+  50%{opacity:1;box-shadow:0 0 8px var(--orb),0 0 12px var(--glow)}
+}
+@keyframes workspaceSignalPulse{
+  0%,100%{opacity:.65;box-shadow:0 0 4px var(--signal-color)}
+  50%{opacity:1;box-shadow:0 0 9px var(--signal-color)}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-summary .step-index.step-orb,.workspace-signal{animation:none!important;opacity:1!important;}
+}
+
+/* === VALEO FULL-BLEED HOLOGRAPHIC HERO V3 === */
+/* Full-width presentation surface; applications remain on the original content grid. */
+.container{
+  width:100%!important;max-width:none!important;
+  padding:0 0 20px!important;margin-inline:auto!important;
+}
+.container > #workspaces,
+.container > .footer{
+  width:100%;max-width:1312px;
+  padding-inline:32px;
+  margin-inline:auto;
+  box-sizing:border-box;
+}
+.hero{
+  --holo-ray:rgba(37,200,208,.24);
+  --holo-rule:rgba(12,155,173,.095);
+  isolation:isolate;
+  width:100%!important;max-width:none!important;
+  margin:0!important;
+  min-height:286px;
+  padding:39px max(32px,calc((100% - 1248px) / 2))!important;
+  background:
+    radial-gradient(ellipse 45% 120% at 83% 50%,rgba(42,215,185,.20),transparent 80%),
+    radial-gradient(ellipse 58% 95% at 8% 120%,rgba(59,181,212,.10),transparent 75%),
+    linear-gradient(108deg,rgba(242,255,255,.99),rgba(228,251,252,.96) 54%,rgba(211,246,244,.96))!important;
+  border:0!important;border-radius:0!important;
+  outline:0!important;
+  box-shadow:0 13px 32px rgba(17,89,101,.075),inset 0 10px 24px rgba(255,255,255,.46)!important;
+  display:grid;
+  grid-template-columns:minmax(0,1.16fr) minmax(250px,.84fr);
+  gap:clamp(28px,4vw,68px);
+  align-items:center;
+  position:relative;overflow:hidden!important;
+}
+.hero > *{position:relative;z-index:2;min-width:0;}
+/* Fine registration/grid lines and an almost imperceptible light-field scan. */
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 63px,var(--holo-rule) 64px,transparent 65px),
+    repeating-linear-gradient(0deg,transparent 0 34px,var(--holo-rule) 35px,transparent 36px),
+    linear-gradient(104deg,transparent 20%,var(--holo-ray) 49%,transparent 60%);
+  background-size:auto,auto,235% 100%;
+  background-position:center,center,-100% center;
+  mask-image:linear-gradient(90deg,transparent,black 15%,black 90%,transparent);
+  opacity:.55;
+  animation:valeoHoloField 12s ease-in-out infinite alternate;
+}
+/* Soft light at the base, never a visible frame or border. */
+.hero::after{
+  content:"";position:absolute;z-index:1;pointer-events:none;
+  inset:auto 0 0 0;height:3px;width:auto;
+  border:0!important;border-radius:0!important;
+  background:linear-gradient(90deg,transparent,var(--tone-one) 32%,var(--tone-two) 58%,transparent);
+  box-shadow:0 0 22px var(--glow),0 -3px 15px var(--glow)!important;
+  opacity:.65;
+  animation:valeoHoloRail 8s ease-in-out infinite alternate;
+}
+@keyframes valeoHoloField{
+  from{background-position:center,center,-100% center;opacity:.42}
+  to{background-position:center,center,100% center;opacity:.63}
+}
+@keyframes valeoHoloRail{from{opacity:.38}to{opacity:.76}}
+/* One marker only: remove the old horizontal dash, preserve the pulsing signal circle. */
+.hero .hero-eyebrow::before{content:none!important;display:none!important;}
+.hero .workspace-signal{width:9px;height:9px;flex:0 0 9px;}
+.hero .hero-eyebrow{gap:11px!important;}
+.hero h1{font-weight:750;letter-spacing:-.032em;}
+.hero-summary{
+  background:rgba(255,255,255,.33)!important;
+  backdrop-filter:blur(15px) saturate(130%)!important;
+  -webkit-backdrop-filter:blur(15px) saturate(130%)!important;
+  border:0!important;border-radius:16px!important;
+  box-shadow:0 15px 32px rgba(29,118,129,.07),inset 0 1px rgba(255,255,255,.55)!important;
+  padding:22px 24px!important;
+}
+.hero-summary .summary-step{transition:background .25s ease,transform .25s ease;}
+.hero-summary .summary-step:hover{transform:translateX(3px);}
+html[data-theme="metroid"] .hero{
+  --holo-ray:rgba(205,38,204,.18);
+  --holo-rule:rgba(191,74,248,.095);
+  background:
+    radial-gradient(ellipse 44% 120% at 84% 43%,rgba(158,24,255,.22),transparent 82%),
+    radial-gradient(ellipse 60% 110% at 10% 110%,rgba(255,30,70,.14),transparent 75%),
+    linear-gradient(110deg,#0d0615 0%,#180925 52%,#180d26 100%)!important;
+  box-shadow:0 14px 36px rgba(12,5,23,.18),inset 0 8px 25px rgba(113,42,162,.06)!important;
+}
+html[data-theme="metroid"] .hero-summary{
+  background:rgba(45,19,57,.50)!important;
+  box-shadow:0 15px 34px rgba(0,0,0,.16),inset 0 1px rgba(234,179,255,.09)!important;
+}
+@media (max-width:1050px){.hero{gap:22px;padding:32px 32px!important;min-height:268px;}}
+@media (max-width:720px){
+  .container > #workspaces,.container > .footer{padding-inline:20px;}
+  .hero{grid-template-columns:minmax(0,1fr)!important;gap:18px!important;padding:31px 24px!important;min-height:0;}
+  .hero-summary{display:none;}
+}
+@media (max-width:390px){
+  .container > #workspaces,.container > .footer{padding-inline:13px;}
+  .hero{padding:27px 19px!important;}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero::before,.hero::after{animation:none!important;}
+  .hero-summary .summary-step:hover{transform:none!important;}
+}
+/* === END VALEO HOLOGRAPHIC HERO V3 === */
+
+
+/* Futuristic-professional display typography for hero title, Applications heading, and application card titles */
+:root{
+  --display-font:'Bahnschrift','Avenir Next Condensed','Avenir Next','Segoe UI Variable','Trebuchet MS',Arial,sans-serif;
+}
+#heroTitle{
+  font-family:var(--display-font)!important;
+  font-weight:700!important;
+  letter-spacing:.045em!important;
+  text-transform:uppercase;
+}
+#workspacesTitle{
+  font-family:var(--display-font)!important;
+  font-weight:700!important;
+  letter-spacing:.04em!important;
+  text-transform:uppercase;
+}
+.module-title{
+  font-family:var(--display-font)!important;
+  font-weight:700!important;
+  letter-spacing:.05em!important;
+  text-transform:uppercase;
+}
+html[data-theme="stella"] #heroTitle,
+html[data-theme="stella"] #workspacesTitle,
+html[data-theme="stella"] .module-title{
+  text-shadow:0 0 18px rgba(37,196,214,.08);
+}
+html[data-theme="metroid"] #heroTitle,
+html[data-theme="metroid"] #workspacesTitle,
+html[data-theme="metroid"] .module-title{
+  text-shadow:0 0 18px rgba(188,73,255,.08);
+}
+
+
+/* VALEO expandable master applications: retain kinetic rail, compact hierarchy */
+.modules{align-items:start;}
+.module--group{
+  --accent:var(--tone-two);
+  --icon-tint:var(--surface-alt);
+  display:block!important;
+  cursor:default;
+  min-height:185px;
+  padding-bottom:19px!important;
+}
+.module--documents{--accent:var(--tone-three);}
+.module-group-trigger{
+  display:block;
+  list-style:none;
+  cursor:pointer;
+  outline-offset:5px;
+  position:relative;
+  min-width:0;
+}
+.module-group-trigger::-webkit-details-marker{display:none;}
+.module-group-trigger::marker{content:"";}
+.module-group-trigger > .module-title{display:block;}
+.module-group-trigger > .module-description{display:block;}
+.module-group-trigger > .module-footer{display:flex;}
+.module-group-trigger .module-topline{display:flex;}
+.module-group-trigger .group-chevron{transition:transform .24s ease;}
+.module--group[open] .group-chevron{transform:rotate(180deg)!important;}
+.module--group[open]{border-color:var(--accent)!important;box-shadow:var(--shadow),0 0 18px var(--glow);}
+.module--group .module-topline,.module--group .module-title,.module--group .module-description,.module--group .module-footer,.module--group .module-branches{position:relative;z-index:1;}
+.module-branches{
+  margin-top:19px;
+  padding-top:14px;
+  border-top:1px solid var(--card-border);
+  display:grid;
+  grid-template-columns:1fr;
+  gap:9px;
+  animation:branchEnter .24s ease both;
+}
+@keyframes branchEnter{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.module-branch{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  min-width:0;
+  padding:12px 13px;
+  text-decoration:none;
+  background:var(--surface-alt);
+  border:1px solid var(--card-border);
+  border-radius:5px;
+  transition:background .18s,border-color .18s,transform .18s,box-shadow .18s;
+}
+.module-branch:hover,.module-branch:focus-visible{
+  background:var(--card-hover);
+  border-color:var(--accent);
+  transform:translateX(3px);
+  box-shadow:0 0 13px var(--glow);
+}
+.branch-indicator{
+  display:block;
+  flex:0 0 7px;width:7px;height:7px;
+  border-radius:50%;background:var(--accent);box-shadow:0 0 9px var(--glow);
+}
+.branch-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:2px;}
+.branch-copy strong{font:700 15px/1.25 var(--display-font);letter-spacing:.025em;color:var(--ink);}
+.branch-copy small{font:500 12px/1.35 var(--font);color:var(--muted);}
+.branch-arrow{color:var(--accent);font-size:17px;line-height:1;flex:0 0 auto;}
+@media(max-width:720px){
+  .module--group{min-height:166px;}
+  .module-branches{gap:8px;}
+  .module-branch{padding:11px 12px;}
+}
+@media(prefers-reduced-motion:reduce){.module-branches{animation:none!important;}}
+
+
+/* === VALEO V4 | PROFESSIONAL HOLOGRAPHIC SCREEN + NESTED MASTER BRANCHES === */

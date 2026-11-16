@@ -1,0 +1,227 @@
+/* VALEO Shared Design System — theme-effects.css */
+:root{
+  --primary-card-accent:#137fdf;
+  --primary-card-glow:rgba(18,129,232,.27);
+  --primary-card-shade:rgba(29,126,231,.13);
+}
+html[data-theme="metroid"]{
+  --primary-card-accent:#f0294c;
+  --primary-card-glow:rgba(250,32,74,.30);
+  --primary-card-shade:rgba(247,28,72,.17);
+}
+/* The round navigation control is saturated blue in Stella, crimson in Metroid. */
+html[data-theme="stella"] .topbar .nav-orb-button{
+  background:linear-gradient(146deg,#329bf5 0%,#187bd6 55%,#0d5db9 100%)!important;
+  color:#fff!important;
+  border-color:#2c90f1!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 0 3px rgba(22,124,220,.09),0 0 17px rgba(16,108,204,.25)!important;
+}
+html[data-theme="metroid"] .topbar .nav-orb-button{
+  background:linear-gradient(146deg,#ff4863 0%,#e42047 52%,#a60e30 100%)!important;
+  color:#fff!important;
+  border-color:#f23559!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 0 0 3px rgba(235,28,66,.10),0 0 19px rgba(241,27,72,.34)!important;
+}
+.topbar .nav-orb-button .nav-orb-lines i{background:#fff!important;box-shadow:0 0 6px rgba(255,255,255,.55)!important;}
+.topbar .nav-orb-button::before{border-color:rgba(255,255,255,.2)!important;}
+html[data-theme="stella"] .topbar .nav-orb-button:hover,
+html[data-theme="stella"] .topbar .nav-orb-button:focus-visible,
+html[data-theme="metroid"] .topbar .nav-orb-button:hover,
+html[data-theme="metroid"] .topbar .nav-orb-button:focus-visible{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 3px var(--primary-card-shade),0 0 29px var(--primary-card-glow)!important;
+}
+/* Equal, stronger color language on Data Archive and Inventory only. */
+#modules > a.module--wide:not(.module--qr-scanner){
+  --accent:var(--primary-card-accent)!important;
+  --icon-tint:color-mix(in srgb,var(--primary-card-accent) 14%,var(--surface))!important;
+  background:linear-gradient(120deg,var(--primary-card-shade) 0%,color-mix(in srgb,var(--primary-card-accent) 4%,var(--surface)) 46%,var(--surface) 92%)!important;
+  border-color:color-mix(in srgb,var(--primary-card-accent) 39%,var(--card-border))!important;
+  box-shadow:var(--shadow),0 0 0 1px color-mix(in srgb,var(--primary-card-accent) 12%,transparent),0 0 22px color-mix(in srgb,var(--primary-card-accent) 13%,transparent)!important;
+  transition:transform .32s cubic-bezier(.16,1,.3,1),box-shadow .35s,border-color .35s,background .35s!important;
+}
+#modules > a.module--wide:not(.module--qr-scanner) .module-title{
+  color:var(--primary-card-accent)!important;
+  text-shadow:0 0 16px color-mix(in srgb,var(--primary-card-accent) 14%,transparent)!important;
+}
+#modules > a.module--wide:not(.module--qr-scanner) .module-eyebrow,
+#modules > a.module--wide:not(.module--qr-scanner) .module-footer,
+#modules > a.module--wide:not(.module--qr-scanner) .module-icon{
+  color:var(--primary-card-accent)!important;
+}
+#modules > a.module--wide:not(.module--qr-scanner) .module-icon{
+  background:color-mix(in srgb,var(--primary-card-accent) 12%,var(--surface))!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.17),0 0 15px color-mix(in srgb,var(--primary-card-accent) 17%,transparent)!important;
+}
+#modules > a.module--wide:not(.module--qr-scanner):hover,
+#modules > a.module--wide:not(.module--qr-scanner):focus-visible{
+  border-color:color-mix(in srgb,var(--primary-card-accent) 67%,var(--card-border))!important;
+  box-shadow:var(--shadow),0 0 0 1px color-mix(in srgb,var(--primary-card-accent) 23%,transparent),0 0 38px var(--primary-card-glow)!important;
+}
+/* 2s intense arrival, then a ~0.8s dissolve back to the regular hologram. */
+.hero .hero-theme-flash{
+  position:absolute!important;
+  inset:0!important;
+  z-index:2!important;
+  pointer-events:none!important;
+  opacity:0;
+  transform:translateZ(0);
+  will-change:opacity;
+  background:transparent;
+}
+html[data-theme="stella"] .hero .hero-theme-flash{
+  background:
+    radial-gradient(ellipse 80% 130% at 50% 46%,rgba(180,248,255,.94) 0%,rgba(74,201,255,.77) 38%,rgba(22,150,251,.36) 75%,rgba(25,146,225,.07) 100%),
+    linear-gradient(110deg,rgba(56,163,238,.22),rgba(126,232,255,.54) 54%,rgba(11,105,190,.13));
+}
+html[data-theme="metroid"] .hero .hero-theme-flash{
+  background:
+    radial-gradient(ellipse 86% 140% at 51% 45%,rgba(255,187,69,.88) 0%,rgba(255,111,20,.80) 35%,rgba(248,67,6,.56) 69%,rgba(152,25,6,.16) 100%),
+    linear-gradient(113deg,rgba(133,27,9,.35),rgba(255,105,18,.73) 55%,rgba(163,30,11,.29));
+}
+.hero.is-theme-flashing .hero-theme-flash{
+  animation:valeoElementalHeroPulse 2.8s linear forwards!important;
+}
+/* Keep text, quick-access buttons, and the workflow panel above the color layer. */
+.hero > .hero-theme-flash ~ :not(.hero-screen-fx):not(.hero-theme-flash){
+  position:relative!important;z-index:3!important;
+}
+@keyframes valeoElementalHeroPulse{
+  0%,71.5%{opacity:.94;}
+  100%{opacity:0;}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero.is-theme-flashing .hero-theme-flash{animation:none!important;opacity:0!important;}
+}
+/* === end VALEO vNext === */
+
+
+/* === VALEO refinement: transparent orbit, restrained 1s screen-glitch, vivid secondary purple === */
+/* Just the illuminated outline and three bars; the disc itself remains clear. */
+html[data-theme="stella"] .topbar .nav-orb-button,
+html[data-theme="metroid"] .topbar .nav-orb-button{
+  background:transparent!important;
+  background-image:none!important;
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--nav-outline) 17%,transparent),
+             0 0 15px color-mix(in srgb,var(--nav-outline) 16%,transparent)!important;
+  border:1.5px solid var(--nav-outline)!important;
+  color:var(--nav-outline)!important;
+}
+html[data-theme="stella"] .topbar .nav-orb-button{--nav-outline:#1689e9;}
+html[data-theme="metroid"] .topbar .nav-orb-button{--nav-outline:#ff345b;}
+html[data-theme="stella"] .topbar .nav-orb-button .nav-orb-lines i,
+html[data-theme="metroid"] .topbar .nav-orb-button .nav-orb-lines i{
+  background:var(--nav-outline)!important;
+  box-shadow:0 0 7px color-mix(in srgb,var(--nav-outline) 44%,transparent)!important;
+}
+html[data-theme="stella"] .topbar .nav-orb-button::before,
+html[data-theme="metroid"] .topbar .nav-orb-button::before{
+  border-color:color-mix(in srgb,var(--nav-outline) 23%,transparent)!important;
+}
+html[data-theme="stella"] .topbar .nav-orb-button:hover,
+html[data-theme="stella"] .topbar .nav-orb-button:focus-visible,
+html[data-theme="metroid"] .topbar .nav-orb-button:hover,
+html[data-theme="metroid"] .topbar .nav-orb-button:focus-visible{
+  background:transparent!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--nav-outline) 11%,transparent),
+             0 0 24px color-mix(in srgb,var(--nav-outline) 40%,transparent)!important;
+}
+/* Keep major destinations prominent with high-contrast, neutral titles. */
+html[data-theme="stella"] #modules > a.module--wide:not(.module--qr-scanner) .module-title{
+  color:#132b3a!important;text-shadow:none!important;
+}
+html[data-theme="metroid"] #modules > a.module--wide:not(.module--qr-scanner) .module-title{
+  color:#fff7fb!important;text-shadow:none!important;
+}
+/* Secondary destinations: clearer electric-purple accents in the dark theme,
+   but still visibly less dominant than the red main cards. */
+html[data-theme="metroid"] #modules > details.module--group,
+html[data-theme="metroid"] #modules > a.module--qr-scanner{
+  --accent:#be5cff!important;
+  --glow:rgba(179,74,255,.32);
+}
+html[data-theme="metroid"] #modules > details.module--group > .module-group-trigger{
+  background:linear-gradient(120deg,rgba(122,44,186,.23),rgba(37,14,58,.89) 62%,rgba(25,8,40,.95))!important;
+  border-color:rgba(189,103,255,.48)!important;
+  box-shadow:0 5px 18px rgba(0,0,0,.18),0 0 17px rgba(158,64,242,.12)!important;
+}
+html[data-theme="metroid"] #modules > details.module--group > .module-group-trigger:hover,
+html[data-theme="metroid"] #modules > details.module--group > .module-group-trigger:focus-visible{
+  border-color:rgba(218,154,255,.77)!important;
+  box-shadow:0 8px 21px rgba(0,0,0,.20),0 0 23px rgba(182,69,255,.28)!important;
+}
+html[data-theme="metroid"] #modules > details.module--group .module-title,
+html[data-theme="metroid"] #modules > a.module--qr-scanner .module-title{
+  color:#f4e5ff!important;text-shadow:0 0 12px rgba(186,81,255,.18)!important;
+}
+html[data-theme="metroid"] #modules > details.module--group .module-eyebrow,
+html[data-theme="metroid"] #modules > a.module--qr-scanner .module-eyebrow,
+html[data-theme="metroid"] #modules > details.module--group .module-footer,
+html[data-theme="metroid"] #modules > a.module--qr-scanner .module-footer,
+html[data-theme="metroid"] #modules > details.module--group .module-icon,
+html[data-theme="metroid"] #modules > a.module--qr-scanner .module-icon{
+  color:#c57aff!important;
+}
+html[data-theme="metroid"] #modules > details.module--group .module-description,
+html[data-theme="metroid"] #modules > a.module--qr-scanner .module-description{
+  color:#d4bddf!important;
+  opacity:1!important;
+}
+html[data-theme="metroid"] #modules > a.module--qr-scanner{
+  background:linear-gradient(120deg,rgba(107,40,172,.19),rgba(36,13,54,.92) 66%,rgba(21,8,32,.96))!important;
+  border-color:rgba(189,103,255,.48)!important;
+  box-shadow:0 5px 18px rgba(0,0,0,.18),0 0 17px rgba(158,64,242,.12)!important;
+}
+html[data-theme="metroid"] #modules > a.module--qr-scanner::before{
+  background:#be5cff!important;
+}
+html[data-theme="metroid"] #modules > details.module--group .module-branch{
+  background:linear-gradient(115deg,rgba(91,36,143,.25),rgba(21,9,34,.96))!important;
+  border-color:rgba(183,96,253,.39)!important;
+}
+html[data-theme="metroid"] #modules > details.module--group .module-branch:hover{
+  border-color:rgba(210,151,255,.7)!important;
+}
+/* The transition is a TRANSLUCENT scan glitch, not a solid color fill.
+   Existing holographic grid, reflections, and typography remain visible. */
+.hero .hero-theme-flash{
+  mix-blend-mode:normal;
+  opacity:0;
+  background-size:100% 100%,100% 100%,100% 100%,100% 100%!important;
+  filter:none;
+}
+html[data-theme="stella"] .hero .hero-theme-flash{
+  background:
+    linear-gradient(90deg,transparent 0 16%,rgba(13,136,231,.11) 16.5%,transparent 18%,transparent 65%,rgba(51,174,245,.12) 66%,transparent 68%),
+    repeating-linear-gradient(0deg,rgba(19,153,242,.11) 0px,rgba(19,153,242,.11) 1px,transparent 1px,transparent 8px),
+    radial-gradient(ellipse at 43% 52%,rgba(63,207,255,.30),rgba(34,149,229,.14) 59%,transparent 88%),
+    linear-gradient(110deg,rgba(99,213,247,.12),rgba(48,154,228,.16) 50%,rgba(19,124,229,.06))!important;
+}
+html[data-theme="metroid"] .hero .hero-theme-flash{
+  background:
+    linear-gradient(90deg,transparent 0 13%,rgba(255,172,71,.13) 13.5%,transparent 15%,transparent 70%,rgba(255,100,38,.12) 71%,transparent 73%),
+    repeating-linear-gradient(0deg,rgba(255,146,67,.10) 0px,rgba(255,146,67,.10) 1px,transparent 1px,transparent 8px),
+    radial-gradient(ellipse at 49% 49%,rgba(255,153,69,.31),rgba(255,97,30,.16) 59%,transparent 90%),
+    linear-gradient(110deg,rgba(255,111,54,.11),rgba(247,140,50,.16) 52%,rgba(206,50,32,.06))!important;
+}
+.hero.is-theme-flashing .hero-theme-flash{
+  animation:valeoHologramGlitchOneSecond 1s cubic-bezier(.28,.1,.64,1) both!important;
+}
+@keyframes valeoHologramGlitchOneSecond{
+  0%{opacity:0;transform:translateX(0) skewX(0);}
+  12%{opacity:.66;transform:translateX(0) skewX(0);}
+  23%{opacity:.80;transform:translateX(-3px) skewX(-.14deg);}
+  29%{opacity:.45;transform:translateX(3px) skewX(.1deg);}
+  37%{opacity:.78;transform:translateX(-1px) skewX(-.12deg);}
+  52%{opacity:.65;transform:translateX(2px) skewX(.11deg);}
+  63%{opacity:.74;transform:translateX(0) skewX(0);}
+  80%{opacity:.27;transform:translateX(0) skewX(0);}
+  100%{opacity:0;transform:translateX(0) skewX(0);}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero.is-theme-flashing .hero-theme-flash{animation:none!important;opacity:0!important;}
+}
+/* === END VALEO translucent-glitch refinement === */
+
+
+
+/* ============================================================
